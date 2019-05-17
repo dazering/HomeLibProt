@@ -24,6 +24,8 @@ namespace HomeLib.Models
             modelBuilder.Entity<Book>().HasOne(b => b.Authtor).WithMany(b => b.Books).IsRequired();
             modelBuilder.Entity<Book>().Property(b => b.Title).IsRequired();
             modelBuilder.Entity<Book>().HasIndex(b => b.Title);
+            modelBuilder.Entity<Book>().Property(b => b.PathArchive).IsRequired();
+            modelBuilder.Entity<Book>().Property(b => b.PathBook).IsRequired();
         }
     }
 }
