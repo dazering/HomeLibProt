@@ -3,14 +3,16 @@ using HomeLib.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HomeLib.Migrations
 {
     [DbContext(typeof(LibraryContex))]
-    partial class LibraryContexModelSnapshot : ModelSnapshot
+    [Migration("20190517113944_AddNewColumnInBooks")]
+    partial class AddNewColumnInBooks
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
