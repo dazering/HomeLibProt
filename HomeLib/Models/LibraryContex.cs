@@ -10,7 +10,7 @@ namespace HomeLib.Models
     {
         public LibraryContex(DbContextOptions<LibraryContex> contextOptions) : base(contextOptions)
         {
-
+            
         }
 
         public DbSet<Authtor> Authtors { get; set; }
@@ -18,7 +18,12 @@ namespace HomeLib.Models
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Authtor>().HasKey(a => new { a.FirstName, a.LastName });
+            modelBuilder.Entity<Authtor>().HasKey(a => new { a.FirstName,a.MiddleName, a.LastName });
+            modelBuilder.Entity<Authtor>().Property(a => a.MiddleName).HasDefaultValue("none");
+
+            modelBuilder.Entity<Book>().HasOne(b => b.Authtor).WithMany(b => b.Books).IsRequired();
+            modelBuilder.Entity<Book>().Property(b => b.Title).IsRequired();
+            modelBuilder.Entity<Book>().HasIndex(b => b.Title);
         }
     }
 }

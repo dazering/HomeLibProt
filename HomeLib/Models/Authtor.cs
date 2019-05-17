@@ -9,6 +9,7 @@ namespace HomeLib.Models
     {
         public long Id { get; set; }
         public string FirstName { get; set; }
+        public string MiddleName { get; set; }
         public string LastName { get; set; }
         public IEnumerable<Book> Books { get; set; }
     }
