@@ -3,16 +3,14 @@ using HomeLib.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace HomeLib.Migrations
 {
-    [DbContext(typeof(LibraryContex))]
-    [Migration("20190517113944_AddNewColumnInBooks")]
-    partial class AddNewColumnInBooks
+    [DbContext(typeof(LibraryContext))]
+    partial class LibraryContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -22,17 +20,26 @@ namespace HomeLib.Migrations
 
             modelBuilder.Entity("HomeLib.Models.Authtor", b =>
                 {
-                    b.Property<string>("FirstName");
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("FirstName")
+                        .IsRequired();
+
+                    b.Property<string>("FullName");
+
+                    b.Property<string>("LastName")
+                        .IsRequired();
 
                     b.Property<string>("MiddleName")
+                        .IsRequired()
                         .ValueGeneratedOnAdd()
-                        .HasDefaultValue("none");
+                        .HasDefaultValue("");
 
-                    b.Property<string>("LastName");
+                    b.HasKey("Id");
 
-                    b.Property<long>("Id");
-
-                    b.HasKey("FirstName", "MiddleName", "LastName");
+                    b.HasIndex("FullName");
 
                     b.ToTable("Authtors");
                 });
@@ -45,24 +52,19 @@ namespace HomeLib.Migrations
 
                     b.Property<string>("Annotation");
 
-                    b.Property<string>("AuthtorFirstName")
-                        .IsRequired();
+                    b.Property<string>("AuthtorFirstName");
 
-                    b.Property<string>("AuthtorLastName")
-                        .IsRequired();
+                    b.Property<string>("AuthtorLastName");
 
-                    b.Property<string>("AuthtorMiddleName")
-                        .IsRequired();
+                    b.Property<string>("AuthtorMiddleName");
 
                     b.Property<string>("Cover");
 
                     b.Property<string>("Isbn");
 
-                    b.Property<string>("PathArchive")
-                        .IsRequired();
+                    b.Property<string>("PathArchive");
 
-                    b.Property<string>("PathBook")
-                        .IsRequired();
+                    b.Property<string>("PathBook");
 
                     b.Property<string>("Title")
                         .IsRequired();
@@ -83,7 +85,7 @@ namespace HomeLib.Migrations
                     b.HasOne("HomeLib.Models.Authtor", "Authtor")
                         .WithMany("Books")
                         .HasForeignKey("AuthtorFirstName", "AuthtorMiddleName", "AuthtorLastName")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .HasPrincipalKey("FirstName", "MiddleName", "LastName");
                 });
 #pragma warning restore 612, 618
         }
