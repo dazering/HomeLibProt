@@ -9,11 +9,12 @@ namespace HomeLib.Infrostructure
     {
         public static string NameToUpperFirstLiteral(this string name)
         {
-            if (name.Length > 0)
+            if (string.IsNullOrWhiteSpace(name))
             {
-                return char.ToUpper(name[0]) + name.Substring(1);
+                return "Unknown";
             }
-            return name;
+            name.Trim(' ');
+            return char.ToUpper(name[0]) + name.Substring(1);
         }
     }
 }
