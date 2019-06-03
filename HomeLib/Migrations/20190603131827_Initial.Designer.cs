@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeLib.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20190526092232_Initial")]
+    [Migration("20190603131827_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,12 +27,16 @@ namespace HomeLib.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FirstName")
-                        .IsRequired();
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue("");
 
                     b.Property<string>("FullName");
 
                     b.Property<string>("LastName")
-                        .IsRequired();
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue("");
 
                     b.Property<string>("MiddleName")
                         .IsRequired()

@@ -25,12 +25,16 @@ namespace HomeLib.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FirstName")
-                        .IsRequired();
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue("");
 
                     b.Property<string>("FullName");
 
                     b.Property<string>("LastName")
-                        .IsRequired();
+                        .IsRequired()
+                        .ValueGeneratedOnAdd()
+                        .HasDefaultValue("");
 
                     b.Property<string>("MiddleName")
                         .IsRequired()
