@@ -1,0 +1,26 @@
+﻿<div class="container-fluid bg-secondary align-middle">
+    <div class="row">
+        <div class="col-sm-4 ml-sm-n3 btn-group text-sm-left">
+            <div>
+                <a asp-action="Index" class="btn btn-primary btn-block">HomeLib</a>
+            </div>
+            <div>
+                <a asp-action="GetStatus" class="btn btn-primary btn-block">Status</a>
+            </div>
+        </div>
+        <div class="col-sm-3"></div>
+        <div class=" col-sm-5 mr-sm-3">
+            <form class="form-row" method="post">
+                <input class="col-sm-5" name="term" type="text" placeholder="Search..." />
+                <div class="col-sm-4">
+                    <input checked="checked" type="radio" name="name" value="Title" />By Title
+                    <input type="radio" name="name" value="FullName" />By Name
+                </div>
+                <div class="col-sm-3 ">
+                    <button asp-action="Search" class="btn btn-primary btn-block">Search!</button>
+                </div>
+                
+            </form>
+        </div>
+    </div>
+</div>

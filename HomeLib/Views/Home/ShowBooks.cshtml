@@ -1,0 +1,17 @@
+﻿@model IEnumerable<Book>
+@{ 
+    ViewData["Title"] = "Books";
+    Layout = "_Layout";
+}
+<div class="container-fluid">
+    <div class="list-group">
+        <div class="placeholder"><h3 class="text-sm-center">No Result =<</h3></div>
+        @if (Model != null)
+        {
+            @foreach (var book in Model)
+            {
+                <a class="list-group-item list-group-item-action" asp-action="GetBook" asp-route-id="@book.Id">@book.Title</a>
+            }
+        }
+    </div>
+</div>

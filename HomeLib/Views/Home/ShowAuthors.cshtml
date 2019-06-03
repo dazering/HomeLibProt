@@ -1,0 +1,19 @@
+﻿@model IEnumerable<MetaInfo>
+@{
+    ViewData["Title"] = "Authors";
+    Layout = "_Layout";
+}
+<div class="container-fluid">
+
+    <div class="list-group">
+        <div class="placeholder"><h3 class="text-sm-center">No Result =<</h3></div>
+        @if (Model != null)
+        {
+            @foreach (var author in Model)
+            {
+                <a class="list-group-item list-group-item-action" asp-action="Index" asp-route-name="@author.Name">@author.Name - @author.Count @(author.Count > 1 ? "Books" : "Books")</a>
+            }
+        }
+
+    </div>
+</div>
