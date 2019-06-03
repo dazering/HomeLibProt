@@ -4,8 +4,15 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/js/bootstrap.min.js" />
+    <style>
+        .placeholder{ visibility:collapse;display:none}
+        .placeholder:only-child{visibility:visible;display:flex}
+    </style>
 </head>
 <body>
+    @Html.Partial("Head")
     <div>
         @RenderBody()
     </div>

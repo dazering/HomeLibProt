@@ -1,5 +1,16 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model IEnumerable<MetaInfo>
 @{
+    Layout = "_Layout";
 }
+<div class="container-fluid">
+    @if (Model != null)
+    {
+    <div class="list-group">
+        @foreach (var m in Model)
+        {
+        <a class="list-group-item list-group-item-action" asp-action="Index" asp-route-literal="@m.Name">@m.Name - @m.Count @(m.Count > 1 ? "elements" : "element")</a>
+        }
+    </div>
+        
+    }
+</div>
