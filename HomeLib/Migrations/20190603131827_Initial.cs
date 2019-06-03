@@ -13,9 +13,9 @@ namespace HomeLib.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    FirstName = table.Column<string>(nullable: false),
+                    FirstName = table.Column<string>(nullable: false, defaultValue: ""),
                     MiddleName = table.Column<string>(nullable: false, defaultValue: ""),
-                    LastName = table.Column<string>(nullable: false),
+                    LastName = table.Column<string>(nullable: false, defaultValue: ""),
                     FullName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
