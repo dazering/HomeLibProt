@@ -10,10 +10,10 @@ namespace ScannerService.Models
     {
         public long Id { get; set; }
         public string Title { get; set; }
-        public string Annotation { get; set; }
-        public string Year { get; set; }
-        public string Isbn { get; set; }
-        public string Cover { get; set; }
+        //public string Annotation { get; set; }
+        //public string Year { get; set; }
+        //public string Isbn { get; set; }
+        //public string Cover { get; set; }
         /// local path to archive
         public string PathArchive { get; set; }
         /// local path to book file in archive

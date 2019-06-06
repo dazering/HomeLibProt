@@ -30,10 +30,10 @@ namespace ScannerService.Models
         {
             modelBuilder.Entity<Authtor>().HasKey(a => a.Id);
             modelBuilder.Entity<Authtor>().HasAlternateKey(a => new { a.FirstName, a.MiddleName, a.LastName });
-            modelBuilder.Entity<Authtor>().Property(a => a.FirstName).HasDefaultValue("");
-            modelBuilder.Entity<Authtor>().Property(a => a.MiddleName).HasDefaultValue("");
-            modelBuilder.Entity<Authtor>().Property(a => a.LastName).HasDefaultValue("");
-            modelBuilder.Entity<Authtor>().HasIndex(a => a.FullName);
+            //modelBuilder.Entity<Authtor>().Property(a => a.FirstName).HasDefaultValue("");
+            //modelBuilder.Entity<Authtor>().Property(a => a.MiddleName).HasDefaultValue("");
+            //modelBuilder.Entity<Authtor>().Property(a => a.LastName).HasDefaultValue("");
+            //modelBuilder.Entity<Authtor>().HasIndex(a => a.FullName);
 
             modelBuilder.Entity<Book>().HasOne(b => b.Authtor).WithMany(a => a.Books).HasPrincipalKey(a => new { a.FirstName, a.MiddleName, a.LastName });
             modelBuilder.Entity<Book>().Property(b => b.Title).IsRequired();
