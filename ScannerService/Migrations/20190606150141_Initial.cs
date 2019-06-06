@@ -13,10 +13,9 @@ namespace ScannerService.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    FirstName = table.Column<string>(nullable: false, defaultValue: ""),
-                    MiddleName = table.Column<string>(nullable: false, defaultValue: ""),
-                    LastName = table.Column<string>(nullable: false, defaultValue: ""),
-                    FullName = table.Column<string>(nullable: true)
+                    FirstName = table.Column<string>(nullable: false),
+                    MiddleName = table.Column<string>(nullable: false),
+                    LastName = table.Column<string>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -31,10 +30,6 @@ namespace ScannerService.Migrations
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Title = table.Column<string>(nullable: false),
-                    Annotation = table.Column<string>(nullable: true),
-                    Year = table.Column<string>(nullable: true),
-                    Isbn = table.Column<string>(nullable: true),
-                    Cover = table.Column<string>(nullable: true),
                     PathArchive = table.Column<string>(nullable: true),
                     PathBook = table.Column<string>(nullable: true),
                     AuthtorFirstName = table.Column<string>(nullable: true),
@@ -51,11 +46,6 @@ namespace ScannerService.Migrations
                         principalColumns: new[] { "FirstName", "MiddleName", "LastName" },
                         onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Authtors_FullName",
-                table: "Authtors",
-                column: "FullName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_Title",
