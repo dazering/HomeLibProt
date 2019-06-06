@@ -185,7 +185,7 @@ namespace ScannerService.Models
             XmlNamespaceManager manager = new XmlNamespaceManager(navigator.NameTable);
             manager.AddNamespace("ns", "http://www.gribuser.ru/xml/fictionbook/2.0");
             XPathNodeIterator iterator = navigator.Select("//ns:title-info", manager);
-            StringBuilder fullName = new StringBuilder();
+
             bool firstAuthor = true;
             while (iterator.MoveNext())
             {
@@ -197,31 +197,15 @@ namespace ScannerService.Models
                         XPathNodeIterator authorsDescendants = descendants.Current.SelectDescendants(XPathNodeType.Element, false);
                         while (authorsDescendants.MoveNext())
                         {
-                            if (authorsDescendants.Current.Name == "first-name") { string name = authorsDescendants.Current.Value.NameToUpperFirstLiteral(); fullName.Append(name); book.Authtor.FirstName = name; }
-                            if (authorsDescendants.Current.Name == "middle-name") { string name = authorsDescendants.Current.Value.NameToUpperFirstLiteral(); fullName.Append(" " + name); book.Authtor.MiddleName = name; }
-                            if (authorsDescendants.Current.Name == "last-name") { string name = authorsDescendants.Current.Value.NameToUpperFirstLiteral(); fullName.Insert(0, name + " "); book.Authtor.LastName = name; }
+                            if (authorsDescendants.Current.Name == "first-name") { string name = authorsDescendants.Current.Value.NameToUpperFirstLiteral(); book.Authtor.FirstName = name; }
+                            if (authorsDescendants.Current.Name == "middle-name") { string name = authorsDescendants.Current.Value.NameToUpperFirstLiteral(); book.Authtor.MiddleName = name; }
+                            if (authorsDescendants.Current.Name == "last-name") { string name = authorsDescendants.Current.Value.NameToUpperFirstLiteral(); book.Authtor.LastName = name; }
                         }
                         firstAuthor = false;
                     }
                     if (descendants.Current.Name == "book-title") { book.Title = descendants.Current.Value; }
-                    if (descendants.Current.Name == "annotation") { book.Annotation = descendants.Current.Value; }
                 }
             }
-
-            book.Authtor.FullName = fullName.ToString();
-            iterator = navigator.Select("//ns:publish-info", manager);
-            while (iterator.MoveNext())
-            {
-                XPathNodeIterator descendants = iterator.Current.SelectDescendants(XPathNodeType.Element, false);
-                while (descendants.MoveNext())
-                {
-                    if (descendants.Current.Name == "year") { book.Year = descendants.Current.Value; }
-                    if (descendants.Current.Name == "isbn") { book.Isbn = descendants.Current.Value; }
-                }
-            }
-
-            iterator = navigator.Select("//ns:binary[@id='cover.jpg']", manager);
-            if (iterator.MoveNext()) { book.Cover = iterator.Current.Value; }
 
             book.PathArchive = GetArchiveName();
             book.PathBook = GetFileName();
