@@ -25,25 +25,15 @@ namespace ScannerService.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue("");
-
-                    b.Property<string>("FullName");
+                        .IsRequired();
 
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue("");
+                        .IsRequired();
 
                     b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue("");
+                        .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FullName");
 
                     b.ToTable("Authtors");
                 });
@@ -54,17 +44,11 @@ namespace ScannerService.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Annotation");
-
                     b.Property<string>("AuthtorFirstName");
 
                     b.Property<string>("AuthtorLastName");
 
                     b.Property<string>("AuthtorMiddleName");
-
-                    b.Property<string>("Cover");
-
-                    b.Property<string>("Isbn");
 
                     b.Property<string>("PathArchive");
 
@@ -72,8 +56,6 @@ namespace ScannerService.Migrations
 
                     b.Property<string>("Title")
                         .IsRequired();
-
-                    b.Property<string>("Year");
 
                     b.HasKey("Id");
 
