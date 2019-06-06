@@ -21,7 +21,7 @@ namespace ScannerService.Repository
             }
             if (IsDatabaseContainsAuthtor(newBook))
             {
-                context.Authtors.Where(a => a.FirstName == newBook.Authtor.FirstName && a.MiddleName == newBook.Authtor.MiddleName && a.LastName == newBook.Authtor.LastName && a.FullName==newBook.Authtor.FullName).Load();
+                context.Authtors.Where(a => a.FirstName == newBook.Authtor.FirstName && a.MiddleName == newBook.Authtor.MiddleName && a.LastName == newBook.Authtor.LastName).Load();
                 context.Update(newBook);
             }
             else
@@ -52,7 +52,7 @@ namespace ScannerService.Repository
 
         private bool IsDatabaseContainsAuthtor(Book newBook)
         {
-            if (context.Authtors.Count(a => (a.FirstName == newBook.Authtor.FirstName) && (a.MiddleName == newBook.Authtor.MiddleName) && (a.LastName == newBook.Authtor.LastName) && a.FullName == newBook.Authtor.FullName) == 0)
+            if (context.Authtors.Count(a => (a.FirstName == newBook.Authtor.FirstName) && (a.MiddleName == newBook.Authtor.MiddleName) && (a.LastName == newBook.Authtor.LastName)) == 0)
             {
                 return false;
             }
