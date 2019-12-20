@@ -1,13 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HomeLibServices.Models
+﻿namespace HomeLibServices.Models
 {
     public class Book
     {
         public long BookId { get; set; }
         public string Title { get; set; }
+        public string Year { get; set; }
         public string Isbn { get; set; }
         /// <summary>
         /// Books cover in Base64 as string
