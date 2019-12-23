@@ -25,6 +25,8 @@ namespace HomeLibServices.DataBase
             modelBuilder.Entity<Book>().HasOne(b => b.Author).WithMany(a => a.Books).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Book>().Property(b => b.Title).IsRequired();
             modelBuilder.Entity<Book>().HasIndex(b => b.Title);
+            modelBuilder.Entity<Book>().Ignore(b => b.Cover);
+            modelBuilder.Entity<Book>().OwnsOne<LocalPath>(l=>l.Path);
         }
     }
 }
