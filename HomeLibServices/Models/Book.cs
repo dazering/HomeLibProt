@@ -1,4 +1,6 @@
-﻿namespace HomeLibServices.Models
+﻿using System.Collections.Generic;
+
+namespace HomeLibServices.Models
 {
     public class Book
     {
@@ -14,11 +16,11 @@
         public string Annotation { get; set; }
 
         public LocalPath Path { get; set; }
-        public Author Author { get; set; }
+        public List<Authorship> Authorships { get; set; }
 
         public Book()
         {
-            Author = new Author();
+            Authorships = new List<Authorship>();
             Path = new LocalPath();
         }
     }
