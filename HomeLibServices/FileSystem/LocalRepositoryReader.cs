@@ -12,12 +12,12 @@ namespace HomeLibServices.FileSystem
         /// <summary>
         /// Delegate containing action with archives entities
         /// </summary>
-        private Action<ZipArchiveEntry> action;
+        private Action<ZipArchive> action;
         /// <summary>
         /// Constructor accept delegate 
         /// </summary>
         /// <param name="act">Action with archives entities</param>
-        internal LocalRepositoryReader(Action<ZipArchiveEntry> act)
+        internal LocalRepositoryReader(Action<ZipArchive> act)
         {
             action = act;
         }
@@ -50,10 +50,7 @@ namespace HomeLibServices.FileSystem
             using (FileStream zipStream = File.OpenRead(pathToArchive))
             using (ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read))
             {
-                foreach (var zipArchiveEntry in zipArchive.Entries)
-                {
-                    action(zipArchiveEntry);
-                }
+                action(zipArchive);
             }
         }
     }
