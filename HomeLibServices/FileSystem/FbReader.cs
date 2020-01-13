@@ -17,7 +17,7 @@ namespace HomeLibServices.FileSystem
         /// </summary>
         /// <param name="path"></param>
         /// <returns></returns>
-        internal Book ReadBook(string path)
+        public Book ReadBook(string path)
         {
             using (FileStream fs = File.OpenRead(path))
             {
@@ -29,7 +29,7 @@ namespace HomeLibServices.FileSystem
         /// </summary>
         /// <param name="streamEntity">Readable file</param>
         /// <returns></returns>
-        internal Book ReadBook(Stream streamEntity)
+        public Book ReadBook(Stream streamEntity)
         {
             Book newBook = new Book();
             XPathDocument doc = new XPathDocument(streamEntity);
@@ -38,10 +38,10 @@ namespace HomeLibServices.FileSystem
             XmlNamespaceManager manager = new XmlNamespaceManager(navigator.NameTable);
             manager.AddNamespace("ns", "http://www.gribuser.ru/xml/fictionbook/2.0");
             GetAuthors(navigator.Select("//ns:title-info/ns:author", manager), newBook);
-            GetTitle(navigator.SelectSingleNode("//ns:title-info/ns:book-title", manager).SelectDescendants(XPathNodeType.Element, false), newBook);
-            GetAnnotation(navigator.SelectSingleNode("//ns:title-info/ns:annotation", manager).SelectDescendants(XPathNodeType.Element, false), newBook);
-            GetYear(navigator.SelectSingleNode("//ns:publish-info/ns:year", manager).SelectDescendants(XPathNodeType.Element, false), newBook);
-            GetISBN(navigator.SelectSingleNode("//ns:publish-info/ns:isbn", manager).SelectDescendants(XPathNodeType.Element, false), newBook);
+            GetTitle(navigator.SelectSingleNode("//ns:title-info/ns:book-title", manager)?.SelectDescendants(XPathNodeType.Element, false), newBook);
+            GetAnnotation(navigator.SelectSingleNode("//ns:title-info/ns:annotation", manager)?.SelectDescendants(XPathNodeType.Element, false), newBook);
+            GetYear(navigator.SelectSingleNode("//ns:publish-info/ns:year", manager)?.SelectDescendants(XPathNodeType.Element, false), newBook);
+            GetISBN(navigator.SelectSingleNode("//ns:publish-info/ns:isbn", manager)?.SelectDescendants(XPathNodeType.Element, false), newBook);
             return newBook;
         }
 
@@ -56,7 +56,7 @@ namespace HomeLibServices.FileSystem
         {
             while (iterator.MoveNext())
             {
-                if (iterator.Current.Name == "author")
+                if (iterator?.Current.Name == "author")
                 {
                     StringBuilder fullName = new StringBuilder();
                     XPathNodeIterator desc = iterator.Current.SelectChildren(XPathNodeType.Element);
@@ -64,12 +64,12 @@ namespace HomeLibServices.FileSystem
                     var newAuthor = new Author();
                     if (desc.Current.Name == "first-name")
                     {
-                        string name = desc.Current.Value.FormatName(); fullName.Append(name + " "); newAuthor.FirstName = name;
+                        string name = desc.Current.Value.FormatName(); fullName.Append(name); newAuthor.FirstName = name;
                         desc.MoveNext();
                     }
                     if (desc.Current.Name == "middle-name")
                     {
-                        string name = desc.Current.Value.FormatName(); fullName.Append(name); newAuthor.MiddleName = name;
+                        string name = desc.Current.Value.FormatName(); fullName.Append(" " + name); newAuthor.MiddleName = name;
                         desc.MoveNext();
                     }
 
@@ -82,11 +82,16 @@ namespace HomeLibServices.FileSystem
                     book.Authorships.Add(new Authorship { Author = newAuthor });
                 }
             }
+
+            if (book.Authorships.Count == 0)
+            {
+                book.Authorships.Add(new Authorship() { Author = new Author() });
+            }
         }
 
         private void GetTitle(XPathNodeIterator iterator, Book book)
         {
-            if (iterator.Current.Name == "book-title")
+            if (iterator?.Current.Name == "book-title")
             {
                 book.Title = iterator.Current.Value;
             }
@@ -94,14 +99,14 @@ namespace HomeLibServices.FileSystem
 
         private void GetAnnotation(XPathNodeIterator iterator, Book book)
         {
-            if (iterator.Current.Name == "annotation")
+            if (iterator?.Current.Name == "annotation")
             {
                 book.Annotation = iterator.Current.Value;
             }
         }
         private void GetYear(XPathNodeIterator iterator, Book book)
         {
-            if (iterator.Current.Name == "year")
+            if (iterator?.Current.Name == "year")
             {
                 book.Year = iterator.Current.Value;
             }
@@ -109,9 +114,9 @@ namespace HomeLibServices.FileSystem
 
         private void GetISBN(XPathNodeIterator iterator, Book book)
         {
-            if (iterator.Current.Name == "isbn")
+            if (iterator?.Current.Name == "isbn")
             {
-                book.Isbn = iterator.Current.Value.Replace("-","");
+                book.Isbn = iterator.Current.Value.Replace("-", "");
             }
         }
 
