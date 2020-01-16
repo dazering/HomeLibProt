@@ -23,6 +23,7 @@ namespace HomeLibServices.Managers
         private ScannerState scannerState;
 
         public event EventHandler<ScannerEventArgs> ChangedScanningState;
+        public event EventHandler<ScannerEventArgs> ScanningOver;
 
         public Scanner(string path, IServiceProvider prov)
         {
@@ -79,6 +80,7 @@ namespace HomeLibServices.Managers
             context = provider.GetService<ILibraryRepository>();
             token = tkn;
             scannerState.StartTime = DateTime.Now;
+            scannerState.IsScanningRun = true;
 
             try
             {
@@ -90,7 +92,7 @@ namespace HomeLibServices.Managers
                 scannerState.ElapsedTime = scannerState.FinishTime - scannerState.StartTime;
                 scannerState.IsScanningRun = false;
                 context = null;
-                ChangedScanningState?.Invoke(this, new ScannerEventArgs(scannerState));
+                ScanningOver?.Invoke(this, new ScannerEventArgs(scannerState));
             }
 
         }
@@ -121,6 +123,11 @@ namespace HomeLibServices.Managers
             context = provider.GetService<ILibraryRepository>();
             scannerState.BooksInDataBase = context.CountBooks();
             return scannerState.BooksInDataBase;
+        }
+
+        public ScannerState GetScannerState()
+        {
+            return scannerState;
         }
     }
 }
