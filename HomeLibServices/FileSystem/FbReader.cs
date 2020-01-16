@@ -85,7 +85,7 @@ namespace HomeLibServices.FileSystem
 
             if (book.Authorships.Count == 0)
             {
-                book.Authorships.Add(new Authorship() { Author = new Author() });
+                book.Authorships.Add(new Authorship() { Author = new Author() { FullName = "Unknown" } });
             }
         }
 
