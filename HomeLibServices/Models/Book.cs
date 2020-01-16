@@ -16,6 +16,7 @@ namespace HomeLibServices.Models
         public string Annotation { get; set; }
 
         public LocalPath Path { get; set; }
+
         public List<Authorship> Authorships { get; set; }
 
         public Book()
