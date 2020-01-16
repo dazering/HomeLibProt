@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HomeLibServices.ExtensionsMethods
+﻿namespace HomeLibServices.ExtensionsMethods
 {
     internal static class StringExtensionsMethods
     {
