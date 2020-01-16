@@ -23,8 +23,11 @@ namespace HomeLibServices.DataBase
                 .HasForeignKey(b => b.BookId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<Authorship>().HasOne(a => a.Author).WithMany(a => a.Authorships)
                 .HasForeignKey(a => a.AuthorId).OnDelete(DeleteBehavior.Cascade);
+
             modelBuilder.Entity<Book>().Property(b => b.Title).IsRequired();
             modelBuilder.Entity<Book>().HasIndex(b => b.Title);
+            modelBuilder.Entity<LocalPath>().HasIndex(p => p.FbName);
+            modelBuilder.Entity<LocalPath>().HasIndex(p => p.ArchiveName);
             modelBuilder.Entity<Book>().Ignore(b => b.Cover);
             modelBuilder.Entity<Book>().OwnsOne<LocalPath>(l => l.Path);
         }
