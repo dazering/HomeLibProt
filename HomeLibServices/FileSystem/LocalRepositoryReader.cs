@@ -10,14 +10,14 @@ namespace HomeLibServices.FileSystem
     internal class LocalRepositoryReader
     {
         /// <summary>
-        /// Delegate containing action with archives entities
+        /// Delegate containing action with archive
         /// </summary>
-        private Action<ZipArchive> action;
+        private Action<ZipArchive, string> action;
         /// <summary>
         /// Constructor accept delegate 
         /// </summary>
         /// <param name="act">Action with archives entities</param>
-        internal LocalRepositoryReader(Action<ZipArchive> act)
+        internal LocalRepositoryReader(Action<ZipArchive, string> act)
         {
             action = act;
         }
@@ -42,7 +42,7 @@ namespace HomeLibServices.FileSystem
             }
         }
         /// <summary>
-        /// Open archive and processing(action) each archived file  
+        /// Open archive and processing(action) archive  
         /// </summary>
         /// <param name="pathToArchive">Path to archive</param>
         private void ReadArchive(string pathToArchive)
@@ -50,7 +50,7 @@ namespace HomeLibServices.FileSystem
             using (FileStream zipStream = File.OpenRead(pathToArchive))
             using (ZipArchive zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read))
             {
-                action(zipArchive);
+                action(zipArchive, zipStream.Name);
             }
         }
     }
