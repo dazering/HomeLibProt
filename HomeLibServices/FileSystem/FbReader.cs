@@ -42,6 +42,7 @@ namespace HomeLibServices.FileSystem
             GetAnnotation(navigator.SelectSingleNode("//ns:title-info/ns:annotation", manager)?.SelectDescendants(XPathNodeType.Element, false), newBook);
             GetYear(navigator.SelectSingleNode("//ns:publish-info/ns:year", manager)?.SelectDescendants(XPathNodeType.Element, false), newBook);
             GetISBN(navigator.SelectSingleNode("//ns:publish-info/ns:isbn", manager)?.SelectDescendants(XPathNodeType.Element, false), newBook);
+            GetCover(navigator.SelectSingleNode("//ns:binary[@id='cover.jpg']", manager)?.SelectDescendants(XPathNodeType.Element, false), newBook);
             return newBook;
         }
 
@@ -117,6 +118,14 @@ namespace HomeLibServices.FileSystem
             if (iterator?.Current.Name == "isbn")
             {
                 book.Isbn = iterator.Current.Value.Replace("-", "");
+            }
+        }
+
+        private void GetCover(XPathNodeIterator iterator, Book book)
+        {
+            if (iterator?.Current.Name == "binary")
+            {
+                book.Cover = iterator.Current.Value;
             }
         }
 
