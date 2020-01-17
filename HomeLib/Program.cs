@@ -14,6 +14,7 @@ namespace HomeLib
     {
         public static void Main(string[] args)
         {
+            //Server.InitializeServerListener().Run();
             CreateWebHostBuilder(args).Build().Run();
         }
 

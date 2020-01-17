@@ -45,31 +45,14 @@ namespace HomeLib.Controllers
         {
             return View("Book", libraryRepository.GetBook(id));
         }
-        [Route("Status/StartScan")]
-        public IActionResult Scan()
-        {
-            scanner.StartScanAsync(libraryRepository);
-            return RedirectToAction(nameof(GetStatus));
-        }
+        
         [Route("GetBook/Download")]
         public FileContentResult GetFile(long id)
         {
             Book book = libraryRepository.GetBook(id);
-            return File(downloader.GetBytes(book), "application/x-fictionbook", string.Format("{0}_{1}.fb2", book.Authtor.FullName,book.Title));
+            return File(downloader.GetBytes(book), "application/x-fictionbook", string.Format("{0}.fb2", book.Title));
         }
-        [Route("Status")]
-        public IActionResult GetStatus()
-        {
-            Status status = scanner.GetStatus();
-            return View("Status",status);
-        }
-        [Route("Status/CancelScanning")]
-        public IActionResult CancelScanning()
-        {
-            scanner.CancelScanning();
-            Status status = scanner.GetStatus();
-            return View("Status",status);
-        }
+        
         [Route("Search")]
         public IActionResult Search(SearchOptions options)
         {
