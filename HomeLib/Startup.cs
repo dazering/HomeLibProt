@@ -33,9 +33,8 @@ namespace HomeLib
                 options.UseSqlServer(conString);
             });
             string localRepositoryPath = configuration["LocalRepository:Path"];
-            services.AddScannerService();
+            services.AddScannerService(localRepositoryPath);
             services.AddDownloaderService(localRepositoryPath);
-            services.AddSignalR();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -47,7 +46,6 @@ namespace HomeLib
                 app.UseStatusCodePages();
             }
             app.UseStaticFiles();
-            app.UseSignalR(rout => { rout.MapHub<ScannerHub>("/scanhub"); });
             app.UseMvcWithDefaultRoute();
         }
     }

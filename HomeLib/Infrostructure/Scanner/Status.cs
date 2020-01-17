@@ -5,75 +5,33 @@ using System.Threading.Tasks;
 
 namespace HomeLib.Infrostructure.Scanner
 {
+    public enum StateScanner
+    {
+        Unscanned,
+        Canceled,
+        InProgress,
+        Scanned,
+        Error
+    }
     public class Status
     {
-        public Status()
-        {
-            SetStatusUnscanned();
-        }
-        public string StateScanner { get; private set; } = "Ready to scan";
+        public StateScanner StateScanner { get; set; }
         private int countBookInLocalRepository = 0;
         private int countBookInDataBase = 0;
-        private List<string> errors = new List<string>();
-        public List<string> Errors { get => errors; }
-        private int notAddedBooks = 0;
-        public int NotAddedBooks { get => notAddedBooks; private set => notAddedBooks = value; }
         public int CountBookInLocalRepository { get => countBookInLocalRepository; set => countBookInLocalRepository = value; }
-        public int CountBookInDataBase { get => countBookInDataBase; set => countBookInDataBase = value; }
-
-        private string timeElapsed = "No information.";
-
-        public void SetTime(TimeSpan time)
+        public int CountBookInDataBase { get => countBookInDataBase; private set => countBookInDataBase = value; }
+        public void UpdateCountBookInDb(int sum)
         {
-            timeElapsed = time.ToString();
+            CountBookInDataBase = sum;
         }
-
-        public string GetTime()
+        private string timeElapsed;
+        public string TimeElapsed
         {
-            return timeElapsed;
+            get => timeElapsed;
         }
-
-        internal void IncreaseNotAddedBooks()
+        public void GetTime(TimeSpan time)
         {
-            notAddedBooks++;
-        }
-
-        internal void AddErrorMessage(string message)
-        {
-            errors.Add(message);
-        }
-
-        internal void SetStatusError()
-        {
-            StateScanner = "Error";
-        }
-
-        internal void SetStatusInProgress()
-        {
-            StateScanner = "In Progress";
-        }
-
-        internal void SetStatusCanceled()
-        {
-            StateScanner = "Canceled";
-        }
-
-        internal void SetStatusScanned()
-        {
-            StateScanner = "Scanned";
-        }
-
-        internal void SetStatusUnscanned()
-        {
-            StateScanner = "Unscanned";
-        }
-        internal bool IsScannerInProgress()
-        {
-            if (StateScanner == "In Progress")
-            {
-                return true;
-            }
-            return false;
+            timeElapsed = String.Format("{0:00}:{1:00}:{2:00}.{3:00}", time.Hours, time.Minutes, time.Seconds, time.Milliseconds / 10);
         }
     }
 }
