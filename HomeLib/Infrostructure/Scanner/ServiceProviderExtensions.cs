@@ -9,9 +9,9 @@ namespace HomeLib.Infrostructure.Scanner
 {
     public static class ServiceProviderExtensions
     {
-        public static void AddScannerService(this IServiceCollection services, string path)
+        public static void AddScannerService(this IServiceCollection services)
         {
-            services.AddSingleton<Scanner>(provider =>new Scanner(path,provider));
+            services.AddSingleton<Scanner>(provider =>new Scanner(provider));
         }
         public static void AddDownloaderService(this IServiceCollection services, string path)
         {
