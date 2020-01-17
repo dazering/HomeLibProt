@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace HomeLib.Migrations
 {
-    public partial class Test : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -13,10 +13,10 @@ namespace HomeLib.Migrations
                 {
                     Id = table.Column<long>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
-                    FirstName = table.Column<string>(nullable: false),
-                    MiddleName = table.Column<string>(nullable: false),
-                    LastName = table.Column<string>(nullable: false),
-                    FullName = table.Column<string>(nullable: true, computedColumnSql: "[LastName]+' ' +[FirstName]+' '+[MiddleName] PERSISTED")
+                    FirstName = table.Column<string>(nullable: false, defaultValue: ""),
+                    MiddleName = table.Column<string>(nullable: false, defaultValue: ""),
+                    LastName = table.Column<string>(nullable: false, defaultValue: ""),
+                    FullName = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -51,6 +51,11 @@ namespace HomeLib.Migrations
                         principalColumns: new[] { "FirstName", "MiddleName", "LastName" },
                         onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Authtors_FullName",
+                table: "Authtors",
+                column: "FullName");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Books_Title",

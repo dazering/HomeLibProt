@@ -1,11 +1,9 @@
 ﻿using HomeLib.Infrostructure;
 using HomeLib.Models;
 using HomeLib.Models.Repository;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
-using System.Data.SqlClient;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
@@ -24,77 +22,22 @@ namespace HomeLib.Infrostructure.Scanner
     /// </summary>
     public class Scanner
     {
-        private string pathToLocalRepository; //path to local repository - r
-        private string currentArchive; // name of the archive with the books - r
-        private string currentFile; // name of book file - r
-        private Status status; // - r
-        private CancellationTokenSource tokenSource; // -r
-        private CancellationToken cancellationToken;// -r
-        private IServiceProvider serviceProvider;// -r
+        private string pathToLocalRepository; //path to local repository
+        private ILibraryRepository libraryRepository; //data base
+        private static string currentArchive; // name of the archive with the books
+        private static string currentFile; // name of book file
+        private Status status;
+        private CancellationTokenSource tokenSource;
+        private CancellationToken cancellationToken;
+        private IServiceProvider serviceProvider;
 
-        public Scanner(IServiceProvider provider)
+        public Scanner(string path, IServiceProvider provider)
         {
-            serviceProvider = provider ?? throw new ArgumentNullException("provider");
             Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-            Configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory()).AddJsonFile("appsettings.json").Build();
-            pathToLocalRepository = Configuration["LocalRepository:Path"];
-            EnsureLocalRepositoryExist(pathToLocalRepository);
-            status = new Status() { CountBookInLocalRepository = BooksInLocalRepository() };
+            pathToLocalRepository = path;
+            serviceProvider = provider;
+            status = new Status() { CountBookInLocalRepository = BooksInLocalRepository(), StateScanner = StateScanner.Unscanned };
         }
-
-        /// <summary>
-        /// Check paht to local repository. If directory not exist - create
-        /// </summary>
-        /// <param name="path"></param>
-
-        private void EnsureLocalRepositoryExist(string path)
-        {
-            if (Directory.Exists(path))
-            {
-            }
-            else
-            {
-                Directory.CreateDirectory(path);
-            }
-        }
-
-        #region Service locator
-
-        private IConfiguration Configuration { get; }
-
-        private ILibraryRepository GetLibrary()
-        {
-            return serviceProvider.GetService<ILibraryRepository>();
-        }
-
-        #endregion
-
-        #region Working with file names
-
-        private string GetArchiveName()
-        {
-            return currentArchive;
-        }
-
-        private void SetArchiveName(string archiveName)
-        {
-            currentArchive = archiveName;
-        }
-
-        private string GetFileName()
-        {
-            return currentFile;
-        }
-
-        private void SetFileName(string fileName)
-        {
-            currentFile = fileName;
-        }
-
-        #endregion
-
-        #region Count Books in Repository and in File System
-
         /// <summary>
         /// count books
         /// </summary>
@@ -102,25 +45,14 @@ namespace HomeLib.Infrostructure.Scanner
         private int BooksInLocalRepository()
         {
             int count = 0;
-            ScanDirectory((entry) => { count++; });
+            ScanDirectory(entry => { count++; });
             return count;
         }
 
-        private int BooksInDataBase()
-        {
-            using (IServiceScope scope = serviceProvider.CreateScope())
-            {
-                var context = scope.ServiceProvider.GetService<ILibraryRepository>();
-                return context.CountBooks();
-            }
-        }
-
-        #endregion
-
         public Status GetStatus()
         {
-            status.CountBookInLocalRepository = BooksInLocalRepository();
-            status.CountBookInDataBase = BooksInDataBase();
+            libraryRepository = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<LibraryRepository>();
+            status.UpdateCountBookInDb(libraryRepository.CountBooks());
             return status;
         }
         public void CancelScanning()
@@ -134,62 +66,48 @@ namespace HomeLib.Infrostructure.Scanner
         /// <summary>
         ///initial scanning 
         /// </summary>
-
-        public void StartScanAsync()
+        public void StartScanAsync(ILibraryRepository repo)
         {
-            if (status.CountBookInLocalRepository > BooksInDataBase() && !(status.IsScannerInProgress()))
+            libraryRepository = repo;
+            InitialScan();
+        }
+
+        private Task InitialScan()
+        {
+            if (status.CountBookInLocalRepository > libraryRepository.CountBooks() && !(status.StateScanner == StateScanner.InProgress))
             {
                 tokenSource = new CancellationTokenSource();
                 cancellationToken = tokenSource.Token;
-                Task.Factory.StartNew((_) => { Scan(); }, cancellationToken);
+                return Task.Factory.StartNew((_) => { Scan(); }, TaskCreationOptions.LongRunning, cancellationToken);
             }
+            return new Task(() => Console.WriteLine("Action "));
         }
-
         private void Scan()
         {
-            Stopwatch timer = Stopwatch.StartNew();
-            status.SetStatusInProgress();
             try
             {
-                ScanDirectory((entry) =>
+                Stopwatch timer = Stopwatch.StartNew();
+                status.StateScanner = StateScanner.InProgress;
+                ScanDirectory(entry =>
                 {
-                    SetFileName(entry.Name);
-                    using (Stream entryStream = entry.Open())
-                    using (IServiceScope scope = serviceProvider.CreateScope())
+                    using (var context = serviceProvider.CreateScope().ServiceProvider.GetRequiredService<LibraryRepository>())
                     {
-                        try
+                        currentFile = entry.Name;
+                        using (Stream entryStream = entry.Open())
                         {
-                            var context = scope.ServiceProvider.GetService<ILibraryRepository>();
                             context.AddBook(ReadBook(entryStream));
                         }
-                        catch (XmlException) { status.IncreaseNotAddedBooks(); }
-                        catch (SqlException e)
-                        {
-                            string message = string.Format("{0} , {1} in {2}", e.Message, GetFileName(), GetArchiveName());
-                            status.AddErrorMessage(message); status.IncreaseNotAddedBooks();
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            throw new OperationCanceledException();
-                        }
-                        catch (Exception e) { string message = string.Format("{0} - {1}, {2} in {3}", e.Message, e.InnerException, GetFileName(), GetArchiveName()); status.AddErrorMessage(message); status.IncreaseNotAddedBooks(); }
                     }
-
                 });
                 timer.Stop();
-                status.SetTime(timer.Elapsed);
-                status.SetStatusScanned();
+                status.GetTime(timer.Elapsed);
+                status.StateScanner = StateScanner.Scanned;
             }
             catch (OperationCanceledException)
             {
-                status.SetStatusCanceled();
-                tokenSource.Dispose();
-                tokenSource = new CancellationTokenSource();
-                cancellationToken = tokenSource.Token;
+                status.StateScanner = StateScanner.Canceled;
             }
         }
-
-        #region Read File System
 
         /// <summary>
         /// scan local directory and record name of archive
@@ -201,7 +119,7 @@ namespace HomeLib.Infrostructure.Scanner
             FileInfo[] zipFiles = localRepository.GetFiles("*.zip", SearchOption.TopDirectoryOnly);
             foreach (FileInfo archive in zipFiles)
             {
-                SetArchiveName(archive.Name);
+                currentArchive = archive.Name;
                 ScanArchive(archive.Name, action);
             }
         }
@@ -221,11 +139,6 @@ namespace HomeLib.Infrostructure.Scanner
                 }
             }
         }
-
-        #endregion
-
-        #region Read book And Return object Book
-
         /// <summary>
         /// create entity book
         /// </summary>
@@ -233,54 +146,43 @@ namespace HomeLib.Infrostructure.Scanner
         /// <returns></returns>
         private Book ReadBook(Stream inputStream)
         {
-
             Book book = new Book();
             XPathDocument doc = new XPathDocument(inputStream);
             XPathNavigator navigator = doc.CreateNavigator();
             XmlNamespaceManager manager = new XmlNamespaceManager(navigator.NameTable);
             manager.AddNamespace("ns", "http://www.gribuser.ru/xml/fictionbook/2.0");
             XPathNodeIterator iterator = navigator.Select("//ns:title-info", manager);
-            XPathNodeIterator descendants;
-            bool firstAuthor = true;
+            StringBuilder fullName = new StringBuilder();
             while (iterator.MoveNext())
             {
-                descendants = iterator.Current.SelectDescendants(XPathNodeType.Element, false);
+                XPathNodeIterator descendants = iterator.Current.SelectDescendants(XPathNodeType.Element, false);
                 while (descendants.MoveNext())
                 {
-                    if (descendants.Current.Name == "author" && firstAuthor)
-                    {
-                        XPathNodeIterator authorsDescendants = descendants.Current.SelectDescendants(XPathNodeType.Element, false);
-                        while (authorsDescendants.MoveNext())
-                        {
-                            if (authorsDescendants.Current.Name == "first-name") { string name = authorsDescendants.Current.Value.FormatName(); book.Authtor.FirstName = name; }
-                            if (authorsDescendants.Current.Name == "middle-name") { string name = authorsDescendants.Current.Value.FormatName(); book.Authtor.MiddleName = name; }
-                            if (authorsDescendants.Current.Name == "last-name") { string name = authorsDescendants.Current.Value.FormatName(); book.Authtor.LastName = name; }
-                        }
-                        firstAuthor = false;
-                    }
+                    if (descendants.Current.Name == "first-name") { string name = descendants.Current.Value.NameToUpperFirstLiteral(); fullName.Append(name + " "); book.Authtor.FirstName = name; }
+                    if (descendants.Current.Name == "middle-name") { string name = descendants.Current.Value.NameToUpperFirstLiteral(); fullName.Append(name); book.Authtor.MiddleName = name; }
+                    if (descendants.Current.Name == "last-name") { string name = descendants.Current.Value.NameToUpperFirstLiteral(); fullName.Insert(0, name + " "); book.Authtor.LastName = name; }
                     if (descendants.Current.Name == "book-title") { book.Title = descendants.Current.Value; }
+                    if (descendants.Current.Name == "annotation") { book.Annotation = descendants.Current.Value; }
                 }
             }
-
-            iterator = navigator.Select("//ns:isbn", manager);
-
+            book.Authtor.FullName = fullName.ToString();
+            iterator = navigator.Select("//ns:publish-info", manager);
             while (iterator.MoveNext())
             {
-                descendants = iterator.Current.SelectDescendants(XPathNodeType.Element, false);
+                XPathNodeIterator descendants = iterator.Current.SelectDescendants(XPathNodeType.Element, false);
                 while (descendants.MoveNext())
                 {
-                    if (descendants.Current.Name == "isbn")
-                    {
-                        book.Isbn = descendants.Current.Value;
-                    }
+                    if (descendants.Current.Name == "year") { book.Year = descendants.Current.Value; }
+                    if (descendants.Current.Name == "isbn") { book.Isbn = descendants.Current.Value; }
                 }
             }
-            book.PathArchive = GetArchiveName();
-            book.PathBook = GetFileName();
+            iterator = navigator.Select("//ns:binary[@id='cover.jpg']", manager);
+            if (iterator.MoveNext()) { book.Cover = iterator.Current.Value; }
+
+            book.PathArchive = currentArchive;
+            book.PathBook = currentFile;
             return book;
         }
-
-        #endregion
     }
 }
 
