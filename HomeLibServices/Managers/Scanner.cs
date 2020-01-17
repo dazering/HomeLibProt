@@ -18,7 +18,6 @@ namespace HomeLibServices.Managers
         private readonly FbReader bookReader;
         private CancellationToken token;
         private readonly IServiceProvider provider;
-        private ILibraryRepository context;
         private ILogger logger;
         private ScannerState scannerState;
 
@@ -77,7 +76,6 @@ namespace HomeLibServices.Managers
 
         public void ReadLocalRepository(CancellationToken tkn)
         {
-            context = provider.GetService<ILibraryRepository>();
             token = tkn;
             scannerState.StartTime = DateTime.Now;
             scannerState.IsScanningRun = true;
@@ -91,7 +89,6 @@ namespace HomeLibServices.Managers
                 scannerState.FinishTime = DateTime.Now;
                 scannerState.ElapsedTime = scannerState.FinishTime - scannerState.StartTime;
                 scannerState.IsScanningRun = false;
-                context = null;
                 ScanningOver?.Invoke(this, new ScannerEventArgs(scannerState));
             }
 
@@ -104,9 +101,12 @@ namespace HomeLibServices.Managers
 
         private void AddBookToRepository(Book newBook)
         {
-            context.AddBook(newBook);
-            ChangedScanningState?.Invoke(this, new ScannerEventArgs(scannerState));
-            scannerState.BooksInDataBase++;
+            using (IServiceScope scope = provider.CreateScope())
+            {
+                scope.ServiceProvider.GetService<ILibraryRepository>().AddBook(newBook);
+                ChangedScanningState?.Invoke(this, new ScannerEventArgs(scannerState));
+                scannerState.BooksInDataBase++;
+            }
         }
 
         public int CountBooksInLocalRepository()
@@ -120,9 +120,11 @@ namespace HomeLibServices.Managers
 
         public int CountBooksInDataBase()
         {
-            context = provider.GetService<ILibraryRepository>();
-            scannerState.BooksInDataBase = context.CountBooks();
-            return scannerState.BooksInDataBase;
+            using (IServiceScope scope = provider.CreateScope())
+            {
+                scannerState.BooksInDataBase = scope.ServiceProvider.GetService<ILibraryRepository>().CountBooks();
+                return scannerState.BooksInDataBase;
+            }
         }
 
         public ScannerState GetScannerState()
