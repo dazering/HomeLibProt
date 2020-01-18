@@ -5,12 +5,12 @@
 <div class="container-fluid">
     @if (Model != null)
     {
-    <div class="list-group">
-        @foreach (var m in Model)
-        {
-        <a class="list-group-item list-group-item-action" asp-action="Index" asp-route-literal="@m.Name">@m.Name - @m.Count @(m.Count > 1 ? "elements" : "element")</a>
-        }
-    </div>
+        <div class="list-group">
+            @foreach (var m in Model)
+            {
+                <a class="list-group-item list-group-item-action" asp-action="Index" asp-route-literal="@m.Name">@m.Name - @m.Count @(m.Count > 1 ? "elements" : "element")</a>
+            }
+        </div>
         
     }
 </div>
