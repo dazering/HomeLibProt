@@ -9,14 +9,14 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HomeLib.Migrations
 {
     [DbContext(typeof(LibraryContext))]
-    [Migration("20190603131827_Initial")]
-    partial class Initial
+    [Migration("20191223185214_Test")]
+    partial class Test
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.11-servicing-32099")
+                .HasAnnotation("ProductVersion", "2.2.6-servicing-10079")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
@@ -27,25 +27,19 @@ namespace HomeLib.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FirstName")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue("");
+                        .IsRequired();
 
-                    b.Property<string>("FullName");
+                    b.Property<string>("FullName")
+                        .ValueGeneratedOnAddOrUpdate()
+                        .HasComputedColumnSql("[LastName]+' ' +[FirstName]+' '+[MiddleName] PERSISTED");
 
                     b.Property<string>("LastName")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue("");
+                        .IsRequired();
 
                     b.Property<string>("MiddleName")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasDefaultValue("");
+                        .IsRequired();
 
                     b.HasKey("Id");
-
-                    b.HasIndex("FullName");
 
                     b.ToTable("Authtors");
                 });
