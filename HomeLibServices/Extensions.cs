@@ -1,5 +1,6 @@
 ﻿using HomeLibServices.DataBase;
 using HomeLibServices.Logger;
+using HomeLibServices.Managers;
 using HomeLibServices.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -9,15 +10,27 @@ namespace HomeLibServices
     public static class Extensions
     {
         /// <summary>
-        /// Add to DI container defaults implementations: LibraryContext, LibraryRepository, LocalLogger
+        /// Add to DI container defaults implementations: LibraryContext, LibraryRepository, LocalLogger and BookManager
         /// </summary>
         /// <param name="collection"></param>
         /// <param name="dbConnection"></param>
-        public static void AddDefaultLibraryServices(this IServiceCollection collection, string dbConnection)
+        /// <param name="pathToLocalRepository"></param>
+        public static void AddDefaultLibraryServices(this IServiceCollection collection, string dbConnection, string pathToLocalRepository)
         {
             collection.AddDbContext<LibraryContext>(opt => opt.UseSqlServer(dbConnection));
             collection.AddScoped<ILibraryRepository, LibraryRepository>();
             collection.AddTransient<ILogger, LocalLogger>();
+            collection.AddBookManager(pathToLocalRepository);
+        }
+
+        /// <summary>
+        /// Add to DI container BookManager
+        /// </summary>
+        /// <param name="collection"></param>
+        /// <param name="pathToLocalRepository"></param>
+        public static void AddBookManager(this IServiceCollection collection, string pathToLocalRepository)
+        {
+            collection.AddSingleton<BookManager>(provider => new BookManager(pathToLocalRepository, provider));
         }
 
         /// <summary>
