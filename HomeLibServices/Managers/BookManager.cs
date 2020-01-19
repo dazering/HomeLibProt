@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace HomeLibServices.Managers
 {
-    internal class BookManager
+    public class BookManager
     {
         private readonly ScannerTasker scanner;
         private readonly Downloader downloader;
