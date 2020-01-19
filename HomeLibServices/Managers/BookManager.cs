@@ -105,6 +105,11 @@ namespace HomeLibServices.Managers
             scanner.TryStartScanning();
         }
 
+        public void StopUpdatingDbRepository()
+        {
+            scanner.CancelScanning();
+        }
+
         #region DownloadBook
 
         public byte[] GetBookBytes(Book book)
