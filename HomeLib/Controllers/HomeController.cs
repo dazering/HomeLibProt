@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using HomeLib.Models.Pages;
-using HomeLibServices.Managers;
+﻿using HomeLibServices.Managers;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 using Book = HomeLibServices.Models.Book;
 
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -23,20 +22,14 @@ namespace HomeLib.Controllers
             {
                 return View(BookManager.GetAuthorsByFirstLiteral(literals));
             }
-            if (countAuthors > 50)
-            {
-                return View(BookManager.GetAuthorsByFirstLiteral(literals));
-            }
-            else
-            {
-                return View("ShowAuthors", BookManager.SearchAuthorsByName(literals));
-            }
+
+            return countAuthors > 50 ? View(BookManager.GetAuthorsByFirstLiteral(literals)) : View("ShowAuthors", BookManager.SearchAuthorsByName(literals));
         }
 
         [Route("Books")]
         public IActionResult GetBooks(long id)
         {
-            return View("ShowBooks", BookManager.GetAuthor(id).Authorships.Select(a=>a.Book));
+            return View("ShowBooks", BookManager.GetAuthor(id).Authorships.Select(a => a.Book));
         }
 
         [Route("Book")]
@@ -53,7 +46,7 @@ namespace HomeLib.Controllers
         }
 
         [Route("Search")]
-        public IActionResult Search(string name,string term)
+        public IActionResult Search(string name, string term)
         {
             if (name == "FullName")
             {
