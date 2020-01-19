@@ -1,66 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
-using HomeLib.Infrostructure.Scanner;
-using HomeLib.Models.Repository;
+﻿using System.Linq;
 using HomeLib.Models.Pages;
-using HomeLib.Models;
+using HomeLibServices.Managers;
+using Microsoft.AspNetCore.Mvc;
+using Book = HomeLibServices.Models.Book;
+
 // For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace HomeLib.Controllers
 {
     public class HomeController : Controller
     {
-        private Scanner scanner;
-        private ILibraryRepository libraryRepository;
-        private Downloader downloader;
-        public HomeController(ILibraryRepository repo, Scanner scan, Downloader downl)
+        private BookManager BookManager;
+        public HomeController(BookManager manager)
         {
-            scanner = scan;
-            libraryRepository = repo;
-            downloader = downl;
+            BookManager = manager;
         }
         // GET: /<controller>/
         [Route("")]
-        public IActionResult Index(QueryOptions options)
+        public IActionResult Index(string literals = "", int countAuthors = 0)
         {
-            if (options.AuthorName != null)
+            if (string.IsNullOrWhiteSpace(literals))
             {
-                return View("ShowBooks", libraryRepository.SearchBooksByAuthor(options));
+                return View(BookManager.GetAuthorsByFirstLiteral(literals));
             }
-            if (options.SearchFirstLiterals.Length<3)
+            if (countAuthors > 50)
             {
-                return View(libraryRepository.SearchAuthorByFirstLiterals(options));
+                return View(BookManager.GetAuthorsByFirstLiteral(literals));
             }
-            if(options.SearchFirstLiterals.Length == 3)
+            else
             {
-                return View("ShowAuthors", libraryRepository.SearchAuthors(options));
+                return View("ShowAuthors", BookManager.SearchAuthorsByName(literals));
             }
-            return View();
         }
-        [Route("GetBook")]
+
+        [Route("Books")]
+        public IActionResult GetBooks(long id)
+        {
+            return View("ShowBooks", BookManager.GetAuthor(id).Authorships.Select(a=>a.Book));
+        }
+
+        [Route("Book")]
         public IActionResult GetBook(long id)
         {
-            return View("Book", libraryRepository.GetBook(id));
+            return View("Book", BookManager.GetBook(id));
         }
-        
+
         [Route("GetBook/Download")]
         public FileContentResult GetFile(long id)
         {
-            Book book = libraryRepository.GetBook(id);
-            return File(downloader.GetBytes(book), "application/x-fictionbook", string.Format("{0}.fb2", book.Title));
+            Book book = BookManager.GetBook(id);
+            return File(BookManager.GetBookBytes(book), "application/x-fictionbook", $"{book.Title}.fb2");
         }
-        
+
         [Route("Search")]
-        public IActionResult Search(SearchOptions options)
+        public IActionResult Search(string name,string term)
         {
-            if (options.PropertyName == "FullName")
+            if (name == "FullName")
             {
-                return View("ShowAuthors", libraryRepository.GetAuthtors(options));
+                return View("ShowAuthors", BookManager.SearchAuthorsByName(term));
             }
-            return View("ShowBooks",libraryRepository.GetBooks(options));
+            return View("ShowBooks", BookManager.SearchBooksByTitle(term));
         }
     }
 }
