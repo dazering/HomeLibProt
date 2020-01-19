@@ -4,6 +4,7 @@ using HomeLibServices.Managers;
 using HomeLibServices.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using System;
 
 namespace HomeLibServices
 {
@@ -15,12 +16,12 @@ namespace HomeLibServices
         /// <param name="collection"></param>
         /// <param name="dbConnection"></param>
         /// <param name="pathToLocalRepository"></param>
-        public static void AddDefaultLibraryServices(this IServiceCollection collection, string dbConnection, string pathToLocalRepository)
+        public static void AddDefaultLibraryServices(this IServiceCollection collection, string dbConnection, string pathToLocalRepository, Action<IServiceProvider, BookManager> subscribeBookManager)
         {
             collection.AddDbContext<LibraryContext>(opt => opt.UseSqlServer(dbConnection));
             collection.AddScoped<ILibraryRepository, LibraryRepository>();
             collection.AddTransient<ILogger, LocalLogger>();
-            collection.AddBookManager(pathToLocalRepository);
+            collection.AddBookManager(pathToLocalRepository, subscribeBookManager);
         }
 
         /// <summary>
@@ -28,9 +29,14 @@ namespace HomeLibServices
         /// </summary>
         /// <param name="collection"></param>
         /// <param name="pathToLocalRepository"></param>
-        public static void AddBookManager(this IServiceCollection collection, string pathToLocalRepository)
+        public static void AddBookManager(this IServiceCollection collection, string pathToLocalRepository, Action<IServiceProvider, BookManager> subscribe)
         {
-            collection.AddSingleton<BookManager>(provider => new BookManager(pathToLocalRepository, provider));
+            collection.AddSingleton<BookManager>((provider) =>
+            {
+                var bookManager = new BookManager(pathToLocalRepository, provider);
+                subscribe(provider, bookManager);
+                return bookManager;
+            });
         }
 
         /// <summary>
