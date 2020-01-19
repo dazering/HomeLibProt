@@ -95,6 +95,11 @@ namespace HomeLibServices.Managers
 
         #endregion
 
+        public ScannerState GetScannerState()
+        {
+            return scanner.GetScannerState();
+        }
+
         public void StartUpdateDbRepository()
         {
             scanner.TryStartScanning();

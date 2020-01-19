@@ -27,7 +27,7 @@ namespace HomeLibServices.Managers
 
         public bool TryStartScanning()
         {
-            if (scanner.GetScannerState().IsScanningRun)
+            if (GetScannerState().IsScanningRun)
             {
                 return false;
             }
@@ -41,13 +41,18 @@ namespace HomeLibServices.Managers
 
         public void CancelScanning()
         {
-            if(scanner.GetScannerState().IsScanningRun)
+            if(GetScannerState().IsScanningRun)
             {
                 source?.Cancel();
                 Thread.Sleep(1000);
                 source?.Dispose();
                 source = new CancellationTokenSource();
             }
+        }
+
+        public ScannerState GetScannerState()
+        {
+            return scanner.GetScannerState();
         }
     }
 }
