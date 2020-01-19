@@ -1,4 +1,5 @@
-﻿@model HomeLib.Models.Book
+﻿@using Microsoft.EntityFrameworkCore.Internal
+@model Book
 @{
     ViewData["Title"] = "Book";
     Layout = "_Layout";
@@ -12,12 +13,12 @@
             }
         </div>
         <div class="col-sm-5">
-            <div>@Model.Authtor.FullName - @Model.Title</div>
+            <div>@Model.Authorships.Select(a=>new string($"{a.Author.LastName} {a.Author.FirstName[0]}")).Join(", ")- @Model.Title</div>
             <div>@Model.Year - @Model.Isbn</div>
             <br />
             <div>@Model.Annotation</div>
             <div>
-                <form asp-action="GetFile" asp-route-id="@Model.Id">
+                <form asp-action="GetFile" asp-route-id="@Model.BookId">
                     <button class="btn btn-link" type="submit">Download</button>
                 </form>
             </div>
