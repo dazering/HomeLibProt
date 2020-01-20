@@ -33,7 +33,7 @@ namespace HomeLibServices.Managers
             logger = provider.GetRequiredService<ILogger>();
             repositoryReader = new LocalRepositoryReader((archive, s) =>
             {
-                string currArchive = s.Replace(pathToLocalRepository, "");
+                string currArchive = s.Replace(pathToLocalRepository, "").Replace("\\","");
 
                 foreach (var zipArchiveEntry in archive.Entries)
                 {
