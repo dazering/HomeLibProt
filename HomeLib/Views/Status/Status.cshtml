@@ -1,4 +1,4 @@
-﻿@model Status
+﻿@model ScannerState
 @{
     ViewData["Title"] = "Status";
     Layout = "_Layout";
@@ -6,38 +6,39 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm-3">
-            <label class="font-weight-bold">Books In Local Library:</label> @Model.CountBookInLocalRepository
+            <label class="font-weight-bold">Books In Local Library:</label> <a id="countLocalRepo">@Model.BooksInLocalRepository</a>
         </div>
         <div class="col-sm-3">
-            <label class="font-weight-bold">Books In DataBase:</label> @Model.CountBookInDataBase
+            <label class="font-weight-bold">Books In DataBase:</label> <a id="countInDb">@Model.BooksInDataBase</a>
         </div>
         <div class="col-sm-3">
-            <label class="font-weight-bold">Books Not Added:</label> @Model.NotAddedBooks
+            <label class="font-weight-bold">Books Not Added:</label>  <a id="notAddedBooks">@Model.BooksNotAddedInDb</a>
         </div>
         <div class="col-sm-3">
-            <label class="font-weight-bold">State Library:</label> @Model.StateScanner
+            <label class="font-weight-bold">State Library:</label> <a id="isScanning">@(Model.IsScanningRun ? "In Progress" : "Stopped")</a>
         </div>
     </div>
     <div class="row">
         <div class="col-sm">
-            <label class="font-weight-bold">Scanned for:</label> @Model.GetTime()
+            <label class="font-weight-bold">Scanned for:</label> <a id="elapsedTime">@Model.ElapsedTime</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm">
+            <label class="font-weight-bold">Scanned start at:</label> <a id="startTime">@Model.StartTime</a>
+        </div>
+        <div class="col-sm">
+            <label class="font-weight-bold">Scanned finished at:</label> <a id="finishTime">@(string.IsNullOrWhiteSpace(Model.FinishTime) ? "Not finished" : Model.FinishTime)</a>
         </div>
     </div>
     <div class="row">
         <div class="col-sm-6">
-            <a class="btn btn-primary btn-block" asp-action="Scan">Scan</a>
+            <a id="startBtn" class="btn btn-primary btn-block">Scan</a>
         </div>
         <div class="col-sm-6">
-            <a class="btn btn-danger btn-block @(Model.StateScanner.ToString()=="In Progress"?"":"disabled")" asp-action="CancelScanning">Cancel Scanning</a>
+            <a id="cancelBtn" class="btn btn-danger btn-block @(Model.IsScanningRun?"":"disabled")">Cancel Scanning</a>
         </div>
-    </div>
-    <div class="row">
-        @if (Model.Errors.Count > 0)
-        {
-            foreach(var error in Model.Errors)
-            {
-                <div>@error</div>
-            }
-        }
     </div>
 </div>
+<script src="lib/signalr/dist/browser/signalr.js"></script>
+<script src="lib/signalr/dist/browser/signalClient.js"></script>
