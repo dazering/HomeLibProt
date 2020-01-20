@@ -92,7 +92,7 @@ namespace HomeLibServices.Repository
             return context.Books.Count();
         }
 
-        public IEnumerable<(string, int)> GetAuthorsByFirstLiteral(string firstLiterals)
+        public IEnumerable<(string, int)> GetAuthorsFirstLiteral(string firstLiterals)
         {
             return context.Authors.Where(a => a.FullName.StartsWith(firstLiterals))
                 .GroupBy(a => a.FullName.Substring(0, firstLiterals.Length + 1)).Select(a =>
@@ -109,6 +109,11 @@ namespace HomeLibServices.Repository
         {
             var result = new SearchResult<Author>(context.Authors.Include(a=>a.Authorships), "FullName", searchTerm);
             return result;
+        }
+
+        public IEnumerable<Author> SearchAuthorsByFirstLiteral(string firstLiterals)
+        {
+            return context.Authors.Include(a => a.Authorships).Where(a => a.FullName.StartsWith(firstLiterals)).ToList();
         }
     }
 }

@@ -11,8 +11,9 @@ namespace HomeLibServices.Repository
         IEnumerable<Book> GetAllBooks();
         IEnumerable<Author> GetAllAuthors();
         int CountBooks();
-        IEnumerable<(string, int)> GetAuthorsByFirstLiteral(string firstLiterals);
+        IEnumerable<(string, int)> GetAuthorsFirstLiteral(string firstLiterals);
         IEnumerable<Book> SearchBookByTitle(string searchTerm);
         IEnumerable<Author> SearchAuthorByName(string searchTerm);
+        IEnumerable<Author> SearchAuthorsByFirstLiteral(string firstLiterals);
     }
 }

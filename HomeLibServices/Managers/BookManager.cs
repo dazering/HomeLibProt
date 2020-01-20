@@ -69,11 +69,11 @@ namespace HomeLibServices.Managers
             }
         }
 
-        public IEnumerable<(string, int)> GetAuthorsByFirstLiteral(string firstLiterals)
+        public IEnumerable<(string, int)> GetAuthorsFirstLiteral(string firstLiterals)
         {
             using (var scope = getScope())
             {
-                return getLibraryRepository(scope).GetAuthorsByFirstLiteral(firstLiterals);
+                return getLibraryRepository(scope).GetAuthorsFirstLiteral(firstLiterals);
             }
         }
 
@@ -90,6 +90,14 @@ namespace HomeLibServices.Managers
             using (var scope = getScope())
             {
                 return getLibraryRepository(scope).SearchAuthorByName(searchTertm);
+            }
+        }
+
+        public IEnumerable<Author> SearchAuthorsByFirstLiteral(string searchTertm)
+        {
+            using (var scope = getScope())
+            {
+                return getLibraryRepository(scope).SearchAuthorsByFirstLiteral(searchTertm);
             }
         }
 
