@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿using HomeLibServices.Managers;
 using HomeLibServices.Models;
 using Microsoft.AspNetCore.SignalR;
 
@@ -11,9 +8,10 @@ namespace HomeLib.Infrostructure.Scanner
     {
         private IHubContext<ScannerHub> hubContext;
 
-        public ScannerMessanger(IHubContext<ScannerHub> cntx)
+        public ScannerMessanger(IHubContext<ScannerHub> cntx, BookManager manager)
         {
             hubContext = cntx;
+            manager.ScannerMessage += SendMessage;
         }
 
         public void SendMessage(object o, ScannerEventArgs e)
