@@ -16,12 +16,12 @@ namespace HomeLibServices
         /// <param name="collection"></param>
         /// <param name="dbConnection"></param>
         /// <param name="pathToLocalRepository"></param>
-        public static void AddDefaultLibraryServices(this IServiceCollection collection, string dbConnection, string pathToLocalRepository, Action<IServiceProvider, BookManager> subscribeBookManager)
+        public static void AddDefaultLibraryServices(this IServiceCollection collection, string dbConnection, string pathToLocalRepository)
         {
             collection.AddDbContext<LibraryContext>(opt => opt.UseSqlServer(dbConnection));
             collection.AddScoped<ILibraryRepository, LibraryRepository>();
             collection.AddTransient<ILogger, LocalLogger>();
-            collection.AddBookManager(pathToLocalRepository, subscribeBookManager);
+            collection.AddBookManager(pathToLocalRepository);
         }
 
         /// <summary>
@@ -29,14 +29,9 @@ namespace HomeLibServices
         /// </summary>
         /// <param name="collection"></param>
         /// <param name="pathToLocalRepository"></param>
-        public static void AddBookManager(this IServiceCollection collection, string pathToLocalRepository, Action<IServiceProvider, BookManager> subscribe)
+        public static void AddBookManager(this IServiceCollection collection, string pathToLocalRepository)
         {
-            collection.AddSingleton<BookManager>((provider) =>
-            {
-                var bookManager = new BookManager(pathToLocalRepository, provider);
-                subscribe(provider, bookManager);
-                return bookManager;
-            });
+            collection.AddSingleton<BookManager>(provider => new BookManager(pathToLocalRepository, provider));
         }
 
         /// <summary>
@@ -67,7 +62,7 @@ namespace HomeLibServices
         /// <param name="collection"></param>
         public static void AddLogger<T>(this IServiceCollection collection) where T : class, ILogger
         {
-            collection.AddScoped<ILogger, T>();
+            collection.AddTransient<ILogger, T>();
         }
     }
 }
