@@ -1,7 +1,12 @@
 ﻿using HomeLib.Infrostructure.Scanner;
 using HomeLibServices;
+using HomeLibServices.DataBase;
+using HomeLibServices.Logger;
+using HomeLibServices.Managers;
+using HomeLibServices.Repository;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -21,11 +26,14 @@ namespace HomeLib
             services.AddSignalR();
             string conString = configuration["ConnectionStrings:DefaultConnection"];
             string localRepositoryPath = configuration["LocalRepository:Path"];
-            services.AddDefaultLibraryServices(conString, localRepositoryPath, (provider, book) =>
+            services.AddLogger<LocalLogger>();
+            services.AddLibraryRepository<LibraryRepository>();
+            services.AddDbContext<LibraryContext>(opt =>
             {
-                book.ScannerMessage += provider.GetService<ScannerHub>().MessageRecived;
+                opt.UseSqlServer(conString, m => m.MigrationsAssembly("HomeLib"));
             });
-
+            services.AddBookManager(localRepositoryPath);
+            services.AddSingleton<ScannerMessanger>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
