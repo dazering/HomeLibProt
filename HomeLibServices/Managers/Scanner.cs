@@ -87,9 +87,9 @@ namespace HomeLibServices.Managers
             {
                 scannerState.SetFinishTime();
                 scannerState.IsScanningRun = false;
-                ScanningOver?.Invoke(this, new ScannerEventArgs(scannerState));
-            }
 
+            }
+            ScanningOver?.Invoke(this, new ScannerEventArgs(scannerState));
         }
 
         private Book ReadArchiveEntity(Stream entityStream)
