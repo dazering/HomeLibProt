@@ -65,18 +65,32 @@ namespace HomeLibServices.FileSystem
                     var newAuthor = new Author();
                     if (desc.Current.Name == "first-name")
                     {
-                        string name = desc.Current.Value.FormatName(); fullName.Append(name); newAuthor.FirstName = name;
+                        string name = desc.Current.Value.FormatName();
+                        if (name != "Unknown")
+                        {
+                            fullName.Append(name);
+                        }
+                        newAuthor.FirstName = name;
                         desc.MoveNext();
                     }
                     if (desc.Current.Name == "middle-name")
                     {
-                        string name = desc.Current.Value.FormatName(); fullName.Append(" " + name); newAuthor.MiddleName = name;
+                        string name = desc.Current.Value.FormatName();
+                        if (name != "Unknown")
+                        {
+                            fullName.Append(" " + name);
+                        }
+                        newAuthor.MiddleName = name;
                         desc.MoveNext();
                     }
 
                     if (desc.Current.Name == "last-name")
                     {
-                        string name = desc.Current.Value.FormatName(); fullName.Insert(0, name + " ");
+                        string name = desc.Current.Value.FormatName();
+                        if (name != "Unknown")
+                        {
+                            fullName.Insert(0, name + " ");
+                        }
                         newAuthor.LastName = name;
                     }
                     newAuthor.FullName = fullName.ToString();
