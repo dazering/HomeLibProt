@@ -20,10 +20,10 @@ namespace HomeLib.Controllers
         {
             if (string.IsNullOrWhiteSpace(literals))
             {
-                return View(BookManager.GetAuthorsByFirstLiteral(literals));
+                return View(BookManager.GetAuthorsFirstLiteral(literals));
             }
 
-            return countAuthors > 50 ? View(BookManager.GetAuthorsByFirstLiteral(literals)) : View("ShowAuthors", BookManager.SearchAuthorsByName(literals));
+            return countAuthors > 50 ? View(BookManager.GetAuthorsFirstLiteral(literals)) : View("ShowAuthors", BookManager.SearchAuthorsByFirstLiteral(literals));
         }
 
         [Route("Books")]
