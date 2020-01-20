@@ -5,7 +5,7 @@ namespace HomeLibServices.Repository
 {
     public interface ILibraryRepository
     {
-        void AddBook(Book book);
+        bool AddBook(Book book);
         Book GetBook(long id);
         Author GetAuthor(long id);
         IEnumerable<Book> GetAllBooks();

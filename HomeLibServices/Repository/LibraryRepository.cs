@@ -1,12 +1,12 @@
-﻿using System;
-using HomeLibServices.DataBase;
+﻿using HomeLibServices.DataBase;
 using HomeLibServices.Models;
+using HomeLibServices.Search;
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
-using HomeLibServices.Search;
 
 namespace HomeLibServices.Repository
 {
@@ -19,11 +19,11 @@ namespace HomeLibServices.Repository
 
         private LibraryContext context;
 
-        public void AddBook(Book book)
+        public bool AddBook(Book book)
         {
             if (IsDbContainingBook(book))
             {
-                return;
+                return false;
             }
 
             var authorsFromDb = getAuthorsByName(book);
@@ -37,6 +37,7 @@ namespace HomeLibServices.Repository
             }
             context.Add(book);
             context.SaveChanges();
+            return true;
         }
 
         private string GetAuthorsForQuery(Book book)
@@ -55,23 +56,23 @@ namespace HomeLibServices.Repository
 
         private bool IsDbContainingBook(Book book)
         {
-            return context.Books.Any(b => b.Title == book.Title&&b.Path.FbName==book.Path.FbName&&b.Path.ArchiveName==book.Path.ArchiveName);
+            return context.Books.Any(b => b.Title == book.Title && b.Path.FbName == book.Path.FbName && b.Path.ArchiveName == book.Path.ArchiveName);
         }
 
         private IEnumerable<Author> getAuthorsByName(Book book)
         {
             return context.Authors
-                .FromSql($"SELECT * FROM Authors a WHERE a.FullName IN({GetAuthorsForQuery(book)})").ToList();
+                .FromSql($"SELECT * FROM Authors a WHERE a.FullName IN({GetAuthorsForQuery(book)})", GetAuthorsSqlParameters(new List<SqlParameter>(), book).ToArray()).ToList();
         }
 
         public Book GetBook(long id)
         {
-            return context.Books.Include(b=>b.Authorships).ThenInclude(a=>a.Author).FirstOrDefault(b => b.BookId == id);
+            return context.Books.Include(b => b.Authorships).ThenInclude(a => a.Author).FirstOrDefault(b => b.BookId == id);
         }
 
         public Author GetAuthor(long id)
         {
-            return context.Authors.Include(a=>a.Authorships).ThenInclude(b=>b.Book).FirstOrDefault(a => a.AuthorId == id);
+            return context.Authors.Include(a => a.Authorships).ThenInclude(b => b.Book).FirstOrDefault(a => a.AuthorId == id);
         }
 
         public IEnumerable<Book> GetAllBooks()
@@ -107,7 +108,8 @@ namespace HomeLibServices.Repository
 
         public IEnumerable<Author> SearchAuthorByName(string searchTerm)
         {
-            return new SearchResult<Author>(context.Authors, "FullName", searchTerm);
+            var result = new SearchResult<Author>(context.Authors.Include(a=>a.Authorships), "FullName", searchTerm);
+            return result;
         }
     }
 }
