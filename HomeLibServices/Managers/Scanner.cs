@@ -28,9 +28,9 @@ namespace HomeLibServices.Managers
         {
             pathToLocalRepository = path;
             bookReader = new FbReader();
-            scannerState = new ScannerState(CountBooksInDataBase(), CountBooksInLocalRepository());
+            scannerState = new ScannerState();
             provider = prov;
-            logger = provider.GetService<ILogger>();
+            logger = provider.GetRequiredService<ILogger>();
             repositoryReader = new LocalRepositoryReader((archive, s) =>
             {
                 string currArchive = s.Replace(pathToLocalRepository, "");
@@ -42,18 +42,17 @@ namespace HomeLibServices.Managers
                     {
                         using (var zipStream = zipArchiveEntry.Open())
                         {
+                            token.ThrowIfCancellationRequested();
                             var newBook = ReadArchiveEntity(zipStream);
                             newBook.Path.FbName = currFileBook;
                             newBook.Path.ArchiveName = currArchive;
                             AddBookToRepository(newBook);
-                            token.ThrowIfCancellationRequested();
                         }
                     }
                     catch (XmlException)
                     {
                         scannerState.BooksNotAddedInDb++;
                         scannerState.CurrentErrorsCount++;
-                        scannerState.BooksInLocalRepository--;
                     }
                     catch (SqlException e)
                     {
@@ -77,7 +76,7 @@ namespace HomeLibServices.Managers
         public void ReadLocalRepository(CancellationToken tkn)
         {
             token = tkn;
-            scannerState.StartTime = DateTime.Now;
+            scannerState.SetStartTime();
             scannerState.IsScanningRun = true;
 
             try
@@ -86,8 +85,7 @@ namespace HomeLibServices.Managers
             }
             catch (OperationCanceledException)
             {
-                scannerState.FinishTime = DateTime.Now;
-                scannerState.ElapsedTime = scannerState.FinishTime - scannerState.StartTime;
+                scannerState.SetFinishTime();
                 scannerState.IsScanningRun = false;
                 ScanningOver?.Invoke(this, new ScannerEventArgs(scannerState));
             }
@@ -103,9 +101,11 @@ namespace HomeLibServices.Managers
         {
             using (IServiceScope scope = provider.CreateScope())
             {
-                scope.ServiceProvider.GetService<ILibraryRepository>().AddBook(newBook);
-                ChangedScanningState?.Invoke(this, new ScannerEventArgs(scannerState));
-                scannerState.BooksInDataBase++;
+                if (scope.ServiceProvider.GetService<ILibraryRepository>().AddBook(newBook))
+                {
+                    ChangedScanningState?.Invoke(this, new ScannerEventArgs(scannerState));
+                    scannerState.BooksInDataBase++;
+                }
             }
         }
 
@@ -127,8 +127,15 @@ namespace HomeLibServices.Managers
             }
         }
 
+        public bool IsScanningRun()
+        {
+            return scannerState.IsScanningRun;
+        }
+
         public ScannerState GetScannerState()
         {
+            scannerState.BooksInDataBase = CountBooksInDataBase();
+            scannerState.BooksInLocalRepository = CountBooksInLocalRepository();
             return scannerState;
         }
     }
