@@ -89,7 +89,6 @@ namespace HomeLibServices.Repository
 
         public int CountBooks()
         {
-            context.Books.Load();
             return context.Books.Count();
         }
 
