@@ -8,7 +8,7 @@
         <div class="list-group">
             @foreach (var m in Model)
             {
-                <a class="list-group-item list-group-item-action" asp-action="Index" asp-route-literals="@m.Item1">@m.Item1 - @m.Item2 @(m.Item2 > 1 ? "elements" : "element")</a>
+                <a class="list-group-item list-group-item-action" asp-action="Index" asp-route-literals="@m.Item1" asp-route-countAuthors="@m.Item2">@m.Item1 - @m.Item2 @(m.Item2 > 1 ? "elements" : "element")</a>
             }
         </div>
         

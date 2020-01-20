@@ -11,7 +11,7 @@
         {
             @foreach (var author in Model)
             {
-                <a class="list-group-item list-group-item-action" asp-action="Index" asp-route-name="@author.FullName">@author.FullName - @author.Authorships.Count() @(author.Authorships.Count() > 1 ? "Books" : "Books")</a>
+                <a class="list-group-item list-group-item-action" asp-action="GetBooks" asp-route-id="@author.AuthorId">@author.FullName - @author.Authorships.Count() @(author.Authorships.Count() > 1 ? "books" : "book")</a>
             }
         }
 
