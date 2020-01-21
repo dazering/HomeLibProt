@@ -33,7 +33,7 @@ namespace HomeLib
                 opt.UseSqlServer(conString, m => m.MigrationsAssembly("HomeLib"));
             });
             services.AddBookManager(localRepositoryPath);
-            services.AddSingleton<ScannerMessanger>();
+            services.AddSingleton<ScannerMessenger>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
