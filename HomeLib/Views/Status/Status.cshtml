@@ -15,22 +15,31 @@
             <label class="font-weight-bold">Books Not Added:</label>  <a id="notAddedBooks">@Model.BooksNotAddedInDb</a>
         </div>
         <div class="col-sm-3">
-            <label class="font-weight-bold">State Library:</label> <a id="isScanning">@(Model.IsScanningRun ? "In Progress" : "Stopped")</a>
+            <label class="font-weight-bold">State Library:</label> <a id="isScanning">@(Model.IsScanningRun ? "In Progress" : "Not runnig")</a>
         </div>
     </div>
     <div class="row">
         <div class="col-sm">
-            <label class="font-weight-bold">Scanned for:</label> <a id="elapsedTime">@Model.ElapsedTime</a>
+            <label class="font-weight-bold">Errors:</label>  <a id="errorsCount">@Model.CurrentErrorsCount</a>
+        </div>
+        <div class="col-sm">
+            <label class="font-weight-bold">Added Books:</label>  <a id="addedCount">@Model.BooksAdded</a>
         </div>
     </div>
     <div class="row">
         <div class="col-sm">
-            <label class="font-weight-bold">Scanned start at:</label> <a id="startTime">@Model.StartTime</a>
+            <label class="font-weight-bold">Scanned start at:</label> <a id="startTime">@(string.IsNullOrWhiteSpace(Model.StartTime) ? "Not started" : Model.FinishTime)</a>
         </div>
         <div class="col-sm">
             <label class="font-weight-bold">Scanned finished at:</label> <a id="finishTime">@(string.IsNullOrWhiteSpace(Model.FinishTime) ? "Not finished" : Model.FinishTime)</a>
         </div>
     </div>
+    <div class="row">
+        <div class="col-sm">
+            <label class="font-weight-bold">Scanned for:</label> <a id="elapsedTime">@(string.IsNullOrWhiteSpace(Model.ElapsedTime) ? "Not finished" : Model.ElapsedTime)</a>
+        </div>
+    </div>
+
     <div class="row">
         <div class="col-sm-6">
             <a id="startBtn" class="btn btn-primary btn-block">Scan</a>
