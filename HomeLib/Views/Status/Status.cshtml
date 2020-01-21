@@ -28,7 +28,7 @@
     </div>
     <div class="row">
         <div class="col-sm">
-            <label class="font-weight-bold">Scanned start at:</label> <a id="startTime">@(string.IsNullOrWhiteSpace(Model.StartTime) ? "Not started" : Model.FinishTime)</a>
+            <label class="font-weight-bold">Scanned start at:</label> <a id="startTime">@(string.IsNullOrWhiteSpace(Model.StartTime) ? "Not started" : Model.StartTime)</a>
         </div>
         <div class="col-sm">
             <label class="font-weight-bold">Scanned finished at:</label> <a id="finishTime">@(string.IsNullOrWhiteSpace(Model.FinishTime) ? "Not finished" : Model.FinishTime)</a>
