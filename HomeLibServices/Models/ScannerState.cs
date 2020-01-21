@@ -6,6 +6,7 @@ namespace HomeLibServices.Models
     {
         public int CurrentErrorsCount { get; set; }
         public int BooksInLocalRepository { get; set; }
+        public int BooksAdded { get; set; }
         public int BooksInDataBase { get; set; }
         public int BooksNotAddedInDb { get; set; }
         public string StartTime { get; set; }
