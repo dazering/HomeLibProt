@@ -86,10 +86,9 @@ namespace HomeLibServices.Managers
             }
             catch (OperationCanceledException)
             {
-                scannerState.SetFinishTime();
-                scannerState.IsScanningRun = false;
-
             }
+            scannerState.SetFinishTime();
+            scannerState.IsScanningRun = false;
             ScanningOver?.Invoke(this, new ScannerEventArgs(scannerState));
         }
 
