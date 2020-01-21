@@ -26,6 +26,11 @@ namespace HomeLibServices.Repository
                 return false;
             }
 
+            if (book.Authorships.Any(a => a.Author.FullName.Length < 4))
+            {
+                return false;
+            }
+
             var authorsFromDb = getAuthorsByName(book);
             if (authorsFromDb.Any())
             {
