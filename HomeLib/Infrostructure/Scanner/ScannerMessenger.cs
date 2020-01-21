@@ -4,11 +4,11 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace HomeLib.Infrostructure.Scanner
 {
-    public class ScannerMessanger
+    public class ScannerMessenger
     {
         private IHubContext<ScannerHub> hubContext;
 
-        public ScannerMessanger(IHubContext<ScannerHub> cntx, BookManager manager)
+        public ScannerMessenger(IHubContext<ScannerHub> cntx, BookManager manager)
         {
             hubContext = cntx;
             manager.ScannerMessage += SendMessage;
