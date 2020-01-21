@@ -106,8 +106,12 @@ namespace HomeLibServices.Managers
                 {
                     scannerState.BooksInDataBase++;
                     scannerState.BooksAdded++;
-                    ChangedScanningState?.Invoke(this, new ScannerEventArgs(scannerState));
                 }
+                else
+                {
+                    scannerState.BooksNotAddedInDb++;
+                }
+                ChangedScanningState?.Invoke(this, new ScannerEventArgs(scannerState));
             }
         }
 
