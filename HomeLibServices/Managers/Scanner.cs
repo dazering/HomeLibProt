@@ -103,8 +103,9 @@ namespace HomeLibServices.Managers
             {
                 if (scope.ServiceProvider.GetService<ILibraryRepository>().AddBook(newBook))
                 {
-                    ChangedScanningState?.Invoke(this, new ScannerEventArgs(scannerState));
                     scannerState.BooksInDataBase++;
+                    scannerState.BooksAdded++;
+                    ChangedScanningState?.Invoke(this, new ScannerEventArgs(scannerState));
                 }
             }
         }
