@@ -5,16 +5,16 @@ using System.Threading.Tasks;
 
 namespace HomeLibServices.Managers
 {
-    internal class ScannerTasker
+    public class ScannerManager
     {
         private readonly Scanner scanner;
         private CancellationTokenSource source;
 
         public event EventHandler<ScannerEventArgs> ScnanningStateChanged;
 
-        public ScannerTasker(string path, IServiceProvider provider)
+        public ScannerManager(string path, Scanner scan)
         {
-            scanner = new Scanner(path, provider);
+            scanner = scan;
             scanner.ScanningOver += ChangedScanningState;
             scanner.ChangedScanningState += ChangedScanningState;
             source = new CancellationTokenSource();
@@ -41,7 +41,7 @@ namespace HomeLibServices.Managers
 
         public void CancelScanning()
         {
-            if(scanner.IsScanningRun())
+            if (scanner.IsScanningRun())
             {
                 source?.Cancel();
                 Thread.Sleep(10000);
