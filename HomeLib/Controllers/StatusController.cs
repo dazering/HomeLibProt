@@ -8,18 +8,18 @@ namespace HomeLib.Controllers
 {
     public class StatusController : Controller
     {
-        private BookManager BookManager;
+        private ScannerManager ScannerManager;
         private ScannerMessenger scannerMessenger;
-        public StatusController(BookManager manager, ScannerMessenger messenger)
+        public StatusController(ScannerManager manager, ScannerMessenger messenger)
         {
-            BookManager = manager;
+            ScannerManager = manager;
             scannerMessenger = messenger;
         }
 
         [Route("Status")]
         public IActionResult GetStatus()
         {
-            return View("Status", BookManager.GetScannerState());
+            return View("Status", ScannerManager.GetScannerState());
         }
     }
 }

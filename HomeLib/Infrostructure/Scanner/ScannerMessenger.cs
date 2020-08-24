@@ -8,10 +8,10 @@ namespace HomeLib.Infrostructure.Scanner
     {
         private IHubContext<ScannerHub> hubContext;
 
-        public ScannerMessenger(IHubContext<ScannerHub> cntx, BookManager manager)
+        public ScannerMessenger(IHubContext<ScannerHub> cntx, ScannerManager manager)
         {
             hubContext = cntx;
-            manager.ScannerMessage += SendMessage;
+            manager.ScnanningStateChanged += SendMessage;
         }
 
         public void SendMessage(object o, ScannerEventArgs e)
