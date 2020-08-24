@@ -26,6 +26,7 @@ namespace HomeLib
             services.AddSignalR();
             string conString = configuration["ConnectionStrings:DefaultConnection"];
             string localRepositoryPath = configuration["LocalRepository:Path"];
+
             services.AddLogger<LocalLogger>();
             services.AddLibraryRepository<LibraryRepository>();
             services.AddDbContext<LibraryContext>(opt =>
@@ -33,7 +34,8 @@ namespace HomeLib
                 opt.UseSqlServer(conString, m => m.MigrationsAssembly("HomeLib"));
             });
             services.AddBookManager(localRepositoryPath);
-            services.AddSingleton<ScannerMessenger>();
+            services.AddTransient<ScannerMessenger>();
+            services.AddSingleton<Scanner>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
