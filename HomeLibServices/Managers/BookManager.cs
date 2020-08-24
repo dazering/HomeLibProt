@@ -8,15 +8,11 @@ namespace HomeLibServices.Managers
 {
     public class BookManager
     {
-        private readonly ScannerTasker scanner;
         private readonly Downloader downloader;
         private readonly IServiceProvider serviceProvider;
-        public event EventHandler<ScannerEventArgs> ScannerMessage;
 
         public BookManager(string path, IServiceProvider provider)
         {
-            scanner = new ScannerTasker(path, provider);
-            scanner.ScnanningStateChanged += SendMessage;
             downloader = new Downloader(path);
             serviceProvider = provider;
         }
@@ -103,21 +99,6 @@ namespace HomeLibServices.Managers
 
         #endregion
 
-        public ScannerState GetScannerState()
-        {
-            return scanner.GetScannerState();
-        }
-
-        public void StartUpdateDbRepository()
-        {
-            scanner.TryStartScanning();
-        }
-
-        public void StopUpdatingDbRepository()
-        {
-            scanner.CancelScanning();
-        }
-
         #region DownloadBook
 
         public byte[] GetBookBytes(Book book)
@@ -131,10 +112,5 @@ namespace HomeLibServices.Managers
         }
 
         #endregion
-
-        private void SendMessage(object obj, ScannerEventArgs e)
-        {
-            ScannerMessage?.Invoke(this, e);
-        }
     }
 }

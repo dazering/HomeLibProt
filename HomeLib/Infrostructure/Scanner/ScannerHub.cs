@@ -1,30 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using HomeLibServices.Managers;
-using HomeLibServices.Models;
+﻿using HomeLibServices.Managers;
 using Microsoft.AspNetCore.SignalR;
 
 namespace HomeLib.Infrostructure.Scanner
 {
     public class ScannerHub : Hub
     {
-        private BookManager BookManager;
+        private ScannerManager ScannerManager;
 
-        public ScannerHub(BookManager manager)
+        public ScannerHub(ScannerManager manager)
         {
-            BookManager = manager;
+            ScannerManager = manager;
         }
 
         public void StopScanning()
         {
-            BookManager.StopUpdatingDbRepository();
+            ScannerManager.TryStartScanning();
         }
 
         public void StartScanning()
         {
-            BookManager.StartUpdateDbRepository();
+            ScannerManager.CancelScanning();
         }
     }
 }
