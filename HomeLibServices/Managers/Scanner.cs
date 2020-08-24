@@ -11,7 +11,7 @@ using System.Xml;
 
 namespace HomeLibServices.Managers
 {
-    internal class Scanner
+    public class Scanner
     {
         private readonly string pathToLocalRepository;
         private readonly LocalRepositoryReader repositoryReader;
@@ -34,7 +34,7 @@ namespace HomeLibServices.Managers
             logger = provider.GetRequiredService<ILogger>();
             repositoryReader = new LocalRepositoryReader((archive, s) =>
             {
-                string currArchive = s.Replace(pathToLocalRepository, "").Replace("\\","");
+                string currArchive = s.Replace(pathToLocalRepository, "").Replace("\\", "");
 
                 foreach (var zipArchiveEntry in archive.Entries)
                 {
@@ -140,7 +140,7 @@ namespace HomeLibServices.Managers
         public ScannerState GetScannerState()
         {
             scannerState.BooksInDataBase = CountBooksInDataBase();
-            
+
             return scannerState;
         }
     }
