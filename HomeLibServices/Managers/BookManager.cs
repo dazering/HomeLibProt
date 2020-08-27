@@ -49,14 +49,6 @@ namespace HomeLibServices.Managers
             }
         }
 
-        public IEnumerable<Book> GetAllBooks()
-        {
-            using (var scope = getScope())
-            {
-                return getLibraryRepository(scope).GetAllBooks();
-            }
-        }
-
         public IEnumerable<Author> GetAllAuthors()
         {
             using (var scope = getScope())
