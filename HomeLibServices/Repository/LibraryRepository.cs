@@ -80,12 +80,6 @@ namespace HomeLibServices.Repository
             return context.Authors.Include(a => a.Authorships).ThenInclude(b => b.Book).FirstOrDefault(a => a.AuthorId == id);
         }
 
-        public IEnumerable<Book> GetAllBooks()
-        {
-            context.Books.Load();
-            return context.Books;
-        }
-
         public IEnumerable<Author> GetAllAuthors()
         {
             context.Authors.Load();
@@ -112,7 +106,7 @@ namespace HomeLibServices.Repository
 
         public IEnumerable<Author> SearchAuthorByName(string searchTerm)
         {
-            var result = new SearchResult<Author>(context.Authors.Include(a=>a.Authorships), "FullName", searchTerm);
+            var result = new SearchResult<Author>(context.Authors.Include(a => a.Authorships), "FullName", searchTerm);
             return result;
         }
 

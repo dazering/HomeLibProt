@@ -8,7 +8,6 @@ namespace HomeLibServices.Repository
         bool AddBook(Book book);
         Book GetBook(long id);
         Author GetAuthor(long id);
-        IEnumerable<Book> GetAllBooks();
         IEnumerable<Author> GetAllAuthors();
         int CountBooks();
         IEnumerable<(string, int)> GetAuthorsFirstLiteral(string firstLiterals);
