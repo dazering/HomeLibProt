@@ -35,7 +35,7 @@ namespace HomeLib
             });
             services.AddBookManager(localRepositoryPath);
             services.AddTransient<ScannerMessenger>();
-            services.AddSingleton<Scanner>();
+            services.AddSingleton((srv) => new Scanner(localRepositoryPath, srv));
             services.AddSingleton<ScannerManager>();
         }
 
