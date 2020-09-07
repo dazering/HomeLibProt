@@ -12,7 +12,7 @@ namespace HomeLibServices.Managers
 
         public event EventHandler<ScannerEventArgs> ScnanningStateChanged;
 
-        public ScannerManager(string path, Scanner scan)
+        public ScannerManager(Scanner scan)
         {
             scanner = scan;
             scanner.ScanningOver += ChangedScanningState;
