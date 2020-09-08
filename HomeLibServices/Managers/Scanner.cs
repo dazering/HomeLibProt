@@ -139,7 +139,7 @@ namespace HomeLibServices.Managers
         public ScannerState GetScannerState()
         {
             scannerState.BooksInDataBase = CountBooksInDataBase();
-
+            scannerState.BooksInLocalRepository = CountBooksInLocalRepository();
             return scannerState;
         }
     }
