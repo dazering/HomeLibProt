@@ -14,12 +14,12 @@ namespace HomeLib.Infrostructure.Scanner
 
         public void StopScanning()
         {
-            ScannerManager.TryStartScanning();
+            ScannerManager.CancelScanning();
         }
 
         public void StartScanning()
         {
-            ScannerManager.CancelScanning();
+            ScannerManager.TryStartScanning();
         }
     }
 }
