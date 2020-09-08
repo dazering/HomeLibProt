@@ -31,7 +31,7 @@ namespace HomeLib.Controllers
             }
             catch (SqlException)
             {
-                return ErrorHandler("Упс... Сервер базы данных не доступен");
+                return ErrorHandler("Упс... Сервер базы данных не доступен.");
             }
         }
 
@@ -44,7 +44,7 @@ namespace HomeLib.Controllers
             }
             catch (SqlException)
             {
-                return ErrorHandler("Упс... Сервер базы данных не доступен");
+                return ErrorHandler("Упс... Сервер базы данных не доступен.");
             }
         }
 
@@ -57,7 +57,7 @@ namespace HomeLib.Controllers
             }
             catch (SqlException)
             {
-                return ErrorHandler("Упс... Сервер базы данных не доступен");
+                return ErrorHandler("Упс... Сервер базы данных не доступен.");
             }
         }
 
@@ -71,7 +71,7 @@ namespace HomeLib.Controllers
             }
             catch (SqlException)
             {
-                return ErrorHandler("Упс... Сервер базы данных не доступен");
+                return ErrorHandler("Упс... Сервер базы данных не доступен.");
             }
         }
 
@@ -88,7 +88,7 @@ namespace HomeLib.Controllers
             }
             catch (SqlException)
             {
-                return ErrorHandler("Упс... Сервер базы данных не доступен");
+                return ErrorHandler("Упс... Сервер базы данных не доступен.");
             }
         }
 

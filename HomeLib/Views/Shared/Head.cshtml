@@ -1,26 +1,56 @@
-﻿<div class="container-fluid bg-secondary align-middle">
-    <div class="row">
-        <div class="col-sm-4 ml-sm-n3 btn-group">
-            <div>
-                <a asp-controller="Home" asp-action="Index" class="btn-primary w-auto ">HomeLib</a>
+﻿<header class="m-0 bg-secondary">
+    <div class="container-fluid">
+        <div class="row align-items-center justify-content-center">
+            <div class="p-0 col-12 col-md-3 col-lg-3 col-xl-3 mr-auto">
+                <nav class="bg-primary nav nav-justified">
+                    <a asp-controller="Home"
+                       asp-action="Index"
+                       class="nav-item nav-link text-white">HomeLib</a>
+                    <a asp-controller="Status"
+                       asp-action="GetStatus"
+                       class="nav-item nav-link text-white">Status</a>
+                </nav>
             </div>
-            <div>
-                <a asp-controller="Status" asp-action="GetStatus" class="btn btn-primary btn-block">Status</a>
+            <div class="p-0 col-12 col-md-6 col-lg-6 col-xl-5 mr-0 ml-auto">
+                <form class=" form-inline justify-content-center" method="post">
+                    <div class="row w-100 justify-content-center align-items-center">
+                        <div class="p-0 col-12 col-sm-5 col-md-5 col-lg-5 col-xl-4">
+                            <input class="form-control w-100"
+                                   name="term"
+                                   type="text"
+                                   placeholder="Search..." />
+                        </div>
+                        <div class="p-0 col-9 col-sm-5 col-md-5 col-lg-5 col-xl-6 mx-auto">
+                            <div class="mx-2">
+                                <div class="form-check-inline">
+                                    <input id="radio-term-title"
+                                           checked="checked"
+                                           type="radio"
+                                           name="name"
+                                           value="Title"
+                                           class="mx-1" />
+                                    <label for="radio-term-title">By Title</label>
+                                </div>
+                                <div class="form-check-inline">
+                                    <input id="radio-term-name"
+                                           type="radio"
+                                           name="name"
+                                           value="FullName"
+                                           class="mx-1" />
+                                    <label for="radio-term-name">By Name</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="p-0 col col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                            <button asp-controller="Home"
+                                    asp-action="Search"
+                                    class="btn btn-primary">
+                                Search!
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
-        </div>
-        <div class="col-sm-3"></div>
-        <div class=" col-sm-5 mr-sm-3">
-            <form class="form-row" method="post">
-                <input class="col-sm-5" name="term" type="text" placeholder="Search..." />
-                <div class="col-sm-4">
-                    <input checked="checked" type="radio" name="name" value="Title" />By Title
-                    <input type="radio" name="name" value="FullName" />By Name
-                </div>
-                <div class="col-sm-3 ">
-                    <button asp-controller="Home" asp-action="Search" class="btn btn-primary btn-block">Search!</button>
-                </div>
-                
-            </form>
         </div>
     </div>
-</div>
+</header>

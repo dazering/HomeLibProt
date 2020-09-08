@@ -28,12 +28,12 @@ namespace HomeLib.Controllers
             }
             catch (DirectoryNotFoundException)
             {
-                TempData["error"] = "Директория с книгами не существует";
+                TempData["error"] = "Директории с книгами не существует.";
                 return RedirectToAction("Index", "Error");
             }
             catch (SqlException)
             {
-                TempData["error"] = "Упс... База данных не доступна";
+                TempData["error"] = "Упс... Сервер базы данных не доступен.";
                 return RedirectToAction("Index", "Error");
             }
         }
