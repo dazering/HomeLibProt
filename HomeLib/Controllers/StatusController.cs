@@ -1,4 +1,6 @@
-﻿using HomeLib.Infrostructure.Scanner;
+﻿using System;
+using System.IO;
+using HomeLib.Infrostructure.Scanner;
 using HomeLibServices.Managers;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,7 +21,15 @@ namespace HomeLib.Controllers
         [Route("Status")]
         public IActionResult GetStatus()
         {
-            return View("Status", ScannerManager.GetScannerState());
+            try
+            {
+                return View("Status", ScannerManager.GetScannerState());
+            }
+            catch (DirectoryNotFoundException)
+            {
+                TempData["error"] = "Директория с книгами не существует";
+                return RedirectToAction("Index", "Error");
+            }
         }
     }
 }

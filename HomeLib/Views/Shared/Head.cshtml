@@ -1,8 +1,8 @@
 ﻿<div class="container-fluid bg-secondary align-middle">
     <div class="row">
-        <div class="col-sm-4 ml-sm-n3 btn-group text-sm-left">
+        <div class="col-sm-4 ml-sm-n3 btn-group">
             <div>
-                <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-block">HomeLib</a>
+                <a asp-controller="Home" asp-action="Index" class="btn-primary w-auto ">HomeLib</a>
             </div>
             <div>
                 <a asp-controller="Status" asp-action="GetStatus" class="btn btn-primary btn-block">Status</a>
@@ -17,7 +17,7 @@
                     <input type="radio" name="name" value="FullName" />By Name
                 </div>
                 <div class="col-sm-3 ">
-                    <button asp-action="Search" class="btn btn-primary btn-block">Search!</button>
+                    <button asp-controller="Home" asp-action="Search" class="btn btn-primary btn-block">Search!</button>
                 </div>
                 
             </form>

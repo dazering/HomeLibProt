@@ -1,5 +1,7 @@
-﻿using HomeLibServices.Managers;
+﻿using System;
+using HomeLibServices.Managers;
 using Microsoft.AspNetCore.Mvc;
+using System.Data.SqlClient;
 using System.Linq;
 using Book = HomeLibServices.Models.Book;
 
@@ -18,41 +20,82 @@ namespace HomeLib.Controllers
         [Route("")]
         public IActionResult Index(string literals = "", int countAuthors = 0)
         {
-            if (string.IsNullOrWhiteSpace(literals))
+            try
             {
-                return View(BookManager.GetAuthorsFirstLiteral(literals));
-            }
+                if (string.IsNullOrWhiteSpace(literals))
+                {
+                    return View(BookManager.GetAuthorsFirstLiteral(literals));
+                }
 
-            return countAuthors > 50 ? View(BookManager.GetAuthorsFirstLiteral(literals)) : View("ShowAuthors", BookManager.SearchAuthorsByFirstLiteral(literals));
+                return countAuthors > 50 ? View(BookManager.GetAuthorsFirstLiteral(literals)) : View("ShowAuthors", BookManager.SearchAuthorsByFirstLiteral(literals));
+            }
+            catch (SqlException)
+            {
+                return ErrorHandler("Упс... Сервер базы данных не доступен");
+            }
         }
 
         [Route("Books")]
         public IActionResult GetBooks(long id)
         {
-            return View("ShowBooks", BookManager.GetAuthor(id).Authorships.Select(a => a.Book));
+            try
+            {
+                return View("ShowBooks", BookManager.GetAuthor(id).Authorships.Select(a => a.Book));
+            }
+            catch (SqlException)
+            {
+                return ErrorHandler("Упс... Сервер базы данных не доступен");
+            }
         }
 
         [Route("Book")]
         public IActionResult GetBook(long id)
         {
-            return View("Book", BookManager.GetBook(id));
+            try
+            {
+                return View("Book", BookManager.GetBook(id));
+            }
+            catch (SqlException)
+            {
+                return ErrorHandler("Упс... Сервер базы данных не доступен");
+            }
         }
 
         [Route("GetBook/Download")]
-        public FileContentResult GetFile(long id)
+        public IActionResult GetFile(long id)
         {
-            Book book = BookManager.GetBook(id);
-            return File(BookManager.GetBookBytes(book), "application/x-fictionbook", $"{book.Title}.fb2");
+            try
+            {
+                Book book = BookManager.GetBook(id);
+                return File(BookManager.GetBookBytes(book), "application/x-fictionbook", $"{book.Title}.fb2");
+            }
+            catch (SqlException)
+            {
+                return ErrorHandler("Упс... Сервер базы данных не доступен");
+            }
         }
 
         [Route("Search")]
         public IActionResult Search(string name, string term)
         {
-            if (name == "FullName")
+            try
             {
-                return View("ShowAuthors", BookManager.SearchAuthorsByName(term));
+                if (name == "FullName")
+                {
+                    return View("ShowAuthors", BookManager.SearchAuthorsByName(term));
+                }
+                return View("ShowBooks", BookManager.SearchBooksByTitle(term));
             }
-            return View("ShowBooks", BookManager.SearchBooksByTitle(term));
+            catch (SqlException)
+            {
+                return ErrorHandler("Упс... Сервер базы данных не доступен");
+            }
+        }
+
+        private IActionResult ErrorHandler(string errorMessage)
+        {
+            TempData["error"] = errorMessage;
+            return RedirectToAction("Index", "Error");
         }
     }
 }
