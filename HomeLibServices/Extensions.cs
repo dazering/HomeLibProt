@@ -24,8 +24,8 @@ namespace HomeLibServices
             collection.AddTransient<ILogger, LocalLogger>();
             collection.AddBookManager(pathToLocalRepository);
             collection.AddLogger<LocalLogger>();
-            collection.AddScanner<Scanner>(pathToLocalRepository);
-            collection.AddScannerManager<ScannerManager>();
+            collection.AddScanner(pathToLocalRepository);
+            collection.AddScannerManager();
         }
 
         /// <summary>
@@ -71,10 +71,9 @@ namespace HomeLibServices
         /// <summary>
         /// Add to DI container Scanner
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
         /// <param name="localRepositoryPath"></param>
-        public static void AddScanner<T>(this IServiceCollection collection, string localRepositoryPath) where T : Scanner
+        public static void AddScanner(this IServiceCollection collection, string localRepositoryPath)
         {
             collection.AddSingleton((srv) => new Scanner(localRepositoryPath, srv));
         }
@@ -82,9 +81,8 @@ namespace HomeLibServices
         /// <summary>
         /// Add to DI container ScannerManager
         /// </summary>
-        /// <typeparam name="T"></typeparam>
         /// <param name="collection"></param>
-        public static void AddScannerManager<T>(this IServiceCollection collection) where T: ScannerManager
+        public static void AddScannerManager(this IServiceCollection collection)
         {
             collection.AddSingleton<ScannerManager>();
         }
