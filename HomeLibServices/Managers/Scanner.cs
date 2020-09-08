@@ -29,7 +29,6 @@ namespace HomeLibServices.Managers
             pathToLocalRepository = path;
             bookReader = new FbReader();
             scannerState = new ScannerState();
-            scannerState.BooksInLocalRepository = CountBooksInLocalRepository();
             provider = prov;
             logger = provider.GetRequiredService<ILogger>();
             repositoryReader = new LocalRepositoryReader((archive, s) =>

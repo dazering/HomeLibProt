@@ -5,6 +5,7 @@ using HomeLibServices.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Reflection;
 
 namespace HomeLibServices
 {
@@ -18,10 +19,13 @@ namespace HomeLibServices
         /// <param name="pathToLocalRepository"></param>
         public static void AddDefaultLibraryServices(this IServiceCollection collection, string dbConnection, string pathToLocalRepository)
         {
-            collection.AddDbContext<LibraryContext>(opt => opt.UseSqlServer(dbConnection));
-            collection.AddScoped<ILibraryRepository, LibraryRepository>();
+            collection.AddDbContext<LibraryContext>(dbConnection);
+            collection.AddLibraryRepository<LibraryRepository>();
             collection.AddTransient<ILogger, LocalLogger>();
             collection.AddBookManager(pathToLocalRepository);
+            collection.AddLogger<LocalLogger>();
+            collection.AddScanner<Scanner>(pathToLocalRepository);
+            collection.AddScannerManager<ScannerManager>();
         }
 
         /// <summary>
@@ -42,7 +46,7 @@ namespace HomeLibServices
         /// <param name="dbConnection">connection string</param>
         public static void AddDbContext<T>(this IServiceCollection collection, string dbConnection) where T : DbContext
         {
-            collection.AddDbContext<T>(opt => opt.UseSqlServer(dbConnection));
+            collection.AddDbContext<T>(opt => opt.UseSqlServer(dbConnection, m=>m.MigrationsAssembly(Assembly.GetCallingAssembly().GetName().Name)));
         }
 
         /// <summary>
@@ -63,6 +67,26 @@ namespace HomeLibServices
         public static void AddLogger<T>(this IServiceCollection collection) where T : class, ILogger
         {
             collection.AddTransient<ILogger, T>();
+        }
+        /// <summary>
+        /// Add to DI container Scanner
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        /// <param name="localRepositoryPath"></param>
+        public static void AddScanner<T>(this IServiceCollection collection, string localRepositoryPath) where T : Scanner
+        {
+            collection.AddSingleton((srv) => new Scanner(localRepositoryPath, srv));
+        }
+
+        /// <summary>
+        /// Add to DI container ScannerManager
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="collection"></param>
+        public static void AddScannerManager<T>(this IServiceCollection collection) where T: ScannerManager
+        {
+            collection.AddSingleton<ScannerManager>();
         }
     }
 }
