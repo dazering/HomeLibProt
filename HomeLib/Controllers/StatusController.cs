@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.IO;
 using HomeLib.Infrostructure.Scanner;
 using HomeLibServices.Managers;
@@ -28,6 +29,11 @@ namespace HomeLib.Controllers
             catch (DirectoryNotFoundException)
             {
                 TempData["error"] = "Директория с книгами не существует";
+                return RedirectToAction("Index", "Error");
+            }
+            catch (SqlException)
+            {
+                TempData["error"] = "Упс... База данных не доступна";
                 return RedirectToAction("Index", "Error");
             }
         }
