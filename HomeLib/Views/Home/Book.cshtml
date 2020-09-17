@@ -4,25 +4,21 @@
     ViewData["Title"] = "Book";
     Layout = "_Layout";
 }
-<div class="container-fluid">
-    <div class="row">
-        <div class="col-sm-2 flex-sm-grow-1">
+
+        <div>
             @if (Model.Cover != null)
             {
                 <img src="data:image/png;base64,@Model.Cover" height="400" width="300" class="img-fluid" />
             }
         </div>
-        <div class="col-sm-5">
-            <div>@Model.Authorships.Select(a=>new string($"{a.Author.LastName} {a.Author.FirstName[0]}")).Join(", ")- @Model.Title</div>
+        <div class="text-white">
+            <div>@Model.Authorships.Select(a=>new string($"{a.Author.LastName} {a.Author.FirstName[0]}")).Join(", ") - @Model.Title</div>
             <div>@Model.Year - @Model.Isbn</div>
             <br />
             <div>@Model.Annotation</div>
             <div>
                 <form asp-action="GetFile" asp-route-id="@Model.BookId">
-                    <button class="btn btn-link" type="submit">Download</button>
+                    <button class="btn btn-primary" type="submit">Download</button>
                 </form>
             </div>
         </div>
-    </div>
-</div>
-

@@ -1,7 +1,7 @@
-﻿<header class="sticky-top m-0 bg-secondary">
+﻿<header class="sticky-top mb-3 bg-secondary rounded-bottom">
     <div class="container-fluid">
         <div class="row align-items-center justify-content-center">
-            <div class="p-0 col-12 col-md-3 col-lg-3 col-xl-3 mr-auto">
+            <div class="p-0 col-12 col-sm-12 col-md-3 col-lg-3 col-xl-3 mr-auto">
                 <nav class="bg-primary nav nav-justified">
                     <a asp-controller="Home"
                        asp-action="Index"
@@ -11,17 +11,17 @@
                        class="nav-item nav-link text-white">Status</a>
                 </nav>
             </div>
-            <div class="p-0 col-12 col-md-6 col-lg-6 col-xl-5 mr-0 ml-auto">
+            <div class="p-0 col-12 col-sm-12 col-md-8 col-lg-6 col-xl-5 mr-0 ml-auto">
                 <form class=" form-inline justify-content-center" method="post">
-                    <div class="row w-100 justify-content-center align-items-center">
-                        <div class="p-0 col-12 col-sm-5 col-md-5 col-lg-5 col-xl-4">
+                    <div class="row w-100  align-items-center">
+                        <div class="p-0 col-12 col-sm-5 col-md-5 col-lg-5 col-xl-5">
                             <input class="form-control w-100"
                                    name="term"
                                    type="text"
                                    placeholder="Search..." />
                         </div>
-                        <div class="p-0 col-9 col-sm-5 col-md-5 col-lg-5 col-xl-6 mx-auto">
-                            <div class="mx-2">
+                        <div class="p-0 col-8 col-sm-5 col-md-5 col-lg-5 col-xl-5 mx-auto">
+                            <div>
                                 <div class="form-check-inline">
                                     <input id="radio-term-title"
                                            checked="checked"
@@ -41,10 +41,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="p-0 col col-sm-2 col-md-2 col-lg-2 col-xl-2">
+                        <div class="p-0 col-4 col-sm-2 col-md-2 col-lg-2 col-xl-2">
                             <button asp-controller="Home"
                                     asp-action="Search"
-                                    class="btn btn-primary">
+                                    class="btn btn-primary w-100">
                                 Search!
                             </button>
                         </div>

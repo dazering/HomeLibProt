@@ -7,14 +7,21 @@
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/lib/bootstrap/dist/js/bootstrap.min.js" />
     <style>
-        .placeholder{ visibility:collapse;display:none}
-        .placeholder:only-child{visibility:visible;display:flex}
+        .placeholder {
+            visibility: collapse;
+            display: none
+        }
+
+        .placeholder:only-child {
+            visibility: visible;
+            display: flex
+        }
     </style>
 </head>
-<body>
+<body class="container bg-dark">
     @Html.Partial("Head")
-    <div>
+    <main class="bg-secondary p-1 rounded">
         @RenderBody()
-    </div>
+    </main>
 </body>
 </html>

@@ -1,16 +1,17 @@
-﻿@model IEnumerable<(string,int)>
+﻿@model IEnumerable<(string, int)>
 @{
     Layout = "_Layout";
 }
-<div class="container-fluid">
+<div>
+    <div class="placeholder"><h3 class="text-sm-center">No Result =<</h3></div>
     @if (Model != null)
     {
-        <div class="list-group">
-            @foreach (var m in Model)
+        <div class="list-group text-center">
+            @foreach (var m in Model.OrderBy(a => a.Item1))
             {
-                <a class="list-group-item list-group-item-action" asp-action="Index" asp-route-literals="@m.Item1" asp-route-countAuthors="@m.Item2">@m.Item1 - @m.Item2 @(m.Item2 > 1 ? "elements" : "element")</a>
+                <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" asp-action="Index" asp-route-literals="@m.Item1" asp-route-countAuthors="@m.Item2">@m.Item1 <span class="badge badge-primary">@m.Item2</span></a>
             }
         </div>
-        
+
     }
 </div>
