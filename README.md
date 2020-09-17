@@ -10,6 +10,10 @@
 Реализованн поиск по названию книги или имени автора.
 
 ![Демо поиска](HomeLib/DEMO/search_demo.gif)
+
+При верстке использован Bootstrap
+
+![Демо верстки](HomeLib/DEMO/front_demo.gif)
 Стек:
 Asp.net Core Mvc, EF Core, SignalR
 
