@@ -2,6 +2,7 @@
 using HomeLibServices.Managers;
 using Microsoft.AspNetCore.Mvc;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using Book = HomeLibServices.Models.Book;
 
@@ -68,6 +69,10 @@ namespace HomeLib.Controllers
             {
                 Book book = BookManager.GetBook(id);
                 return File(BookManager.GetBookBytes(book), "application/x-fictionbook", $"{book.Title}.fb2");
+            }
+            catch (FileNotFoundException)
+            {
+                return ErrorHandler("Упс... Такой файл не найден");
             }
             catch (SqlException)
             {
