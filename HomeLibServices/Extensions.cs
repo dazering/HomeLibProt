@@ -46,7 +46,7 @@ namespace HomeLibServices
         /// <param name="dbConnection">connection string</param>
         public static void AddDbContext<T>(this IServiceCollection collection, string dbConnection) where T : DbContext
         {
-            collection.AddDbContext<T>(opt => opt.UseSqlServer(dbConnection, m=>m.MigrationsAssembly(Assembly.GetCallingAssembly().GetName().Name)));
+            collection.AddDbContext<T>(opt => opt.UseSqlServer(dbConnection, m=>m.MigrationsAssembly(Assembly.GetExecutingAssembly().GetName().Name)));
         }
 
         /// <summary>
