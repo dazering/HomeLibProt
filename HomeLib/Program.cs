@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
+﻿using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using System.IO;
 
 namespace HomeLib
 {
@@ -14,7 +8,6 @@ namespace HomeLib
     {
         public static void Main(string[] args)
         {
-            //Server.InitializeServerListener().Run();
             CreateWebHostBuilder(args).Build().Run();
         }
 
@@ -25,11 +18,14 @@ namespace HomeLib
                 {
                     IHostingEnvironment env = hostingContext.HostingEnvironment;
                     config.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
+                    if (env.IsDevelopment())
+                    {
+                        config.AddUserSecrets<Program>();
+                    }
                 }).UseIISIntegration().UseDefaultServiceProvider((context, options) =>
                 {
                     options.ValidateScopes = context.HostingEnvironment.IsDevelopment();
                 }).UseStartup<Startup>();
-           // return WebHost.CreateDefaultBuilder(args).UseStartup<Startup>();
         }
     }
 }
