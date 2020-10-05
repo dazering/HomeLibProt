@@ -19,10 +19,5 @@ namespace HomeLibServices.Models
 
         public List<Authorship> Authorships { get; set; }
 
-        public Book()
-        {
-            Authorships = new List<Authorship>();
-            Path = new LocalPath();
-        }
     }
 }
