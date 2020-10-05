@@ -106,13 +106,13 @@ namespace HomeLibServices.Repository
 
         public IEnumerable<Author> SearchAuthorByName(string searchTerm)
         {
-            var result = new SearchResult<Author>(context.Authors.Include(a => a.Authorships), "FullName", searchTerm);
+            var result = new SearchResult<Author>(context.Authors.Include(a => a.Authorships).Select(a=>new Author(){AuthorId = a.AuthorId, FullName = a.FullName}), "FullName", searchTerm);
             return result;
         }
 
         public IEnumerable<Author> SearchAuthorsByFirstLiteral(string firstLiterals)
         {
-            return context.Authors.Include(a => a.Authorships).Where(a => a.FullName.StartsWith(firstLiterals)).ToList();
+            return context.Authors.Include(a => a.Authorships).Where(a => a.FullName.StartsWith(firstLiterals)).Select(a=> new Author(){FullName = a.FullName, AuthorId = a.AuthorId}).ToList();
         }
     }
 }
