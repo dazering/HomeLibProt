@@ -48,10 +48,14 @@ namespace HomeLibApi.Controllers
         [Route("Download/{id}")]
         public IActionResult GetFile(long id)
         {
-            Book book;
             try
             {
-                book = BookManager.GetBook(id);
+                var book = BookManager.GetBook(id);
+                if (book != null)
+                {
+                    return File(BookManager.GetBookBytes(book), "application/x-fictionbook", $"{book.Title}.fb2");
+                }
+                return NotFound("Книга не найдена");
             }
             catch (FileNotFoundException)
             {
@@ -61,11 +65,6 @@ namespace HomeLibApi.Controllers
             {
                 return StatusCode(500,"Сервер базы данных не доступен.");
             }
-            if (book != null)
-            {
-                return File(BookManager.GetBookBytes(book), "application/x-fictionbook", $"{book.Title}.fb2");
-            }
-            return NotFound("Книга не найдена");
         }
     }
 }
