@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
 
 namespace HomeLibApi
 {
@@ -18,7 +19,11 @@ namespace HomeLibApi
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddMvc();
+            services.AddMvc().AddJsonOptions(opt =>
+            {
+                opt.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+                opt.SerializerSettings.NullValueHandling = NullValueHandling.Ignore;
+            });
             string conString = Configuration["ConnectionStrings:DefaultConnection"];
             string localRepositoryPath = Configuration["LocalRepository:Path"];
 
