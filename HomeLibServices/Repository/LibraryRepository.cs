@@ -112,7 +112,7 @@ namespace HomeLibServices.Repository
 
         public IEnumerable<Author> SearchAuthorsByFirstLiteral(string firstLiterals)
         {
-            return context.Authors.Include(a => a.Authorships).Where(a => a.FullName.StartsWith(firstLiterals)).Select(a=> new Author(){FullName = a.FullName, AuthorId = a.AuthorId}).ToList();
+            return context.Authors.Include(a => a.Authorships).Where(a => a.FullName.StartsWith(firstLiterals)).Select(a=> new Author(){FullName = a.FullName, AuthorId = a.AuthorId, Authorships = a.Authorships}).ToList();
         }
     }
 }

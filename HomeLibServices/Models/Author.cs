@@ -9,6 +9,6 @@ namespace HomeLibServices.Models
         public string MiddleName { get; set; } = "Unknown";
         public string LastName { get; set; } = "Unknown";
         public string FullName { get; set; }
-        public IEnumerable<Authorship> Authorships { get; set; }
+        public List<Authorship> Authorships { get; set; }
     }
 }
