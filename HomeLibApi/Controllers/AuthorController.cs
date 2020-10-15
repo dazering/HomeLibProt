@@ -33,7 +33,7 @@ namespace HomeLibApi.Controllers
             }
         }
 
-        [Route("{literals}")]
+        [Route("{literals?}")]
         public IActionResult SearchFirstLiteralsOfAuthorName(string literals = "")
         {
             try
