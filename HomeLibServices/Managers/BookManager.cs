@@ -32,7 +32,7 @@ namespace HomeLibServices.Managers
         #endregion
 
         #region LibaryRepository
-
+        /// <inheritdoc cref="LibraryRepository.GetBook"/>
         public Book GetBook(long id)
         {
             using (var scope = getScope())
@@ -41,6 +41,7 @@ namespace HomeLibServices.Managers
             }
         }
 
+        /// <inheritdoc cref="LibraryRepository.GetAuthor"/>
         public Author GetAuthor(long id)
         {
             using (var scope = getScope())
@@ -49,14 +50,7 @@ namespace HomeLibServices.Managers
             }
         }
 
-        public IEnumerable<Author> GetAllAuthors()
-        {
-            using (var scope = getScope())
-            {
-                return getLibraryRepository(scope).GetAllAuthors();
-            }
-        }
-
+        /// <inheritdoc cref="LibraryRepository.GetAuthorsFirstLiteral"/>
         public IEnumerable<(string, int)> GetAuthorsFirstLiteral(string firstLiterals)
         {
             using (var scope = getScope())
@@ -65,6 +59,7 @@ namespace HomeLibServices.Managers
             }
         }
 
+        /// <inheritdoc cref="LibraryRepository.SearchBookByTitle"/>
         public IEnumerable<Book> SearchBooksByTitle(string searchTerm)
         {
             using (var scope = getScope())
@@ -73,6 +68,7 @@ namespace HomeLibServices.Managers
             }
         }
 
+        /// <inheritdoc cref="LibraryRepository.SearchAuthorByName"/>
         public IEnumerable<Author> SearchAuthorsByName(string searchTertm)
         {
             using (var scope = getScope())
@@ -81,6 +77,7 @@ namespace HomeLibServices.Managers
             }
         }
 
+        /// <inheritdoc cref="LibraryRepository.SearchAuthorsByFirstLiteral"/>
         public IEnumerable<Author> SearchAuthorsByFirstLiteral(string searchTertm)
         {
             using (var scope = getScope())
@@ -92,12 +89,22 @@ namespace HomeLibServices.Managers
         #endregion
 
         #region DownloadBook
-
+        /// <summary>
+        /// Return bytes of .fb2 file
+        /// </summary>
+        /// <param name="book"></param>
+        /// <returns></returns>
+        /// <exception cref="System.Data.SqlClient.SqlException">Thrown when database is not access.</exception>
+        /// <exception cref="System.IO.FileNotFoundException">Thrown when file no found of physical driver.</exception>
         public byte[] GetBookBytes(Book book)
         {
             return GetBookBytes(book.Path.ArchiveName, book.Path.FbName);
         }
-
+        
+        /// <inheritdoc cref="GetBookBytes(HomeLibServices.Models.Book)"/>
+        /// <param name="archiveName"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
         public byte[] GetBookBytes(string archiveName, string fileName)
         {
             return downloader.ReadArchive(archiveName, fileName);
