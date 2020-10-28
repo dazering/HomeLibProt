@@ -130,11 +130,11 @@ namespace HomeLibServices.Repository
         /// <param name="firstLiterals"></param>
         /// <returns></returns>
         /// <exception cref="SqlException">Thrown when database is not access.</exception>
-        public IEnumerable<(string, int)> GetAuthorsFirstLiteral(string firstLiterals)
+        public IEnumerable<AlphabetSearchResult> GetAuthorsFirstLiteral(string firstLiterals)
         {
             return context.Authors.Where(a => a.FullName.StartsWith(firstLiterals))
                 .GroupBy(a => a.FullName.Substring(0, firstLiterals.Length + 1)).Select(a =>
-                    new System.Tuple<string, int>(a.Key, a.Count()).ToValueTuple())
+                    new AlphabetSearchResult { Alphabets = a.Key, Count = a.Count() })
                 .ToList();
         }
 

@@ -42,7 +42,7 @@ namespace HomeLibApi.Controllers
                 var authors = BookManager.GetAuthorsFirstLiteral(literals);
                 if (authors != null)
                 {
-                    return Ok(new ApiResponse<IEnumerable<(string Alphabets, int Count)>> { Data = authors });
+                    return Ok(new ApiResponse<IEnumerable<AlphabetSearchResult>> { Data = authors });
                 }
 
                 return NotFound(new ApiResponse<string> { Data = "Автор не найден" });

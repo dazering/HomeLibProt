@@ -9,7 +9,7 @@ namespace HomeLibServices.Repository
         Book GetBook(long id);
         Author GetAuthor(long id);
         int CountBooks();
-        IEnumerable<(string, int)> GetAuthorsFirstLiteral(string firstLiterals);
+        IEnumerable<AlphabetSearchResult> GetAuthorsFirstLiteral(string firstLiterals);
         IEnumerable<Book> SearchBookByTitle(string searchTerm);
         IEnumerable<Author> SearchAuthorByName(string searchTerm);
         IEnumerable<Author> SearchAuthorsByFirstLiteral(string firstLiterals);

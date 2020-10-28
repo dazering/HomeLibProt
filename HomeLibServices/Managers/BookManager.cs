@@ -51,7 +51,7 @@ namespace HomeLibServices.Managers
         }
 
         /// <inheritdoc cref="LibraryRepository.GetAuthorsFirstLiteral"/>
-        public IEnumerable<(string, int)> GetAuthorsFirstLiteral(string firstLiterals)
+        public IEnumerable<AlphabetSearchResult> GetAuthorsFirstLiteral(string firstLiterals)
         {
             using (var scope = getScope())
             {
