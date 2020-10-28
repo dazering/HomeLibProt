@@ -4,6 +4,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 using HomeLibServices.Managers;
+using HomeLibServices.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,11 +26,11 @@ namespace HomeLibApi.Controllers
         {
             try
             {
-                return Ok(BookManager.GetAuthor(id));
+                return Ok(new ApiResponse<Author>() { Data = BookManager.GetAuthor(id) });
             }
             catch (SqlException)
             {
-                return StatusCode(500, "Сервер базы данных не доступен");
+                return StatusCode(500, new ApiResponse<string> { Data = "Сервер базы данных не доступен" });
             }
         }
 
@@ -41,14 +42,14 @@ namespace HomeLibApi.Controllers
                 var authors = BookManager.GetAuthorsFirstLiteral(literals);
                 if (authors != null)
                 {
-                    return Ok(authors);
+                    return Ok(new ApiResponse<IEnumerable<(string Alphabets, int Count)>> { Data = authors });
                 }
 
-                return NotFound("Автор не найден");
+                return NotFound(new ApiResponse<string> { Data = "Автор не найден" });
             }
             catch (SqlException)
             {
-                return StatusCode(500, "Сервер базы данных не доступен");
+                return StatusCode(500, new ApiResponse<string> { Data = "Сервер базы данных не доступен" });
             }
         }
 
@@ -57,11 +58,11 @@ namespace HomeLibApi.Controllers
         {
             try
             {
-                return Ok(BookManager.SearchAuthorsByFirstLiteral(name));
+                return Ok(new ApiResponse<IEnumerable<Author>>() { Data = BookManager.SearchAuthorsByFirstLiteral(name) });
             }
             catch (SqlException)
             {
-                return StatusCode(500, "Сервер базы данных не доступен");
+                return StatusCode(500, new ApiResponse<string>() { Data = "Сервер базы данных не доступен" });
             }
         }
 
@@ -70,11 +71,11 @@ namespace HomeLibApi.Controllers
         {
             try
             {
-                return Ok(BookManager.SearchAuthorsByName(name));
+                return Ok(new ApiResponse<IEnumerable<Author>>() { Data = BookManager.SearchAuthorsByName(name) });
             }
             catch (SqlException)
             {
-                return StatusCode(500, "Сервер базы данных не доступен");
+                return StatusCode(500, new ApiResponse<string>() { Data = "Сервер базы данных не доступен" });
             }
         }
     }
