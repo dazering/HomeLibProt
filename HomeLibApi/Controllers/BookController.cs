@@ -1,7 +1,6 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.IO;
-using System.Linq;
 using HomeLibServices.Managers;
 using HomeLibServices.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +21,15 @@ namespace HomeLibApi.Controllers
         [Route("search/{title}")]
         public IActionResult SearchBook(string title)
         {
-            return Ok(BookManager.SearchBooksByTitle(title));
+            try
+            {
+                return Ok(new ApiResponse<IEnumerable<Book>> { Data = BookManager.SearchBooksByTitle(title) });
+            }
+            catch (SqlException)
+            {
+                return StatusCode(500, new ApiResponse<string> { Data = "Сервер базы данных не доступен" });
+            }
+
         }
 
         [Route("book/{bookId}")]
@@ -35,14 +42,14 @@ namespace HomeLibApi.Controllers
             }
             catch (SqlException)
             {
-                return StatusCode(500, "Сервер базы данных не доступен");
+                return StatusCode(500, new ApiResponse<string> { Data = "Сервер базы данных не доступен" });
             }
             if (book != null)
             {
-                return Ok(book);
+                return Ok(new ApiResponse<Book> { Data = book });
             }
 
-            return NotFound("Книга не найдена");
+            return NotFound(new ApiResponse<string> { Data = "Книга не найдена" });
         }
 
         [Route("Download/{id}")]
@@ -55,15 +62,15 @@ namespace HomeLibApi.Controllers
                 {
                     return File(BookManager.GetBookBytes(book), "application/x-fictionbook", $"{book.Title}.fb2");
                 }
-                return NotFound("Книга не найдена");
+                return NotFound(new ApiResponse<string> { Data = "Книга не найдена" });
             }
             catch (FileNotFoundException)
             {
-                return NotFound("Файл не найден");
+                return NotFound(new ApiResponse<string> { Data = "Файл книги не найден" });
             }
             catch (SqlException)
             {
-                return StatusCode(500,"Сервер базы данных не доступен.");
+                return StatusCode(500, new ApiResponse<string> { Data = "Сервер базы данных не доступен" });
             }
         }
     }
