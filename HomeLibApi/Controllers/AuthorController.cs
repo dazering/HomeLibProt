@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
+using HomeLibApi.Models;
 using HomeLibServices.Managers;
 using HomeLibServices.Models;
 using Microsoft.AspNetCore.Http;

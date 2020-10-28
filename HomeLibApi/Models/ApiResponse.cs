@@ -1,6 +1,8 @@
-
-
-public class ApiResponse<T> where T : class
+namespace HomeLibApi.Models
 {
-    public T Data { get; set; }
+
+    public class ApiResponse<T> where T : class
+    {
+        public T Data { get; set; }
+    }
 }

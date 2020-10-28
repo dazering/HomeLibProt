@@ -1,5 +1,8 @@
-public class AlphabetSearchResult
+namespace HomeLibServices.Models
 {
-    public int Count { get; set; }
-    public string Alphabets { get; set; }
+    public class AlphabetSearchResult
+    {
+        public int Count { get; set; }
+        public string Alphabets { get; set; }
+    }
 }
