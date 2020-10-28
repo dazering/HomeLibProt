@@ -331,3 +331,4 @@ ASALocalRun/
 /HomeLib/log.txt
 /TestApp
 /HomeLib/Logs
+*.vscode
