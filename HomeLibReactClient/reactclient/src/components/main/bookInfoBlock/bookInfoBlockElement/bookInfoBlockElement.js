@@ -1,5 +1,4 @@
 import React from "react";
-import HttpApiClient from "../../../api/httpApiClient";
 
 const BookInfoBlockElement = (props) => {
   return (
