@@ -16,16 +16,24 @@ const AuthorsBlock = (props) => {
         .then((res) => {
           if (res.ok) {
             res.json().then((data) => {
-              setAuthorsElems({
-                elems: data["data"].map((auth, i) => (
-                  <AuthorsBlockElement
-                    key={i}
-                    authorId={auth.authorId}
-                    name={auth.fullName}
-                    count={auth.authorships.length}
-                  />
-                )),
-              });
+              let authorships = data["data"];
+              if (authorships.length > 0) {
+                setAuthorsElems({
+                  elems: data["data"].map((auth, i) => (
+                    <AuthorsBlockElement
+                      key={i}
+                      authorId={auth.authorId}
+                      name={auth.fullName}
+                      count={auth.authorships.length}
+                    />
+                  )),
+                });
+              }
+              else{
+                setAuthorsElems({
+                  elems: <ErrorMessage key={0} message={'Никого не найдено...'} />,
+                });
+              }
             });
           } else {
             res.json().then((data) => {

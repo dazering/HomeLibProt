@@ -30,6 +30,11 @@ const AlpabeltSearchBlock = (props) => {
                   )),
                 });
               }
+              else{
+                setAlphabetsElems({
+                  elems: <ErrorMessage key={0} message={'Ничего не найдено...'} />,
+                });
+              }
             });
           } else
             return res.json().then((data) => {
