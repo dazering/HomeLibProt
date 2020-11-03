@@ -51,7 +51,7 @@ const AuthorsBlock = (props) => {
     };
 
     if (!cleanUp) {
-      getAuthors(decodeURIComponent(name));
+      getAuthors(name);
     }
 
     return () => {
