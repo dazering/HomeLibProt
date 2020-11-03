@@ -1,7 +1,11 @@
-
+import Header from "./components/header/header";
+import Main from "./components/main/main";
 function App() {
   return (
-    <div></div>
+    <div>
+      <Header />
+      <Main />
+    </div>
   );
 }
 
