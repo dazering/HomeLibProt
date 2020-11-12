@@ -16,5 +16,3 @@
 ![Демо верстки](HomeLib/DEMO/front_demo.gif)
 Стек:
 Asp.net Core Mvc, EF Core, SignalR
-
-В планах вынести фронт на Angular|React, бэкенд переделать в api.
