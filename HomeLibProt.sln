@@ -5,6 +5,8 @@ VisualStudioVersion = 16.0.30413.136
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeLibProt.Domain", "HomeLibProt.Domain\HomeLibProt.Domain.csproj", "{2331986D-5157-438A-A531-EC3659C54B1F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeLibProt.Domain.Tests", "HomeLibProt.Domain.Tests\HomeLibProt.Domain.Tests.csproj", "{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}"
+EndProject
 Global
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -33,5 +35,17 @@ Global
 		{2331986D-5157-438A-A531-EC3659C54B1F}.Release|x64.Build.0 = Release|Any CPU
 		{2331986D-5157-438A-A531-EC3659C54B1F}.Release|x86.ActiveCfg = Release|Any CPU
 		{2331986D-5157-438A-A531-EC3659C54B1F}.Release|x86.Build.0 = Release|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Debug|x64.Build.0 = Debug|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Debug|x86.Build.0 = Debug|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Release|x64.ActiveCfg = Release|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Release|x64.Build.0 = Release|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Release|x86.ActiveCfg = Release|Any CPU
+		{5B374D5C-62EA-464B-A8DB-E39F1CE1B85F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
