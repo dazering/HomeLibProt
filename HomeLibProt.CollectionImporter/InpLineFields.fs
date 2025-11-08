@@ -1,0 +1,18 @@
+module HomeLibProt.CollectionImporter.InpLineFields
+
+let public authors = "authors"
+let public genres = "genres"
+let public title = "title"
+let public series = "series"
+let public serno = "serno"
+let public file = "file"
+let public size = "size"
+let public libid = "libid"
+let public del = "del"
+let public extension = "extension"
+let public date = "date"
+let public insno = "insno"
+let public folder = "folder"
+let public lang = "lang"
+let public rate = "rate"
+let public keywords = "keywords"
