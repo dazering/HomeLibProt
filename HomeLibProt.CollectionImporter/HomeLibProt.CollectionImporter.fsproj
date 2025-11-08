@@ -9,4 +9,8 @@
     <Compile Include="InpLine.fs" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="HomeLibProt.CollectionImporter.Tests" />
+  </ItemGroup>
+
 </Project>
