@@ -9,6 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="TestInpLine.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
