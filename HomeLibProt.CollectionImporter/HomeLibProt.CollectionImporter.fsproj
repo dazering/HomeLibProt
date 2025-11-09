@@ -8,6 +8,7 @@
     <Compile Include="InpLineFields.fs" />
     <Compile Include="InpLine.fs" />
     <Compile Include="Book.fs" />
+    <Compile Include="BookImporter.fs" />
   </ItemGroup>
 
   <ItemGroup>
