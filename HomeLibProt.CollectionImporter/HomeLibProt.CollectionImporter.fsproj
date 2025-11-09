@@ -7,6 +7,7 @@
   <ItemGroup>
     <Compile Include="InpLineFields.fs" />
     <Compile Include="InpLine.fs" />
+    <Compile Include="Book.fs" />
   </ItemGroup>
 
   <ItemGroup>
