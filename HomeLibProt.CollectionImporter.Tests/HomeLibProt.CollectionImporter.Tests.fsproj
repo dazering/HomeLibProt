@@ -24,6 +24,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeLibProt.CollectionImporter\HomeLibProt.CollectionImporter.fsproj" />
+    <ProjectReference Include="..\HomeLibProt.Domain.Tests\HomeLibProt.Domain.Tests.csproj" />
   </ItemGroup>
 
 </Project>
