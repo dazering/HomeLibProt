@@ -11,6 +11,7 @@
   <ItemGroup>
     <Compile Include="TestInpLine.fs" />
     <Compile Include="TestBook.fs" />
+    <Compile Include="TestBookImporter.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
