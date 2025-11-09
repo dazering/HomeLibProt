@@ -14,4 +14,8 @@
     <InternalsVisibleTo Include="HomeLibProt.CollectionImporter.Tests" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HomeLibProt.Domain\HomeLibProt.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
