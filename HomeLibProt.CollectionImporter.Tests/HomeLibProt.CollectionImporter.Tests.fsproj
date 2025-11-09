@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Compile Include="TestInpLine.fs" />
+    <Compile Include="TestBook.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
