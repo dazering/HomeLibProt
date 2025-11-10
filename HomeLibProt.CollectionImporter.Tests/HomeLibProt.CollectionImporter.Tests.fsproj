@@ -12,6 +12,7 @@
     <Compile Include="TestInpLine.fs" />
     <Compile Include="TestBook.fs" />
     <Compile Include="TestBookImporter.fs" />
+    <Compile Include="TestInpxImporter.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
@@ -26,6 +27,12 @@
   <ItemGroup>
     <ProjectReference Include="..\HomeLibProt.CollectionImporter\HomeLibProt.CollectionImporter.fsproj" />
     <ProjectReference Include="..\HomeLibProt.Domain.Tests\HomeLibProt.Domain.Tests.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="TestCases\**\*.*">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
 </Project>
