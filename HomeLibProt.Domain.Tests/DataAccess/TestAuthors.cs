@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using HomeLibProt.Domain.DataAccess;
 using HomeLibProt.Domain.Tests.Entities;
@@ -35,6 +36,23 @@ public class TestAuthors {
             });
 
             return await ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData);
+        });
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
+    }
+
+    [Test]
+    public async Task TestGetAuthorsAsync() {
+        var expected = new[] {
+            new Author(Id: 1, Name: "A A A"),
+            new Author(Id: 2, Name: "B B B")
+         };
+
+        var actual = await TestUtils.UseTestDatabase(async (connection) => {
+            await ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.SetUpTestData);
+            return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                return Authors.GetAuthorsAsync(c).ToBlockingEnumerable().ToArray();
+            });
         });
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
