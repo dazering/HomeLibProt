@@ -13,6 +13,8 @@
     <Compile Include="TestBook.fs" />
     <Compile Include="TestBookImporter.fs" />
     <Compile Include="TestInpxImporter.fs" />
+    <Compile Include="Utils\AuthorHierarchicalSearchImporterUtils.fs" />
+    <Compile Include="TestAuthorHierarchicalSearchImporter.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
