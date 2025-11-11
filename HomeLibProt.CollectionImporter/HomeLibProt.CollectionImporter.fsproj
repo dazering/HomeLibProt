@@ -10,6 +10,7 @@
     <Compile Include="Book.fs" />
     <Compile Include="BookImporter.fs" />
     <Compile Include="InpxImporter.fs" />
+    <Compile Include="AuthorHierarchicalSearchImporter.fs" />
   </ItemGroup>
 
   <ItemGroup>
