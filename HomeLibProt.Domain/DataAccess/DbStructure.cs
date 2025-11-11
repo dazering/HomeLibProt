@@ -150,4 +150,10 @@ create index idx_author_hierarchical_search_results_node_ids on AuthorHierarchic
         await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchNodeSql);
         await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchResultsSql);
     }
+
+    public static async Task CreateAHSStructure (DbConnection connection) {
+        await ExecuteSqlAsync(connection, dropExistingAHSTablesSql);
+        await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchNodeSql);
+        await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchResultsSql);
+    }
 }
