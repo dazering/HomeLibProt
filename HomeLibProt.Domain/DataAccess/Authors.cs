@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
@@ -33,5 +34,15 @@ values (@FullName, @FirstName, @MiddleName, @LastName)
         foreach (var a in authorNames) {
             var _ = await connection.ExecuteAsync(sql, a);
         }
+    }
+
+    public static IAsyncEnumerable<Author> GetAuthorsAsync(DbConnection connection) {
+        var sql =
+            @"
+select Id, FullName as Name from Authors
+order by FullName
+";
+
+        return connection.QueryUnbufferedAsync<Author>(sql);
     }
 }
