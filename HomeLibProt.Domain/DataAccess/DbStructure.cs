@@ -135,7 +135,7 @@ create index idx_author_hierarchical_search_results_node_ids on AuthorHierarchic
         var _ = await connection.ExecuteAsync(sql);
     }
 
-    public static async Task CreateFullStructure (DbConnection connection) {
+    public static async Task CreateFullStructure(DbConnection connection) {
         await ExecuteSqlAsync(connection, dropExistingAHSTablesSql);
         await ExecuteSqlAsync(connection, dropExistingInpxTablesSql);
         await ExecuteSqlAsync(connection, createAuthorsSql);
@@ -151,7 +151,7 @@ create index idx_author_hierarchical_search_results_node_ids on AuthorHierarchic
         await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchResultsSql);
     }
 
-    public static async Task CreateAHSStructure (DbConnection connection) {
+    public static async Task CreateAHSStructure(DbConnection connection) {
         await ExecuteSqlAsync(connection, dropExistingAHSTablesSql);
         await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchNodeSql);
         await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchResultsSql);
