@@ -14,6 +14,6 @@ insert into
 BookSeries (BookId, SeriesId, SeriesNumber)
 values (@BookId, @SeriesId, @SeriesNumber)
 ";
-            await connection.ExecuteAsync(sql, bookSeriesParam);
+        await connection.ExecuteAsync(sql, bookSeriesParam);
     }
 }
