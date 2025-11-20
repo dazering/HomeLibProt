@@ -51,9 +51,9 @@ let private getStructureInfoContentOrDefault (structureInfo: ZipArchiveEntry opt
 
 let private readInpx (path: string) : ZipArchive = ZipFile.OpenRead path
 
-let importInpxToDb (parameters: InpxImporterParameters) (connection: DbConnection) : Task<unit> =
+let private import (pathToInpx: string) (batchSize: int) (connection: DbConnection) : Task =
     task {
-        let inpx = parameters.PathToInpx |> readInpx
+        let inpx = pathToInpx |> readInpx
 
         let regEx =
             inpx |> tryGetStructureInfoEntry |> getStructureInfoContentOrDefault |> getRegEx
@@ -67,11 +67,12 @@ let importInpxToDb (parameters: InpxImporterParameters) (connection: DbConnectio
                 (readEntry, e)
                 ||> useEntry
                 |> Seq.map (parseLine regEx >> Book.convertInpLineToBook folderName))
-            |> Seq.chunkBySize parameters.BatchSize
+            |> Seq.chunkBySize batchSize
 
 
         for books in bookChunks do
-            do!
-                (connection, books |> BookImporter.processBooks)
-                |> parameters.DoInTransactionAsync
+            do! (books, connection) ||> BookImporter.processBooks
     }
+
+let importInpxToDb (parameters: InpxImporterParameters) (connection: DbConnection) : Task<unit> =
+    task { do! parameters.DoInTransactionAsync(connection, import parameters.PathToInpx parameters.BatchSize) }
