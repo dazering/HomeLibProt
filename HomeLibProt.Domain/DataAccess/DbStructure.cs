@@ -19,7 +19,7 @@ drop table if exists Books;
 
     private static readonly string dropExistingAHSTablesSql = @"
 drop table if exists AuthorHierarchicalSearchResults;
-drop table if exists AuthorHierarchicalSearchNode;
+drop table if exists AuthorHierarchicalSearchNodes;
 ";
 
     private static readonly string createAuthorsSql = @"
@@ -109,7 +109,7 @@ create table BookKeywords (
 );
 ";
 
-    private static readonly string createAuthorHierarchicalSearchNodeSql = @"
+    private static readonly string createAuthorHierarchicalSearchNodesSql = @"
 create table AuthorHierarchicalSearchNodes (
     Id integer primary key,
     Letters text not null,
@@ -147,13 +147,13 @@ create index idx_author_hierarchical_search_results_node_ids on AuthorHierarchic
         await ExecuteSqlAsync(connection, createBookGenresSql);
         await ExecuteSqlAsync(connection, createKeywordsSql);
         await ExecuteSqlAsync(connection, createBookKeywordsSql);
-        await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchNodeSql);
+        await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchNodesSql);
         await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchResultsSql);
     }
 
     public static async Task CreateAHSStructure(DbConnection connection) {
         await ExecuteSqlAsync(connection, dropExistingAHSTablesSql);
-        await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchNodeSql);
+        await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchNodesSql);
         await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchResultsSql);
     }
 }
