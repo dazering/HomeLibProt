@@ -5,13 +5,17 @@ open System.Threading.Tasks
 
 open HomeLibProt.Domain.DataAccess
 
-type CollectionImporterParameters =
+type ImportInpxParameters =
     { PathToInpx: string
       BatchSize: int
       MaxCountLeafs: int
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
-let importCollectionToDb (parameters: CollectionImporterParameters) (connection: DbConnection) : Task =
+type ReimportAHSParameters =
+    { MaxCountLeafs: int
+      DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
+
+let importCollectionToDb (parameters: ImportInpxParameters) (connection: DbConnection) : Task =
     task {
         do! (connection, DbStructure.CreateFullStructure) |> parameters.DoInTransactionAsync
 
@@ -29,7 +33,7 @@ let importCollectionToDb (parameters: CollectionImporterParameters) (connection:
         do! AuthorHierarchicalSearchImporter.importAuthorHierarchicalSearchToDbAsync ahsImporterParameters connection
     }
 
-let reimportAuthorHierarchicalSearch (parameters: CollectionImporterParameters) (connection: DbConnection) : Task =
+let reimportAuthorHierarchicalSearch (parameters: ReimportAHSParameters) (connection: DbConnection) : Task =
     task {
         do! (connection, DbStructure.CreateAHSStructure) |> parameters.DoInTransactionAsync
 
