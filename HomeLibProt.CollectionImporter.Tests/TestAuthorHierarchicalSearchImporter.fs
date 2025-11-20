@@ -146,6 +146,7 @@ let TestImportAuthorHierarchicalSearchToDbAsync () =
 
         let authorHierarchicalSearchImporterParameters =
             { MaxCountLeafs = 2
+              ProgressReport = ignore
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
         let! searchNodes, searchResults =

@@ -12,7 +12,11 @@ open HomeLibProt.CollectionImporter.InpLine
 type InpxImporterParameters =
     { PathToInpx: string
       BatchSize: int
+      ProgressReport: string -> unit
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
+
+let makeImportProgressMessage (chunkCount: int) (chunkNumber: int) =
+    sprintf $"Imported {chunkNumber}/{chunkCount}"
 
 let private parseLine (regEx: Regex) (line: string) : InpLine =
     line |> parseInpLine regEx |> getInpLine
@@ -51,7 +55,12 @@ let private getStructureInfoContentOrDefault (structureInfo: ZipArchiveEntry opt
 
 let private readInpx (path: string) : ZipArchive = ZipFile.OpenRead path
 
-let private import (pathToInpx: string) (batchSize: int) (connection: DbConnection) : Task =
+let private import
+    (pathToInpx: string)
+    (batchSize: int)
+    (progressReport: string -> unit)
+    (connection: DbConnection)
+    : Task =
     task {
         let inpx = pathToInpx |> readInpx
 
@@ -69,10 +78,27 @@ let private import (pathToInpx: string) (batchSize: int) (connection: DbConnecti
                 |> Seq.map (parseLine regEx >> Book.convertInpLineToBook folderName))
             |> Seq.chunkBySize batchSize
 
+        let chunkCount = bookChunks |> Seq.length
+
+        let mutable currentChunk = 0
 
         for books in bookChunks do
             do! (books, connection) ||> BookImporter.processBooks
+
+            currentChunk <- currentChunk + 1
+
+            currentChunk |> makeImportProgressMessage chunkCount |> progressReport
     }
 
 let importInpxToDb (parameters: InpxImporterParameters) (connection: DbConnection) : Task<unit> =
-    task { do! parameters.DoInTransactionAsync(connection, import parameters.PathToInpx parameters.BatchSize) }
+    task {
+        "Importing inpx" |> parameters.ProgressReport
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                import parameters.PathToInpx parameters.BatchSize parameters.ProgressReport
+            )
+
+        "Inport inpx finished" |> parameters.ProgressReport
+    }

@@ -9,6 +9,7 @@ open HomeLibProt.Domain.DataAccess.AuthorHierarchicalSearch
 
 type AuthorHierarchicalSearchImporterParameters =
     { MaxCountLeafs: int
+      ProgressReport: string -> unit
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
 type TreeNode =
@@ -114,7 +115,7 @@ let rec internal insertTree
 
     }
 
-let private import (maxCountLeafs: int) (connection: DbConnection) : Task =
+let private import (maxCountLeafs: int) (progressReport: string -> unit) (connection: DbConnection) : Task =
     task {
         let mutable tree = Map.empty
         let mutable previousKey = String.Empty
@@ -134,6 +135,8 @@ let private import (maxCountLeafs: int) (connection: DbConnection) : Task =
 
                 previousKey <- currentKey
 
+                $"Imported: '{previousKey}'" |> progressReport
+
             tree <- addAuthorToTree maxCountLeafs tree author 1
 
         do! insertTree connection tree None 1
@@ -143,4 +146,12 @@ let importAuthorHierarchicalSearchToDbAsync
     (parameters: AuthorHierarchicalSearchImporterParameters)
     (connection: DbConnection)
     : Task<unit> =
-    task { do! (connection, import parameters.MaxCountLeafs) |> parameters.DoInTransactionAsync }
+    task {
+        "Importing author hierarchical search" |> parameters.ProgressReport
+
+        do!
+            (connection, import parameters.MaxCountLeafs parameters.ProgressReport)
+            |> parameters.DoInTransactionAsync
+
+        "Import author hierarchical search finished" |> parameters.ProgressReport
+    }

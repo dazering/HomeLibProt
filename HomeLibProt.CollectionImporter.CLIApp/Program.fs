@@ -13,6 +13,8 @@ let parser = ArgumentParser.Create<CLIArguments>()
 let batchSizeDefault = 100
 let maxCountLeafsDefault = 50
 
+let printProgressReport (message: string) : unit = printfn $"{message}"
+
 let importInpxAsync (args: ParseResults<ImportInpxArgs>) : Task<unit> =
     task {
         let pathToInpx = args.GetResult ImportInpxArgs.PathToInpx
@@ -35,6 +37,7 @@ let importInpxAsync (args: ParseResults<ImportInpxArgs>) : Task<unit> =
             { PathToInpx = pathToInpx
               BatchSize = batchSize
               MaxCountLeafs = maxCountLeafs
+              ProgressReport = printProgressReport
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
         do! ConnectionUtils.WithConnectionAsync(connection, CollectionImporter.importCollectionToDb parameters)
@@ -55,6 +58,7 @@ let reimportAHSAsync (args: ParseResults<ReimportAHSArgs>) : Task<unit> =
 
         let parameters: CollectionImporter.ReimportAHSParameters =
             { MaxCountLeafs = maxCountLeafs
+              ProgressReport = printProgressReport
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
         do!
