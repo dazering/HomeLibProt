@@ -76,6 +76,7 @@ let TestInsertBookAsync () =
         let inpxImporterParameters =
             { PathToInpx = getInpxPath "Simple"
               BatchSize = 2
+              ProgressReport = ignore
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
         let! books, authors, authorships, genres, bookGenres, keywords, bookKeywords, series, bookSeries =

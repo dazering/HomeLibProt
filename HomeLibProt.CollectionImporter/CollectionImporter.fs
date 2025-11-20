@@ -9,10 +9,12 @@ type ImportInpxParameters =
     { PathToInpx: string
       BatchSize: int
       MaxCountLeafs: int
+      ProgressReport: string -> unit
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
 type ReimportAHSParameters =
     { MaxCountLeafs: int
+      ProgressReport: string -> unit
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
 let importCollectionToDb (parameters: ImportInpxParameters) (connection: DbConnection) : Task =
@@ -22,12 +24,14 @@ let importCollectionToDb (parameters: ImportInpxParameters) (connection: DbConne
         let inpxImporterParameters: InpxImporter.InpxImporterParameters =
             { PathToInpx = parameters.PathToInpx
               BatchSize = parameters.BatchSize
+              ProgressReport = parameters.ProgressReport
               DoInTransactionAsync = parameters.DoInTransactionAsync }
 
         do! InpxImporter.importInpxToDb inpxImporterParameters connection
 
         let ahsImporterParameters: AuthorHierarchicalSearchImporter.AuthorHierarchicalSearchImporterParameters =
             { MaxCountLeafs = parameters.MaxCountLeafs
+              ProgressReport = parameters.ProgressReport
               DoInTransactionAsync = parameters.DoInTransactionAsync }
 
         do! AuthorHierarchicalSearchImporter.importAuthorHierarchicalSearchToDbAsync ahsImporterParameters connection
@@ -39,6 +43,7 @@ let reimportAuthorHierarchicalSearch (parameters: ReimportAHSParameters) (connec
 
         let ahsImporterParameters: AuthorHierarchicalSearchImporter.AuthorHierarchicalSearchImporterParameters =
             { MaxCountLeafs = parameters.MaxCountLeafs
+              ProgressReport = parameters.ProgressReport
               DoInTransactionAsync = parameters.DoInTransactionAsync }
 
         do! AuthorHierarchicalSearchImporter.importAuthorHierarchicalSearchToDbAsync ahsImporterParameters connection
