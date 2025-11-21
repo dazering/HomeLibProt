@@ -1,4 +1,4 @@
-﻿module HomeLibProt.CollectionImporter.CLIApp.Arguments
+﻿module HomeLibProt.CommandLineImporter.Arguments
 
 open Argu
 

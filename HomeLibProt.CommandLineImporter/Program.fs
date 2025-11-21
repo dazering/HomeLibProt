@@ -1,11 +1,11 @@
-﻿module HomeLibProt.CollectionImporter.CLIApp.Program
+﻿module HomeLibProt.CommandLineImporter.Program
 
 open Argu
 open System.Diagnostics
 open System.Threading.Tasks
 
-open HomeLibProt.CollectionImporter.CLIApp.Arguments
 open HomeLibProt.CollectionImporter
+open HomeLibProt.CommandLineImporter.Arguments
 open HomeLibProt.Domain.DataAccess
 
 let parser = ArgumentParser.Create<CLIArguments>()
