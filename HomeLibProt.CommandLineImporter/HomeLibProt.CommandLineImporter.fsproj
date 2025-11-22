@@ -5,6 +5,9 @@
     <OutputType>Exe</OutputType>
     <DebugType>embedded</DebugType>
     <EmbedAllSources>true</EmbedAllSources>
+    <PublishSingleFile>true</PublishSingleFile>
+    <SelfContained>true</SelfContained>
+    <IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
   </PropertyGroup>
 
   <ItemGroup>
