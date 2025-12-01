@@ -23,4 +23,4 @@ Features:
 ## HomeLibProt
 - Introduce web interface for import collection
 - Introduce web interface for interaction with collection
-- Introduce ODPS support
+- Introduce OPDS support
