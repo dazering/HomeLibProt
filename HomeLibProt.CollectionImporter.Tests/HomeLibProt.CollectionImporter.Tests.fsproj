@@ -16,6 +16,8 @@
     <Compile Include="TestInpxImporter.fs" />
     <Compile Include="Utils\AuthorHierarchicalSearchImporterUtils.fs" />
     <Compile Include="TestAuthorHierarchicalSearchImporter.fs" />
+    <Compile Include="Utils\CollectionValidatorUtils.fs" />
+    <Compile Include="TestCollectionValidator.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
