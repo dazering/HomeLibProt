@@ -13,15 +13,14 @@ let getArchivesPath (testCaseName: string) =
     Path.Combine(TestCaseUtils.getTestCasesBasePath "TestCollectionValidator", testCaseName)
 
 [<Test>]
-[<Ignore("Zip file is broken after commit")>]
 let TestValidateCollectionAsync () =
     task {
         let expected =
             [| "Collection validation"
-               "Validating 000001-000002.zip"
-               "Absent files in 000001-000002.zip: 3.fb2"
-               "Validating 000003-000004.zip"
-               "Archive isn't exsists: 000003-000004.zip"
+               "Validating 000001-000001.zip"
+               "Absent files in 000001-000001.zip: 2.fb2"
+               "Validating 000002-000003.zip"
+               "Archive isn't exsists: 000002-000003.zip"
                "Collection validation finished" |]
 
         let actualMessages = Collections.Generic.List<string>()
