@@ -13,12 +13,13 @@ Library of tools for importing collection.
 Features:
 - Import inp lines
 - Create hierarchical search structure for authors
+- Validate inpx and collection archives for consistency
 
 # TODO
 
 ## HomeLibProt.CollectionImporter
-- Validate inpx and collection archives for consistency
-- Import coverpage and annotation from fb2
+- Add ability to filter books by language
+- Respect language filter during creation hierarchical search structure for authors
 
 ## HomeLibProt
 - Introduce web interface for import collection
