@@ -3,21 +3,15 @@ module HomeLibProt.CollectionImporter.Tests.TestInpxImporter
 open NUnit.Framework
 open System
 open System.IO
-open System.Reflection
 
 open HomeLibProt.CollectionImporter.InpxImporter
+open HomeLibProt.CollectionImporter.Tests.Utils
 open HomeLibProt.Domain.DataAccess
 open HomeLibProt.Domain.Tests.Entities
 open HomeLibProt.Domain.Tests.Utils
 
 let getInpxPath (testCaseName: string) =
-    Path.Combine(
-        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-        "TestCases",
-        "TestInpxImporter",
-        testCaseName,
-        "inpx.inpx"
-    )
+    Path.Combine(TestCaseUtils.getTestCasesBasePath "TestInpxImporter", testCaseName, "inpx.inpx")
 
 [<Test>]
 let TestInsertBookAsync () =
