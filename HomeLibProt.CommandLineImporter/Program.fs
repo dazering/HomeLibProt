@@ -18,6 +18,7 @@ let printProgressReport (message: string) : unit = printfn $"{message}"
 let importInpxAsync (args: ParseResults<ImportInpxArgs>) : Task<unit> =
     task {
         let pathToInpx = args.GetResult ImportInpxArgs.PathToInpx
+        let pathToArchives = args.GetResult ImportInpxArgs.PathToArchives
         let pathToDb = args.GetResult ImportInpxArgs.PathToDatabase
 
         let batchSize =
@@ -35,6 +36,7 @@ let importInpxAsync (args: ParseResults<ImportInpxArgs>) : Task<unit> =
 
         let parameters: CollectionImporter.ImportInpxParameters =
             { PathToInpx = pathToInpx
+              PathToArchives = pathToArchives
               BatchSize = batchSize
               MaxCountLeafs = maxCountLeafs
               ProgressReport = printProgressReport

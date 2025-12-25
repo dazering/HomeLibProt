@@ -14,6 +14,7 @@ type CLIArguments =
 
 and ImportInpxArgs =
     | [<ExactlyOnce; AltCommandLine("-i")>] PathToInpx of string
+    | [<ExactlyOnce; AltCommandLine("-a")>] PathToArchives of string
     | [<ExactlyOnce; AltCommandLine("-d")>] PathToDatabase of string
     | [<AltCommandLine("-b")>] BatchSize of int
     | [<AltCommandLine("-l")>] MaxCountLeafs of int
@@ -22,6 +23,7 @@ and ImportInpxArgs =
         member this.Usage =
             match this with
             | PathToInpx _ -> "Path to Inpx file on local file system"
+            | PathToArchives _ -> "Path to Zip archives directory on local file system"
             | PathToDatabase _ -> "Path to database on local file system"
             | BatchSize _ -> "[Optional] Max count inp records imported per time. Default: 100."
             | MaxCountLeafs _ -> "[Optional] Max count leafs for author hierarchical search. Default: 50."
