@@ -78,6 +78,6 @@ Tested with inpx contains 1M lines, 100 inp files, 1M authors, genres, series an
 
 |                           App                           |  SSD  | HDD   | Memory usage |
 | :-----------------------------------------------------: | :---: | ----- | ------------ |
-|             HomeLibProt.CommandLineImporter             | 1:20  | 2:37  | 25 MB        |
+|             HomeLibProt.CommandLineImporter             | 1:24  | 2:37  | 25 MB        |
 |    [Inpx-web](https://github.com/bookpauk/inpx-web)     | 1:18  | 3:35  | 1095.98 MB   |
 | [MyHomeLib](https://github.com/OleksiyPenkov/MyHomeLib) | ~3;45 | ~3:57 | 19 MB        |
