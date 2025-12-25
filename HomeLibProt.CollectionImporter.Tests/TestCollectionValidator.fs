@@ -13,6 +13,7 @@ let getArchivesPath (testCaseName: string) =
     Path.Combine(TestCaseUtils.getTestCasesBasePath "TestCollectionValidator", testCaseName)
 
 [<Test>]
+[<Ignore("Zip file is broken after commit")>]
 let TestValidateCollectionAsync () =
     task {
         let expected =
