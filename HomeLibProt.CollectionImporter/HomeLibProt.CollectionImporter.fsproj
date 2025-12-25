@@ -13,6 +13,7 @@
     <Compile Include="BookImporter.fs" />
     <Compile Include="InpxImporter.fs" />
     <Compile Include="AuthorHierarchicalSearchImporter.fs" />
+    <Compile Include="CollectionValidator.fs" />
     <Compile Include="CollectionImporter.fs" />
   </ItemGroup>
 
