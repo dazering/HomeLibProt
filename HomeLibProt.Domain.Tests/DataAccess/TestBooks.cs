@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using HomeLibProt.Domain.DataAccess;
 using HomeLibProt.Domain.Tests.Entities;
@@ -22,6 +23,41 @@ public class TestBooks {
             });
 
             return await ConnectionUtils.DoInTransactionAsync(connection, BookUtils.GetTestData);
+        });
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
+    }
+
+    [Test]
+    public async Task TestGetFoldersAsync() {
+        var expected = new[] {
+                "archive1.zip",
+                "archive2.zip"
+            };
+
+        var actual = await TestUtils.UseTestDatabase(async (connection) => {
+            await ConnectionUtils.DoInTransactionAsync(connection, BookUtils.SetUpTestData);
+
+            return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                return Books.GetFoldersAsync(c).ToBlockingEnumerable().ToArray();
+            });
+        });
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
+    }
+
+    [Test]
+    public async Task TestGetFolderEntitiesByFolderAsync() {
+        var expected = new[] {
+                new FolderEntity(FileName: "File1", Extension: "fb2")
+            };
+
+        var actual = await TestUtils.UseTestDatabase(async (connection) => {
+            await ConnectionUtils.DoInTransactionAsync(connection, BookUtils.SetUpTestData);
+
+            return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                return Books.GetFolderEntitiesByFolderAsync(c, "archive1.zip").ToBlockingEnumerable().ToArray();
+            });
         });
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
