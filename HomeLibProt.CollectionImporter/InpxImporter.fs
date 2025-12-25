@@ -53,17 +53,13 @@ let private getStructureInfoContentOrDefault (structureInfo: ZipArchiveEntry opt
     | Some si -> si |> readStructureInfoContent
     | None -> defaultStructure
 
-let private readInpx (path: string) : ZipArchive = ZipFile.OpenRead path
-
-let private import
-    (pathToInpx: string)
-    (batchSize: int)
+let private importInpx
     (progressReport: string -> unit)
+    (batchSize: int)
     (connection: DbConnection)
+    (inpx: ZipArchive)
     : Task =
     task {
-        let inpx = pathToInpx |> readInpx
-
         let regEx =
             inpx |> tryGetStructureInfoEntry |> getStructureInfoContentOrDefault |> getRegEx
 
@@ -88,6 +84,20 @@ let private import
             currentChunk <- currentChunk + 1
 
             currentChunk |> makeImportProgressMessage chunkCount |> progressReport
+    }
+
+let private import
+    (pathToInpx: string)
+    (batchSize: int)
+    (progressReport: string -> unit)
+    (connection: DbConnection)
+    : Task =
+    task {
+        do!
+            HomeLibProt.Domain.Utils.ArchiveUtils.DoWithArchiveAsync(
+                pathToInpx,
+                importInpx progressReport batchSize connection
+            )
     }
 
 let importInpxToDb (parameters: InpxImporterParameters) (connection: DbConnection) : Task<unit> =
