@@ -4,6 +4,8 @@
 * text=unset
 * eol=crlf
 
+*.zip   binary
+
 ###############################################################################
 # Set default behavior for command prompt diff.
 #
