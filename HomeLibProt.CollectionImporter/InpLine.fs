@@ -108,7 +108,13 @@ let getRegEx (structure: string) =
 
     new Regex(regExPattern, RegexOptions.Compiled)
 
-let parseInpLine (regEx: Regex) (line: string) : GroupCollection = regEx.Match(line).Groups
+let parseInpLine (regEx: Regex) (line: string) : GroupCollection =
+    let regExMatch = regEx.Match(line)
+
+    if regExMatch.Success then
+        regExMatch.Groups
+    else
+        failwith $"Unsupported inpx format: \"{line}\""
 
 let private extractGroupValue (group: Group) : string = group.Value
 
