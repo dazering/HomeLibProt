@@ -230,6 +230,17 @@ let TestGetStructureSections () =
     Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
 [<Test>]
+let TestParseInpLineDefaultStructureUnsupportedFormat () =
+    let inpLine =
+        "A,A,A:B,B,B:\x04Genre 1:Genre 2:\x04Title 1\x04Series 1\x041\x041\x04100500\x041\x040\x04fb2\x042025-05-28\x04en\x042\x04Keyword 1, Keyword 2\x040"
+
+    Assert.That(
+        (fun _ -> (defaultStructure |> getRegEx, inpLine) ||> parseInpLine |> ignore),
+        Throws.Exception.With.Message.EqualTo
+            "Unsupported inpx format: \"A,A,A:B,B,B:Genre 1:Genre 2:Title 1Series 11110050010fb22025-05-28en2Keyword 1, Keyword 20\""
+    )
+
+[<Test>]
 let TestGetInpLineDefaultStructure () =
     let expected =
         { Authors = "A,A,A:B,B,B:"
