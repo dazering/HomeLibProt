@@ -15,7 +15,8 @@ let setUpData (connection: DbConnection) : Task<unit> =
     task {
         let! _ = AuthorUtils.Create(connection, fullName = "A A A", lastName = "A", firstName = "A", middleName = "A")
         let! _ = AuthorUtils.Create(connection, fullName = "B B B", lastName = "B", firstName = "B", middleName = "B")
-        do! GenreUtils.SetUpTestData connection
+        let! _ = GenreUtils.Create(connection, key = "genre1", name = "Genre 1")
+        let! _ = GenreUtils.Create(connection, key = "genre2", name = "Genre 2")
         let! _ = SeriesUtils.Create(connection, name = "Series 1")
         let! _ = SeriesUtils.Create(connection, name = "Series 2")
         let! _ = KeywordUtils.Create(connection, name = "Keyword 1")
