@@ -1,16 +1,25 @@
 using System.Data.Common;
 using System.Threading.Tasks;
+using Dapper;
 using HomeLibProt.Domain.Tests.Entities;
 
 namespace HomeLibProt.Domain.Tests.Utils;
 
 public static class BookUtils {
-    public static async Task SetUpTestData(DbConnection connection) {
+    public static async Task<long> Create(DbConnection connection,
+                                          string title,
+                                          string fileName,
+                                          long size,
+                                          string libId,
+                                          bool deleted,
+                                          string extension,
+                                          string date,
+                                          string folder,
+                                          int? libRate) {
         var sql = @"
 insert into
 Books
-    (Id,
-    Title,
+    (Title,
     FileName,
     Size,
     LibId,
@@ -20,29 +29,28 @@ Books
     Folder,
     LibRate)
 values
-    (1,
-    'Title1',
-    'File1',
-    1,
-    'File1',
-    0,
-    'fb2',
-    '2025-11-7',
-    'archive1.zip',
-    0),
-    (2,
-    'Title2',
-    'File2',
-    1,
-    'File2',
-    0,
-    'fb2',
-    '2025-11-7',
-    'archive2.zip',
-    0);
-";
+    (@Title,
+    @FileName,
+    @Size,
+    @LibId,
+    @Deleted,
+    @Extension,
+    @Date,
+    @Folder,
+    @LibRate)
+returning Id";
 
-        await TestUtils.InsertIntoTestDatabase(connection, sql);
+        return await connection.QuerySingleAsync<long>(sql, new {
+            Title = title,
+            FileName = fileName,
+            Size = size,
+            LibId = libId,
+            Deleted = deleted,
+            Extension = extension,
+            Date = date,
+            Folder = folder,
+            LibRate = libRate
+        });
     }
 
     public static async Task<TestBook[]> GetTestData(DbConnection connection) {
