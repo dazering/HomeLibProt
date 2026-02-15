@@ -18,7 +18,9 @@ let setUpData (connection: DbConnection) : Task<unit> =
         do! GenreUtils.SetUpTestData connection
         let! _ = SeriesUtils.Create(connection, name = "Series 1")
         let! _ = SeriesUtils.Create(connection, name = "Series 2")
-        do! KeywordUtils.SetUpTestData connection
+        let! _ = KeywordUtils.Create(connection, name = "Keyword 1")
+        let! _ = KeywordUtils.Create(connection, name = "Keyword 2")
+        do ()
     }
 
 [<Test>]

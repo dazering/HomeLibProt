@@ -1,20 +1,22 @@
 using System.Data.Common;
 using System.Threading.Tasks;
+using Dapper;
 using HomeLibProt.Domain.Tests.Entities;
 
 namespace HomeLibProt.Domain.Tests.Utils;
 
 public static class KeywordUtils {
-    public static async Task SetUpTestData(DbConnection connection) {
+    public static async Task<long> Create(DbConnection connection,
+                                          string name) {
         var sql = @"
 insert into
-Keywords (Id, Name)
-values
-(1, 'Keyword 1'),
-(2, 'Keyword 2')
-";
+Keywords (Name)
+values (@Name)
+returning Id";
 
-        await TestUtils.InsertIntoTestDatabase(connection, sql);
+        return await connection.QuerySingleAsync<long>(sql, new {
+            Name = name
+        });
     }
 
     public static async Task<TestKeyword[]> GetTestData(DbConnection connection) {

@@ -11,7 +11,11 @@ public class TestKeywords {
         var expected = new[] { new Keyword(Id: 2, Name: "Keyword 2") };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, KeywordUtils.SetUpTestData);
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await KeywordUtils.Create(c, name: "Keyword 1");
+                await KeywordUtils.Create(c, name: "Keyword 2");
+            });
+
             return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                 return await Keywords.GetKeywordsByNameAsync(c, ["Keyword 2", "Keyword 3"]);
             });
@@ -29,7 +33,11 @@ public class TestKeywords {
         };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, KeywordUtils.SetUpTestData);
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await KeywordUtils.Create(c, name: "Keyword 1");
+                await KeywordUtils.Create(c, name: "Keyword 2");
+            });
+
             await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                 await Keywords.InsertKeywordsAsync(c, ["Keyword 3"]);
             });
