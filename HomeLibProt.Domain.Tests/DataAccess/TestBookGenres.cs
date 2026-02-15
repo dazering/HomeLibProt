@@ -13,10 +13,25 @@ public class TestBookGenres {
             };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, BookGenreUtils.SetUpTestData);
+            var (bookId, genreId) = await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                var bookId = await BookUtils.Create(c,
+                                                    title: "Title1",
+                                                    fileName: "File1",
+                                                    size: 1,
+                                                    libId: "File1",
+                                                    deleted: false,
+                                                    extension: "fb2",
+                                                    date: "2025-11-07",
+                                                    folder: "archive1.zip",
+                                                    libRate: 0);
+
+                var genreId = await GenreUtils.Create(c, key: "genre1", name: "Genre 1");
+
+                return (bookId, genreId);
+            });
 
             await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await BookGenres.InsertBookGenresAsync(c, [new BookGenreParam(BookId: 1, GenreId: 1)]);
+                await BookGenres.InsertBookGenresAsync(c, [new BookGenreParam(BookId: bookId, GenreId: genreId)]);
             });
 
             return await ConnectionUtils.DoInTransactionAsync(connection, BookGenreUtils.GetTestData);
