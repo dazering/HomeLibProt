@@ -13,10 +13,24 @@ public class TestBookKeywords {
             };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, BookKeywordUtils.SetUpTestData);
+            var (bookId, keywordId) = await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                var bookId = await BookUtils.Create(c,
+                                                    title: "Title1",
+                                                    fileName: "File1",
+                                                    size: 1,
+                                                    libId: "File1",
+                                                    deleted: false,
+                                                    extension: "fb2",
+                                                    date: "2025-11-07",
+                                                    folder: "archive1.zip",
+                                                    libRate: 0);
+                var keywordId = await KeywordUtils.Create(c, name: "Keyword 1");
+
+                return (bookId, keywordId);
+            });
 
             await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await BookKeywords.InsertBookKeywordsAsync(c, [new BookKeywordParam(BookId: 1, KeywordId: 1)]);
+                await BookKeywords.InsertBookKeywordsAsync(c, [new BookKeywordParam(BookId: bookId, KeywordId: keywordId)]);
             });
 
             return await ConnectionUtils.DoInTransactionAsync(connection, BookKeywordUtils.GetTestData);
