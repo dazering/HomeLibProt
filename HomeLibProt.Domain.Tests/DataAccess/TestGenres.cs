@@ -11,7 +11,11 @@ public class TestGenres {
         var expected = new[] { new Genre(Id: 2, Key: "genre2") };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, GenreUtils.SetUpTestData);
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await GenreUtils.Create(connection, key: "genre1", name: "Genre 1");
+                await GenreUtils.Create(connection, key: "genre2", name: "Genre 2");
+            });
+
             return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                 return await Genres.GetGenresByKeyAsync(c, ["genre2", "genre3"]);
             });
@@ -29,7 +33,11 @@ public class TestGenres {
         };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, GenreUtils.SetUpTestData);
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await GenreUtils.Create(connection, key: "genre1", name: "Genre 1");
+                await GenreUtils.Create(connection, key: "genre2", name: "Genre 2");
+            });
+
             await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                 await Genres.InsertGenresAsync(c, ["genre3"]);
             });

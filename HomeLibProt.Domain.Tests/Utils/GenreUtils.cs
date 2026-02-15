@@ -1,20 +1,24 @@
 using System.Data.Common;
 using System.Threading.Tasks;
+using Dapper;
 using HomeLibProt.Domain.Tests.Entities;
 
 namespace HomeLibProt.Domain.Tests.Utils;
 
 public static class GenreUtils {
-    public static async Task SetUpTestData(DbConnection connection) {
+    public static async Task<long> Create(DbConnection connection,
+                                          string key,
+                                          string name) {
         var sql = @"
 insert into
-Genres (Id, Key, Name)
-values
-(1, 'genre1', 'Genre 1'),
-(2, 'genre2', 'Genre 2')
-";
+Genres (Key, Name)
+values (@Key, @Name)
+returning Id";
 
-        await TestUtils.InsertIntoTestDatabase(connection, sql);
+        return await connection.QuerySingleAsync<long>(sql, new {
+            Key = key,
+            Name = name
+        });
     }
 
     public static async Task<TestGenre[]> GetTestData(DbConnection connection) {
