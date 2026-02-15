@@ -1,20 +1,28 @@
 using System.Data.Common;
 using System.Threading.Tasks;
+using Dapper;
 using HomeLibProt.Domain.Tests.Entities;
 
 namespace HomeLibProt.Domain.Tests.Utils;
 
 public static class AuthorUtils {
-    public static async Task SetUpTestData(DbConnection connection) {
+    public static async Task<long> Create(DbConnection connection,
+                                          string fullName,
+                                          string lastName,
+                                          string firstName,
+                                          string middleName) {
         var sql = @"
 insert into
-Authors (Id, FullName, FirstName, MiddleName, LastName)
-values
-(1, 'A A A', 'A', 'A', 'A'),
-(2, 'B B B', 'B', 'B', 'B')
-";
+Authors (FullName, FirstName, MiddleName, LastName)
+values (@FullName, @FirstName, @MiddleName, @LastName)
+returning Id";
 
-        await TestUtils.InsertIntoTestDatabase(connection, sql);
+        return await connection.QuerySingleAsync<long>(sql, new {
+            FullName = fullName,
+            LastName = lastName,
+            FirstName = firstName,
+            MiddleName = middleName
+        });
     }
 
     public static async Task<TestAuthor[]> GetTestData(DbConnection connection) {

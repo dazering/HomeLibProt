@@ -13,7 +13,8 @@ open HomeLibProt.Domain.Tests.Utils
 
 let setUpData (connection: DbConnection) : Task<unit> =
     task {
-        do! AuthorUtils.SetUpTestData connection
+        let! _ = AuthorUtils.Create(connection, fullName = "A A A", lastName = "A", firstName = "A", middleName = "A")
+        let! _ = AuthorUtils.Create(connection, fullName = "B B B", lastName = "B", firstName = "B", middleName = "B")
         do! GenreUtils.SetUpTestData connection
         do! SeriesUtils.SetUpTestData connection
         do! KeywordUtils.SetUpTestData connection
