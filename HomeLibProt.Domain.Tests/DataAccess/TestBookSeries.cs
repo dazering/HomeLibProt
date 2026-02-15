@@ -13,10 +13,25 @@ public class TestBookSeries {
             };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.SetUpTestData);
+            var (bookId, seriesId) = await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                var bookId = await BookUtils.Create(c,
+                                                    title: "Title1",
+                                                    fileName: "File1",
+                                                    size: 1,
+                                                    libId: "File1",
+                                                    deleted: false,
+                                                    extension: "fb2",
+                                                    date: "2025-11-07",
+                                                    folder: "archive1.zip",
+                                                    libRate: 0);
+
+                var seriesId = await SeriesUtils.Create(c, name: "Series 1");
+
+                return (bookId, seriesId);
+            });
 
             await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await BookSeries.InsertBookSeriesAsync(c, new BookSeriesParam(BookId: 1, SeriesId: 1, SeriesNumber: 1));
+                await BookSeries.InsertBookSeriesAsync(c, new BookSeriesParam(BookId: bookId, SeriesId: seriesId, SeriesNumber: 1));
             });
 
             return await ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.GetTestData);
