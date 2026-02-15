@@ -36,7 +36,28 @@ public class TestBooks {
             };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, BookUtils.SetUpTestData);
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await BookUtils.Create(c,
+                                       title: "Title1",
+                                       fileName: "File1",
+                                       size: 1,
+                                       libId: "File1",
+                                       deleted: false,
+                                       extension: "fb2",
+                                       date: "2025-11-07",
+                                       folder: "archive1.zip",
+                                       libRate: 0);
+                await BookUtils.Create(c,
+                                       title: "Title2",
+                                       fileName: "File2",
+                                       size: 1,
+                                       libId: "File2",
+                                       deleted: false,
+                                       extension: "fb2",
+                                       date: "2025-11-07",
+                                       folder: "archive2.zip",
+                                       libRate: 0);
+            });
 
             return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                 return Books.GetFoldersAsync(c).ToBlockingEnumerable().ToArray();
@@ -53,7 +74,28 @@ public class TestBooks {
             };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, BookUtils.SetUpTestData);
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await BookUtils.Create(c,
+                                       title: "Title1",
+                                       fileName: "File1",
+                                       size: 1,
+                                       libId: "File1",
+                                       deleted: false,
+                                       extension: "fb2",
+                                       date: "2025-11-07",
+                                       folder: "archive1.zip",
+                                       libRate: 0);
+                await BookUtils.Create(c,
+                                       title: "Title2",
+                                       fileName: "File2",
+                                       size: 1,
+                                       libId: "File2",
+                                       deleted: false,
+                                       extension: "fb2",
+                                       date: "2025-11-07",
+                                       folder: "archive2.zip",
+                                       libRate: 0);
+            });
 
             return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                 return Books.GetFolderEntitiesByFolderAsync(c, "archive1.zip").ToBlockingEnumerable().ToArray();
