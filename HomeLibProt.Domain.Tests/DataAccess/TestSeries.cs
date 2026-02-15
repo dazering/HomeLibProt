@@ -11,7 +11,11 @@ public class TestSeries {
         var expected = new[] { new SeriesEntity(Id: 2, Name: "Series 2") };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.SetUpTestData);
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await SeriesUtils.Create(c, name: "Series 1");
+                await SeriesUtils.Create(c, name: "Series 2");
+            });
+
             return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                 return await Series.GetSeriesByNameAsync(c, ["Series 2", "Series 3"]);
             });
@@ -29,7 +33,11 @@ public class TestSeries {
         };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.SetUpTestData);
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await SeriesUtils.Create(c, name: "Series 1");
+                await SeriesUtils.Create(c, name: "Series 2");
+            });
+
             await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                 await Series.InsertSeriesAsync(c, ["Series 3"]);
             });
