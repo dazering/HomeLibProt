@@ -13,10 +13,24 @@ public class TestAuthorships {
             };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, AuthorshipUtils.SetUpTestData);
+            var (bookId, authorId) = await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                var bookId = await BookUtils.Create(c,
+                                                    title: "Title1",
+                                                    fileName: "File1",
+                                                    size: 1,
+                                                    libId: "File1",
+                                                    deleted: false,
+                                                    extension: "fb2",
+                                                    date: "2025-11-07",
+                                                    folder: "archive1.zip",
+                                                    libRate: 0);
+                var authorId = await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+
+                return (bookId, authorId);
+            });
 
             await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await Authorships.InsertAuthorshipsAsync(c, [new AuthorshipParam(BookId: 1, AuthorId: 1)]);
+                await Authorships.InsertAuthorshipsAsync(c, [new AuthorshipParam(BookId: bookId, AuthorId: authorId)]);
             });
 
             return await ConnectionUtils.DoInTransactionAsync(connection, AuthorshipUtils.GetTestData);
