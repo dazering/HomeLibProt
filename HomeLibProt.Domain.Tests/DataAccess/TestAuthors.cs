@@ -12,7 +12,11 @@ public class TestAuthors {
         var expected = new[] { new Author(Id: 2, Name: "B B B") };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.SetUpTestData);
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+                await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
+            });
+
             return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                 return await Authors.GetAuthorsByNameAsync(c, ["B B B", "C C C"]);
             });
@@ -30,7 +34,11 @@ public class TestAuthors {
         };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.SetUpTestData);
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+                await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
+            });
+
             await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                 await Authors.InsertAuthorsAsync(c, [new AuthorParam(FullName: "C C C", LastName: "C", FirstName: "C", MiddleName: "C")]);
             });
@@ -49,7 +57,10 @@ public class TestAuthors {
          };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.SetUpTestData);
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+                await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
+            });
             return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                 return Authors.GetAuthorsAsync(c).ToBlockingEnumerable().ToArray();
             });
