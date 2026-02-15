@@ -4,7 +4,6 @@ open NUnit.Framework
 open System
 
 open HomeLibProt.CollectionImporter.AuthorHierarchicalSearchImporter
-open HomeLibProt.CollectionImporter.Tests.Utils
 open HomeLibProt.Domain.DataAccess
 open HomeLibProt.Domain.Tests.Entities.AuthorHierarchicalSearch
 open HomeLibProt.Domain.Tests.Utils
@@ -109,7 +108,37 @@ let TestInsertTree () =
                     do!
                         ConnectionUtils.DoInTransactionAsync(
                             connection,
-                            AuthorHierarchicalSearchImporterUtils.setUpData
+                            fun c ->
+                                task {
+                                    let! _ =
+                                        AuthorUtils.Create(
+                                            c,
+                                            fullName = "B B B",
+                                            lastName = "B",
+                                            firstName = "B",
+                                            middleName = "B"
+                                        )
+
+                                    let! _ =
+                                        AuthorUtils.Create(
+                                            c,
+                                            fullName = "Baa Baa Baa",
+                                            lastName = "Baa",
+                                            firstName = "Baa",
+                                            middleName = "Baa"
+                                        )
+
+                                    let! _ =
+                                        AuthorUtils.Create(
+                                            c,
+                                            fullName = "Bab Bab Bab",
+                                            lastName = "Bab",
+                                            firstName = "Bab",
+                                            middleName = "Bab"
+                                        )
+
+                                    do ()
+                                }
                         )
 
                     do!
@@ -155,7 +184,37 @@ let TestImportAuthorHierarchicalSearchToDbAsync () =
                     do!
                         ConnectionUtils.DoInTransactionAsync(
                             connection,
-                            AuthorHierarchicalSearchImporterUtils.setUpData
+                            fun c ->
+                                task {
+                                    let! _ =
+                                        AuthorUtils.Create(
+                                            c,
+                                            fullName = "B B B",
+                                            lastName = "B",
+                                            firstName = "B",
+                                            middleName = "B"
+                                        )
+
+                                    let! _ =
+                                        AuthorUtils.Create(
+                                            c,
+                                            fullName = "Baa Baa Baa",
+                                            lastName = "Baa",
+                                            firstName = "Baa",
+                                            middleName = "Baa"
+                                        )
+
+                                    let! _ =
+                                        AuthorUtils.Create(
+                                            c,
+                                            fullName = "Bab Bab Bab",
+                                            lastName = "Bab",
+                                            firstName = "Bab",
+                                            middleName = "Bab"
+                                        )
+
+                                    do ()
+                                }
                         )
 
                     do! importAuthorHierarchicalSearchToDbAsync authorHierarchicalSearchImporterParameters connection
