@@ -16,11 +16,18 @@ public class TestSearchResults {
         };
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, SearchResultUtils.SetUpTestData);
+            var (nodeId, author1Id, author2Id) = await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                var nodeId = await SearchNodeUtils.Create(c, "A", 2, null);
+
+                var author1Id = await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+                var author2Id = await AuthorUtils.Create(connection, fullName: "A B B", lastName: "A", firstName: "B", middleName: "B");
+
+                return (nodeId, author1Id, author2Id);
+            });
 
             await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await SearchResults.InsertSearchResultAsync(c, new SearchResultParam(NodeId: 1, AuthorId: 1));
-                await SearchResults.InsertSearchResultAsync(c, new SearchResultParam(NodeId: 1, AuthorId: 2));
+                await SearchResults.InsertSearchResultAsync(c, new SearchResultParam(NodeId: nodeId, AuthorId: author1Id));
+                await SearchResults.InsertSearchResultAsync(c, new SearchResultParam(NodeId: nodeId, AuthorId: author2Id));
             });
 
             return await ConnectionUtils.DoInTransactionAsync(connection, SearchResultUtils.GetTestData);
