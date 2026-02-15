@@ -19,10 +19,6 @@ public static class TestUtils {
         });
     }
 
-    public static async Task InsertIntoTestDatabase(DbConnection connection, string sql) {
-        await connection.ExecuteAsync(sql);
-    }
-
     public static async Task<T[]> GetFromTestDatabase<T>(DbConnection connection, string sql) {
         return (await connection.QueryAsync<T>(sql)).ToArray();
     }
