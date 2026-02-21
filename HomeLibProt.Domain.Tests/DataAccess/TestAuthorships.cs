@@ -14,6 +14,8 @@ public class TestAuthorships {
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
             var (bookId, authorId) = await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                var langId = await LanguageUtils.Create(c, "Lang 1");
+
                 var bookId = await BookUtils.Create(c,
                                                     title: "Title1",
                                                     fileName: "File1",
@@ -23,7 +25,8 @@ public class TestAuthorships {
                                                     extension: "fb2",
                                                     date: "2025-11-07",
                                                     folder: "archive1.zip",
-                                                    libRate: 0);
+                                                    libRate: 0,
+                                                    languageId: langId);
                 var authorId = await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
 
                 return (bookId, authorId);

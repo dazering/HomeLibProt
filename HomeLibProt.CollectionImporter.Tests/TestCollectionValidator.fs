@@ -40,6 +40,8 @@ let TestValidateCollectionAsync () =
                             connection,
                             fun c ->
                                 task {
+                                    let! langId = LanguageUtils.Create(c, "Lang 1")
+
                                     let! _ =
                                         BookUtils.Create(
                                             c,
@@ -51,7 +53,8 @@ let TestValidateCollectionAsync () =
                                             extension = "fb2",
                                             date = "2025-11-07",
                                             folder = "000001-000002.zip",
-                                            libRate = 0
+                                            libRate = 0,
+                                            languageId = langId
                                         )
 
                                     let! _ =
@@ -65,7 +68,8 @@ let TestValidateCollectionAsync () =
                                             extension = "fb2",
                                             date = "2025-11-07",
                                             folder = "000001-000002.zip",
-                                            libRate = 0
+                                            libRate = 0,
+                                            languageId = langId
                                         )
 
                                     let! _ =
@@ -79,7 +83,8 @@ let TestValidateCollectionAsync () =
                                             extension = "fb2",
                                             date = "2025-11-07",
                                             folder = "000003-000003.zip",
-                                            libRate = 0
+                                            libRate = 0,
+                                            languageId = langId
                                         )
 
                                     do ()
