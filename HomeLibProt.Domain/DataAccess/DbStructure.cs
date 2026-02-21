@@ -15,6 +15,7 @@ drop table if exists Keywords;
 drop table if exists Authorships;
 drop table if exists Authors;
 drop table if exists Books;
+drop table if exists Languages;
 ";
 
     private static readonly string dropExistingAHSTablesSql = @"
@@ -131,6 +132,17 @@ create table AuthorHierarchicalSearchResults (
 
 create index idx_author_hierarchical_search_results_node_ids on AuthorHierarchicalSearchResults (NodeId);
 ";
+
+    private static readonly string createLanguagesSql = @"
+create table Languages (
+    Id integer primary key,
+    Name text not null,
+    Include integer not null,
+
+    unique (Name)
+);
+";
+
     private static async Task ExecuteSqlAsync(DbConnection connection, string sql) {
         var _ = await connection.ExecuteAsync(sql);
     }
@@ -139,6 +151,7 @@ create index idx_author_hierarchical_search_results_node_ids on AuthorHierarchic
         await ExecuteSqlAsync(connection, dropExistingAHSTablesSql);
         await ExecuteSqlAsync(connection, dropExistingInpxTablesSql);
         await ExecuteSqlAsync(connection, createAuthorsSql);
+        await ExecuteSqlAsync(connection, createLanguagesSql);
         await ExecuteSqlAsync(connection, createBooksSql);
         await ExecuteSqlAsync(connection, createAuthorshipsSql);
         await ExecuteSqlAsync(connection, createSeriesSql);
