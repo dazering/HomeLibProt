@@ -42,13 +42,14 @@ create table Books (
     Id integer primary key,
     Title text not null,
     FileName text not null,
-    Size int not null,
+    Size integer not null,
     LibId text not null,
-    Deleted int not null,
+    Deleted integer not null,
     Extension text not null,
     Date text not null,
     Folder text not null,
-    LibRate int null
+    LibRate integer null,
+    LanguageId integer references Languages(Id)
 );
 ";
 
