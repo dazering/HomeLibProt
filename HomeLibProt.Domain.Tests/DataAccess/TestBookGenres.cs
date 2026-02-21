@@ -14,6 +14,8 @@ public class TestBookGenres {
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
             var (bookId, genreId) = await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                var langId = await LanguageUtils.Create(c, "Lang 1");
+
                 var bookId = await BookUtils.Create(c,
                                                     title: "Title1",
                                                     fileName: "File1",
@@ -23,7 +25,8 @@ public class TestBookGenres {
                                                     extension: "fb2",
                                                     date: "2025-11-07",
                                                     folder: "archive1.zip",
-                                                    libRate: 0);
+                                                    libRate: 0,
+                                                    languageId: langId);
 
                 var genreId = await GenreUtils.Create(c, key: "genre1", name: "Genre 1");
 

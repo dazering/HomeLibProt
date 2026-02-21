@@ -21,6 +21,8 @@ let setUpData (connection: DbConnection) : Task<unit> =
         let! _ = SeriesUtils.Create(connection, name = "Series 2")
         let! _ = KeywordUtils.Create(connection, name = "Keyword 1")
         let! _ = KeywordUtils.Create(connection, name = "Keyword 2")
+        let! _ = LanguageUtils.Create(connection, name = "Lang 1")
+        let! _ = LanguageUtils.Create(connection, name = "Lang 2")
         do ()
     }
 
@@ -38,7 +40,8 @@ let TestInsertBookAsync () =
                    Extension = "fb2",
                    Date = "2025-11-07",
                    Folder = "archive.zip",
-                   LibRate = Nullable(2L)
+                   LibRate = Nullable(2L),
+                   LanguageId = 1L
                ) |]
 
         let expectedAuthorships = [| TestAuthorship(BookId = 1, AuthorId = 1) |]
@@ -54,6 +57,7 @@ let TestInsertBookAsync () =
         let genres = [| "Genre 1", 1L |] |> Map
         let keywords = [| "Keyword 1", 1L |] |> Map
         let series = [| "Series 1", 1L |] |> Map
+        let languages = [| "Lang 1", 1L |] |> Map
 
         let book =
             { Authors =
@@ -71,7 +75,7 @@ let TestInsertBookAsync () =
               Extension = "fb2"
               Date = "2025-11-07"
               Folder = "archive.zip"
-              Lang = "en"
+              Lang = "Lang 1"
               LibRate = Nullable 2
               Keywords = [| "Keyword 1" |] }
 
@@ -84,7 +88,9 @@ let TestInsertBookAsync () =
                         ConnectionUtils.DoInTransactionAsync(
                             connection,
                             fun connection ->
-                                task { do! book |> insertBookAsync authors genres series keywords connection }
+                                task {
+                                    do! book |> insertBookAsync authors genres series keywords languages connection
+                                }
                         )
 
                     let! books = ConnectionUtils.DoInTransactionAsync(connection, BookUtils.GetTestData)

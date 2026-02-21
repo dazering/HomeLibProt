@@ -16,6 +16,10 @@ let getInpxPath (testCaseName: string) =
 [<Test>]
 let TestInsertBookAsync () =
     task {
+        let expectedLanguages =
+            [| TestLanguage(Id = 1, Name = "de", Include = 1)
+               TestLanguage(Id = 2, Name = "en", Include = 1) |]
+
         let expectedBooks =
             [| TestBook(
                    Id = 1,
@@ -27,7 +31,8 @@ let TestInsertBookAsync () =
                    Extension = "fb2",
                    Date = "2025-05-28",
                    Folder = "000001-000002.zip",
-                   LibRate = Nullable(0L)
+                   LibRate = Nullable(0L),
+                   LanguageId = 1
                )
                TestBook(
                    Id = 2,
@@ -39,7 +44,8 @@ let TestInsertBookAsync () =
                    Extension = "fb2",
                    Date = "2025-05-28",
                    Folder = "000001-000002.zip",
-                   LibRate = Nullable(1L)
+                   LibRate = Nullable(1L),
+                   LanguageId = 2
                ) |]
 
         let expectedAuthors =
@@ -73,7 +79,7 @@ let TestInsertBookAsync () =
               ProgressReport = ignore
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
-        let! books, authors, authorships, genres, bookGenres, keywords, bookKeywords, series, bookSeries =
+        let! books, authors, authorships, genres, bookGenres, keywords, bookKeywords, series, bookSeries, languages =
             TestUtils.UseTestDatabase(fun connection ->
                 task {
 
@@ -88,8 +94,19 @@ let TestInsertBookAsync () =
                     let! bookKeywords = ConnectionUtils.DoInTransactionAsync(connection, BookKeywordUtils.GetTestData)
                     let! series = ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData)
                     let! bookSeries = ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.GetTestData)
+                    let! languages = ConnectionUtils.DoInTransactionAsync(connection, LanguageUtils.GetTestData)
 
-                    return books, authors, authorships, genres, bookGenres, keywords, bookKeywords, series, bookSeries
+                    return
+                        books,
+                        authors,
+                        authorships,
+                        genres,
+                        bookGenres,
+                        keywords,
+                        bookKeywords,
+                        series,
+                        bookSeries,
+                        languages
                 })
 
         Assert.That(books, Is.EqualTo expectedBooks)
@@ -101,5 +118,6 @@ let TestInsertBookAsync () =
         Assert.That(bookKeywords, Is.EqualTo(expectedBookKeywords).AsCollection)
         Assert.That(bookSeries, Is.EqualTo(expectedBookSeries).AsCollection)
         Assert.That(series, Is.EqualTo(expectedSeries).AsCollection)
+        Assert.That(languages, Is.EqualTo(expectedLanguages).AsCollection)
 
     }

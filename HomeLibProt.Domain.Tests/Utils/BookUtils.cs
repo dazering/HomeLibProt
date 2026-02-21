@@ -15,7 +15,8 @@ public static class BookUtils {
                                           string extension,
                                           string date,
                                           string folder,
-                                          int? libRate) {
+                                          int? libRate,
+                                          long languageId) {
         var sql = @"
 insert into
 Books
@@ -27,7 +28,8 @@ Books
     Extension,
     Date,
     Folder,
-    LibRate)
+    LibRate,
+    LanguageId)
 values
     (@Title,
     @FileName,
@@ -37,7 +39,8 @@ values
     @Extension,
     @Date,
     @Folder,
-    @LibRate)
+    @LibRate,
+    @LanguageId)
 returning Id";
 
         return await connection.QuerySingleAsync<long>(sql, new {
@@ -49,7 +52,8 @@ returning Id";
             Extension = extension,
             Date = date,
             Folder = folder,
-            LibRate = libRate
+            LibRate = libRate,
+            LanguageId = languageId
         });
     }
 
@@ -65,7 +69,8 @@ select
     Extension,
     Date,
     Folder,
-    LibRate
+    LibRate,
+    LanguageId
 from Books
 ";
 
