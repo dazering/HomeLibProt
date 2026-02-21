@@ -5,7 +5,7 @@ using Dapper;
 
 namespace HomeLibProt.Domain.DataAccess;
 
-public record BookParam(string Title, string FileName, long Size, string LibId, bool Deleted, string Extension, string Date, string Folder, int? LibRate);
+public record BookParam(string Title, string FileName, long Size, string LibId, bool Deleted, string Extension, string Date, string Folder, int? LibRate, long LanguageId);
 
 public record FolderEntity(string FileName, string Extension);
 
@@ -23,7 +23,8 @@ Books
     Extension,
     Date,
     Folder,
-    LibRate)
+    LibRate,
+    LanguageId)
 values
     (@Title,
     @FileName,
@@ -33,7 +34,8 @@ values
     @Extension,
     @Date,
     @Folder,
-    @LibRate)
+    @LibRate,
+    @LanguageId)
 returning Id
 ";
 
