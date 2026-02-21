@@ -111,6 +111,57 @@ let TestInsertBookAsync () =
     }
 
 [<Test>]
+let TestGetLanguagesMapAsyncAsync () =
+    task {
+        let expected = Map [| "Lang 1", 1 |]
+
+        let languages = [| "Lang 1" |] |> Set.ofArray
+
+        let! actual =
+            TestUtils.UseTestDatabase(fun connection ->
+                task {
+                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+
+                    return!
+                        ConnectionUtils.DoInTransactionAsync(
+                            connection,
+                            fun connection -> task { return! languages |> getLanguagesMapAsync connection }
+                        )
+                })
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+
+    }
+
+[<Test>]
+let TestInsertUnexistedLanguagesAsync () =
+    task {
+        let expected =
+            [| TestLanguage(Id = 1, Name = "Lang 1", Include = 1)
+               TestLanguage(Id = 2, Name = "Lang 2", Include = 1)
+               TestLanguage(Id = 3, Name = "Lang 3", Include = 1) |]
+
+        let languages = [| "Lang 2"; "Lang 3" |] |> Set.ofArray
+
+        let! actual =
+            TestUtils.UseTestDatabase(fun connection ->
+                task {
+                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+
+                    do!
+                        ConnectionUtils.DoInTransactionAsync(
+                            connection,
+                            fun connection -> task { do! languages |> insertUnexistedLanguagesAsync connection }
+                        )
+
+                    return! ConnectionUtils.DoInTransactionAsync(connection, LanguageUtils.GetTestData)
+                })
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+
+    }
+
+[<Test>]
 let TestGetKeywordsMapAsyncAsync () =
     task {
         let expected = Map [| "Keyword 1", 1 |]
