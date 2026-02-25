@@ -13,13 +13,13 @@ Library of tools for importing collection.
 Features:
 - Import inp lines
 - Create hierarchical search structure for authors
+- Filter authors by included language (any new language include by default)
 - Validate inpx and collection archives for consistency
 
 # TODO
 
 ## HomeLibProt.CollectionImporter
-- Add ability to filter books by language
-- Respect language filter during creation hierarchical search structure for authors
+- Add ability to save data between imports (e.g. language includes)
 
 ## HomeLibProt
 - Introduce web interface for import collection
