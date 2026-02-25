@@ -55,6 +55,7 @@ create table Books (
 
     private static readonly string createAuthorshipsSql = @"
 create table Authorships (
+    Id integer primary key,
     AuthorId integer not null references Authors(Id),
     BookId integer not null references Books(Id),
     unique(AuthorId, BookId)
@@ -72,6 +73,7 @@ create index idx_series_names on Series (Name);
 
     private static readonly string createBookSeriesSql = @"
 create table BookSeries (
+    Id integer primary key,
     BookId integer not null references Books(Id),
     SeriesId integer not null references Series(Id),
     SeriesNumber integer not null
@@ -90,6 +92,7 @@ create index idx_genres_keys on Genres (Key);
 
     private static readonly string createBookGenresSql = @"
 create table BookGenres (
+    Id integer primary key,
     BookId integer not null references Books(Id),
     GenreId integer not null references Genres(Id)
 );
@@ -106,6 +109,7 @@ create index idx_keywords_names on Keywords (Name);
 
     private static readonly string createBookKeywordsSql = @"
 create table BookKeywords (
+    Id integer primary key,
     BookId integer not null references Books(Id),
     KeywordId integer not null References Keywords(Id)
 );
