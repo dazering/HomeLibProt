@@ -186,7 +186,24 @@ let TestImportAuthorHierarchicalSearchToDbAsync () =
                             connection,
                             fun c ->
                                 task {
-                                    let! _ =
+                                    let! langId = LanguageUtils.Create(c, "Lang1", true)
+
+                                    let! bookId =
+                                        BookUtils.Create(
+                                            c,
+                                            title = "Title1",
+                                            fileName = "1",
+                                            size = 1,
+                                            libId = "1",
+                                            deleted = false,
+                                            extension = "fb2",
+                                            date = "2025-11-07",
+                                            folder = "000001-000002.zip",
+                                            libRate = 0,
+                                            languageId = langId
+                                        )
+
+                                    let! authorId1 =
                                         AuthorUtils.Create(
                                             c,
                                             fullName = "B B B",
@@ -195,7 +212,7 @@ let TestImportAuthorHierarchicalSearchToDbAsync () =
                                             middleName = "B"
                                         )
 
-                                    let! _ =
+                                    let! authorId2 =
                                         AuthorUtils.Create(
                                             c,
                                             fullName = "Baa Baa Baa",
@@ -204,7 +221,7 @@ let TestImportAuthorHierarchicalSearchToDbAsync () =
                                             middleName = "Baa"
                                         )
 
-                                    let! _ =
+                                    let! authorId3 =
                                         AuthorUtils.Create(
                                             c,
                                             fullName = "Bab Bab Bab",
@@ -212,6 +229,10 @@ let TestImportAuthorHierarchicalSearchToDbAsync () =
                                             firstName = "Bab",
                                             middleName = "Bab"
                                         )
+
+                                    let! _ = AuthorshipUtils.Create(c, bookId = bookId, authorId = authorId1)
+                                    let! _ = AuthorshipUtils.Create(c, bookId = bookId, authorId = authorId2)
+                                    let! _ = AuthorshipUtils.Create(c, bookId = bookId, authorId = authorId3)
 
                                     do ()
                                 }
