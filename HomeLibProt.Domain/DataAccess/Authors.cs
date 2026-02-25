@@ -36,11 +36,14 @@ values (@FullName, @FirstName, @MiddleName, @LastName)
         }
     }
 
-    public static IAsyncEnumerable<Author> GetAuthorsAsync(DbConnection connection) {
+    public static IAsyncEnumerable<Author> GetAuthorsFilterByIncludedLanguageAsync(DbConnection connection) {
         var sql =
             @"
-select Id, FullName as Name from Authors
-order by FullName
+select distinct a.Id, a.FullName as Name from Authors a
+inner join Authorships asp on asp.AuthorId = a.Id
+inner join Books b on b.Id = asp.BookId
+inner join Languages l on l.Id = b.LanguageId and l.Include <> 0
+order by a.FullName
 ";
 
         return connection.QueryUnbufferedAsync<Author>(sql);
