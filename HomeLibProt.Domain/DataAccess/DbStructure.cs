@@ -48,7 +48,7 @@ create table Books (
     Deleted integer not null,
     Extension text not null,
     Date text not null,
-    Folder text not null,
+    ArchiveId integer not null references Archives(Id),
     LibRate integer null,
     LanguageId integer not null references Languages(Id)
 );

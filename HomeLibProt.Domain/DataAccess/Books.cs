@@ -5,9 +5,9 @@ using Dapper;
 
 namespace HomeLibProt.Domain.DataAccess;
 
-public record BookParam(string Title, string FileName, long Size, string LibId, bool Deleted, string Extension, string Date, string Folder, int? LibRate, long LanguageId);
+public record BookParam(string Title, string FileName, long Size, string LibId, bool Deleted, string Extension, string Date, long ArchiveId, int? LibRate, long LanguageId);
 
-public record FolderEntity(string FileName, string Extension);
+public record ArchiveEntity(string FileName, string Extension);
 
 public static class Books {
     public static async Task<long> InsertBookAsync(DbConnection connection, BookParam bookParam) {
@@ -22,7 +22,7 @@ Books
     Deleted,
     Extension,
     Date,
-    Folder,
+    ArchiveId,
     LibRate,
     LanguageId)
 values
@@ -33,7 +33,7 @@ values
     @Deleted,
     @Extension,
     @Date,
-    @Folder,
+    @ArchiveId,
     @LibRate,
     @LanguageId)
 returning Id
@@ -42,24 +42,14 @@ returning Id
         return await connection.QuerySingleAsync<long>(sql, bookParam);
     }
 
-    public static IAsyncEnumerable<string> GetFoldersAsync(DbConnection connection) {
-        var sql =
-            @"
-select distinct Folder from Books
-order by Folder
-";
-
-        return connection.QueryUnbufferedAsync<string>(sql);
-    }
-
-    public static IAsyncEnumerable<FolderEntity> GetFolderEntitiesByFolderAsync(DbConnection connection, string folder) {
+    public static IAsyncEnumerable<ArchiveEntity> GetArchiveEntitiesByArchiveIdAsync(DbConnection connection, long archiveId) {
         var sql =
             @"
 select FileName, Extension from Books
-where Folder = @Folder
+where ArchiveId = @ArchiveId
 order by FileName
 ";
 
-        return connection.QueryUnbufferedAsync<FolderEntity>(sql, new { Folder = folder });
+        return connection.QueryUnbufferedAsync<ArchiveEntity>(sql, new { ArchiveId = archiveId });
     }
 }
