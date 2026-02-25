@@ -14,7 +14,7 @@ public static class BookUtils {
                                           bool deleted,
                                           string extension,
                                           string date,
-                                          string folder,
+                                          long archiveId,
                                           int? libRate,
                                           long languageId) {
         var sql = @"
@@ -27,7 +27,7 @@ Books
     Deleted,
     Extension,
     Date,
-    Folder,
+    ArchiveId,
     LibRate,
     LanguageId)
 values
@@ -38,7 +38,7 @@ values
     @Deleted,
     @Extension,
     @Date,
-    @Folder,
+    @ArchiveId,
     @LibRate,
     @LanguageId)
 returning Id";
@@ -51,7 +51,7 @@ returning Id";
             Deleted = deleted,
             Extension = extension,
             Date = date,
-            Folder = folder,
+            ArchiveId = archiveId,
             LibRate = libRate,
             LanguageId = languageId
         });
@@ -68,7 +68,7 @@ select
     Deleted,
     Extension,
     Date,
-    Folder,
+    ArchiveId,
     LibRate,
     LanguageId
 from Books

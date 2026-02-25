@@ -16,6 +16,8 @@ let getInpxPath (testCaseName: string) =
 [<Test>]
 let TestInsertBookAsync () =
     task {
+        let expectedArchives = [| TestArchive(Id = 1, Name = "000001-000002.zip") |]
+
         let expectedLanguages =
             [| TestLanguage(Id = 1, Name = "de", Include = 1)
                TestLanguage(Id = 2, Name = "en", Include = 1) |]
@@ -30,7 +32,7 @@ let TestInsertBookAsync () =
                    Deleted = 0,
                    Extension = "fb2",
                    Date = "2025-05-28",
-                   Folder = "000001-000002.zip",
+                   ArchiveId = 1,
                    LibRate = Nullable(0L),
                    LanguageId = 1
                )
@@ -43,7 +45,7 @@ let TestInsertBookAsync () =
                    Deleted = 0,
                    Extension = "fb2",
                    Date = "2025-05-28",
-                   Folder = "000001-000002.zip",
+                   ArchiveId = 1,
                    LibRate = Nullable(1L),
                    LanguageId = 2
                ) |]
@@ -79,7 +81,17 @@ let TestInsertBookAsync () =
               ProgressReport = ignore
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
-        let! books, authors, authorships, genres, bookGenres, keywords, bookKeywords, series, bookSeries, languages =
+        let! books,
+             authors,
+             authorships,
+             genres,
+             bookGenres,
+             keywords,
+             bookKeywords,
+             series,
+             bookSeries,
+             languages,
+             archives =
             TestUtils.UseTestDatabase(fun connection ->
                 task {
 
@@ -95,6 +107,7 @@ let TestInsertBookAsync () =
                     let! series = ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData)
                     let! bookSeries = ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.GetTestData)
                     let! languages = ConnectionUtils.DoInTransactionAsync(connection, LanguageUtils.GetTestData)
+                    let! archives = ConnectionUtils.DoInTransactionAsync(connection, ArchiveUtils.GetTestData)
 
                     return
                         books,
@@ -106,7 +119,8 @@ let TestInsertBookAsync () =
                         bookKeywords,
                         series,
                         bookSeries,
-                        languages
+                        languages,
+                        archives
                 })
 
         Assert.That(books, Is.EqualTo expectedBooks)
@@ -119,5 +133,6 @@ let TestInsertBookAsync () =
         Assert.That(bookSeries, Is.EqualTo(expectedBookSeries).AsCollection)
         Assert.That(series, Is.EqualTo(expectedSeries).AsCollection)
         Assert.That(languages, Is.EqualTo(expectedLanguages).AsCollection)
+        Assert.That(archives, Is.EqualTo(expectedArchives).AsCollection)
 
     }

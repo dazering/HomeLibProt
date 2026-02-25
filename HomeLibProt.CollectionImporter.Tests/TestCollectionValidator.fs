@@ -40,6 +40,9 @@ let TestValidateCollectionAsync () =
                             connection,
                             fun c ->
                                 task {
+                                    let! archiveId1 = ArchiveUtils.Create(c, "000001-000002.zip")
+                                    let! archiveId2 = ArchiveUtils.Create(c, "000003-000003.zip")
+
                                     let! langId = LanguageUtils.Create(c, "Lang 1")
 
                                     let! _ =
@@ -52,7 +55,7 @@ let TestValidateCollectionAsync () =
                                             deleted = false,
                                             extension = "fb2",
                                             date = "2025-11-07",
-                                            folder = "000001-000002.zip",
+                                            archiveId = archiveId1,
                                             libRate = 0,
                                             languageId = langId
                                         )
@@ -67,7 +70,7 @@ let TestValidateCollectionAsync () =
                                             deleted = false,
                                             extension = "fb2",
                                             date = "2025-11-07",
-                                            folder = "000001-000002.zip",
+                                            archiveId = archiveId1,
                                             libRate = 0,
                                             languageId = langId
                                         )
@@ -82,7 +85,7 @@ let TestValidateCollectionAsync () =
                                             deleted = false,
                                             extension = "fb2",
                                             date = "2025-11-07",
-                                            folder = "000003-000003.zip",
+                                            archiveId = archiveId2,
                                             libRate = 0,
                                             languageId = langId
                                         )
