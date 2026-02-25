@@ -121,7 +121,7 @@ let private import (maxCountLeafs: int) (progressReport: string -> unit) (connec
         let mutable previousKey = String.Empty
         let mutable currentKey = String.Empty
 
-        let authors = Authors.GetAuthorsAsync connection
+        let authors = Authors.GetAuthorsFilterByIncludedLanguageAsync connection
         let enumerator = authors.GetAsyncEnumerator()
 
         while! enumerator.MoveNextAsync() do
