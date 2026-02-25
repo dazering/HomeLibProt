@@ -139,6 +139,57 @@ let TestGetLanguagesMapAsyncAsync () =
     }
 
 [<Test>]
+let TestInsertUnexistedArchivesAsync () =
+    task {
+        let expected =
+            [| TestArchive(Id = 1, Name = "archive1.zip")
+               TestArchive(Id = 2, Name = "archive2.zip")
+               TestArchive(Id = 3, Name = "archive3.zip") |]
+
+        let archives = [| "archive2.zip"; "archive3.zip" |] |> Set.ofArray
+
+        let! actual =
+            TestUtils.UseTestDatabase(fun connection ->
+                task {
+                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+
+                    do!
+                        ConnectionUtils.DoInTransactionAsync(
+                            connection,
+                            fun connection -> task { do! archives |> insertUnexistedArchivesAsync connection }
+                        )
+
+                    return! ConnectionUtils.DoInTransactionAsync(connection, ArchiveUtils.GetTestData)
+                })
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+
+    }
+
+[<Test>]
+let TestGetArchivesMapAsyncAsync () =
+    task {
+        let expected = Map [| "archive1.zip", 1 |]
+
+        let archives = [| "archive1.zip" |] |> Set.ofArray
+
+        let! actual =
+            TestUtils.UseTestDatabase(fun connection ->
+                task {
+                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+
+                    return!
+                        ConnectionUtils.DoInTransactionAsync(
+                            connection,
+                            fun connection -> task { return! archives |> getArchivesMapAsync connection }
+                        )
+                })
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+
+    }
+
+[<Test>]
 let TestInsertUnexistedLanguagesAsync () =
     task {
         let expected =
