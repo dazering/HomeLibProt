@@ -32,12 +32,12 @@ let private tryToGetEntry (archive: ZipArchive) (entryName: string) : ZipArchive
     | entry -> Some entry
 
 let private findAbsentFilesAsync
-    (folder: string)
+    (archiveId: int64)
     (connection: DbConnection)
     (archive: ZipArchive)
     : Task<List<string>> =
     task {
-        let folderEntities = Books.GetFolderEntitiesByFolderAsync(connection, folder)
+        let folderEntities = Books.GetArchiveEntitiesByArchiveIdAsync(connection, archiveId)
         let enumerator = folderEntities.GetAsyncEnumerator()
 
         let absentFiles = List<string>()
@@ -56,36 +56,36 @@ let private findAbsentFilesAsync
 
 let private validateFolderAsync
     (fullPath: string)
-    (folder: string)
+    (archive: Archive)
     (progressReport: string -> unit)
     (connection: DbConnection)
     =
     task {
-        let! absentFiles = ArchiveUtils.DoWithArchiveAsync(fullPath, findAbsentFilesAsync folder connection)
+        let! absentFiles = ArchiveUtils.DoWithArchiveAsync(fullPath, findAbsentFilesAsync archive.Id connection)
 
         if absentFiles.Count > 0 then
-            progressReport $"Absent files in {folder}: {absentFiles |> makeAbsentFilesMessage}"
+            progressReport $"Absent files in {archive.Name}: {absentFiles |> makeAbsentFilesMessage}"
     }
 
 let private validate (pathToArchives: string) (progressReport: string -> unit) (connection: DbConnection) : Task =
     task {
-        let folders = Books.GetFoldersAsync connection
-        let folderEnumerator = folders.GetAsyncEnumerator()
+        let archives = Archives.GetArchivesAsync connection
+        let archiveEnumerator = archives.GetAsyncEnumerator()
 
-        while! folderEnumerator.MoveNextAsync() do
-            let folder = folderEnumerator.Current
+        while! archiveEnumerator.MoveNextAsync() do
+            let archive = archiveEnumerator.Current
 
-            progressReport $"Validating {folder}"
+            progressReport $"Validating {archive.Name}"
 
-            let fullPath = Path.Combine(pathToArchives, folder)
+            let fullPath = Path.Combine(pathToArchives, archive.Name)
 
             if File.Exists fullPath then
                 try
-                    do! validateFolderAsync fullPath folder progressReport connection
+                    do! validateFolderAsync fullPath archive progressReport connection
                 with :? InvalidDataException ->
-                    progressReport $"Archive {folder} is invalid"
+                    progressReport $"Archive {archive.Name} is invalid"
             else
-                progressReport $"Archive isn't exsists: {folder}"
+                progressReport $"Archive isn't exsists: {archive.Name}"
     }
 
 let validateCollectionAsync (parameters: CollectionValidatorParameters) (connection: DbConnection) : Task<unit> =

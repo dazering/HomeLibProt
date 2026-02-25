@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
@@ -31,5 +32,15 @@ values (@Name)
         foreach (var a in archives) {
             var _ = await connection.ExecuteAsync(sql, new { Name = a });
         }
+    }
+
+    public static IAsyncEnumerable<Archive> GetArchivesAsync(DbConnection connection) {
+        var sql =
+            @"
+select Id, Name from Archives
+order by Name
+";
+
+        return connection.QueryUnbufferedAsync<Archive>(sql);
     }
 }

@@ -61,7 +61,11 @@ let private makeBookKeywordParams
     keywords
     |> Array.map (fun k -> BookKeywordParam(BookId = bookId, KeywordId = (keywordsMap |> Map.find k)))
 
-let private getBookParamsFromBook (languagesMap: Map<string, int64>) (book: Book.Book) : BookParam =
+let private getBookParamsFromBook
+    (languagesMap: Map<string, int64>)
+    (archivesMap: Map<string, int64>)
+    (book: Book.Book)
+    : BookParam =
     BookParam(
         Title = book.Title,
         FileName = book.FileName,
@@ -70,7 +74,7 @@ let private getBookParamsFromBook (languagesMap: Map<string, int64>) (book: Book
         Deleted = book.Deleted,
         Extension = book.Extension,
         Date = book.Date,
-        Folder = book.Folder,
+        ArchiveId = (archivesMap |> Map.find book.Folder),
         LibRate = book.LibRate,
         LanguageId = (languagesMap |> Map.find book.Lang)
     )
@@ -81,12 +85,13 @@ let internal insertBookAsync
     (seriesMap: Map<string, int64>)
     (keywordsMap: Map<string, int64>)
     (languagesMap: Map<string, int64>)
+    (archivesMap: Map<string, int64>)
     (connection: DbConnection)
     (book: Book.Book)
     : Task<unit> =
     task {
         let! bookId =
-            (connection, book |> getBookParamsFromBook languagesMap)
+            (connection, book |> getBookParamsFromBook languagesMap archivesMap)
             |> Books.InsertBookAsync
 
         do!
@@ -112,6 +117,8 @@ let private mapAuthorToAuthorParam (author: Book.Author) : AuthorParam =
         MiddleName = author.MiddleName,
         LastName = author.LastName
     )
+
+let private mapArchiveToNameId (archive: Archive) : string * int64 = archive.Name, archive.Id
 
 let private mapLanguageToNameId (language: Language) : string * int64 = language.Name, language.Id
 
@@ -183,6 +190,22 @@ let private getEntitiesMap
     }
 
 let private authorKeyAccessor (a: Book.Author) : string = a.FullName
+
+let internal insertUnexistedArchivesAsync (connection: DbConnection) (archives: Set<string>) : Task<unit> =
+    task {
+        do!
+            insertUnexistedEntitiesAsync
+                connection
+                Archives.GetArchivesByNameAsync
+                mapArchiveToNameId
+                id
+                id
+                Archives.InsertArchivesAsync
+                archives
+    }
+
+let internal getArchivesMapAsync (connection: DbConnection) (archives: Set<string>) : Task<Map<string, int64>> =
+    task { return! getEntitiesMap connection id Archives.GetArchivesByNameAsync mapArchiveToNameId archives }
 
 let internal insertUnexistedLanguagesAsync (connection: DbConnection) (languages: Set<string>) : Task<unit> =
     task {
@@ -300,8 +323,14 @@ let processBooks (books: Book.Book array) (connection: DbConnection) : Task =
 
         let! languagesMap = languages |> getLanguagesMapAsync connection
 
+        let archives = books |> Array.map (fun l -> l.Folder) |> Set.ofArray
+
+        do! archives |> insertUnexistedArchivesAsync connection
+
+        let! archivesMap = archives |> getArchivesMapAsync connection
+
         for book in books do
             do!
                 book
-                |> insertBookAsync authorsMap genresMap seriesMap keywordsMap languagesMap connection
+                |> insertBookAsync authorsMap genresMap seriesMap keywordsMap languagesMap archivesMap connection
     }
