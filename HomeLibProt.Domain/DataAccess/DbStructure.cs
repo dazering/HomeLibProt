@@ -16,6 +16,7 @@ drop table if exists Authorships;
 drop table if exists Authors;
 drop table if exists Books;
 drop table if exists Languages;
+drop table if exists Archives;
 ";
 
     private static readonly string dropExistingAHSTablesSql = @"
@@ -148,6 +149,15 @@ create table Languages (
 );
 ";
 
+    private static readonly string createArchivesSql = @"
+create table Archives (
+    Id integer primary key,
+    Name text not null,
+
+    unique (Name)
+);
+";
+
     private static async Task ExecuteSqlAsync(DbConnection connection, string sql) {
         var _ = await connection.ExecuteAsync(sql);
     }
@@ -157,6 +167,7 @@ create table Languages (
         await ExecuteSqlAsync(connection, dropExistingInpxTablesSql);
         await ExecuteSqlAsync(connection, createAuthorsSql);
         await ExecuteSqlAsync(connection, createLanguagesSql);
+        await ExecuteSqlAsync(connection, createArchivesSql);
         await ExecuteSqlAsync(connection, createBooksSql);
         await ExecuteSqlAsync(connection, createAuthorshipsSql);
         await ExecuteSqlAsync(connection, createSeriesSql);
