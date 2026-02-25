@@ -186,6 +186,8 @@ let TestImportAuthorHierarchicalSearchToDbAsync () =
                             connection,
                             fun c ->
                                 task {
+                                    let! archiveId = ArchiveUtils.Create(c, "archive1.zip")
+
                                     let! langId = LanguageUtils.Create(c, "Lang1", true)
 
                                     let! bookId =
@@ -198,7 +200,7 @@ let TestImportAuthorHierarchicalSearchToDbAsync () =
                                             deleted = false,
                                             extension = "fb2",
                                             date = "2025-11-07",
-                                            folder = "000001-000002.zip",
+                                            archiveId = archiveId,
                                             libRate = 0,
                                             languageId = langId
                                         )

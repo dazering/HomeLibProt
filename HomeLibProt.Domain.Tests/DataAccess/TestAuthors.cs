@@ -58,6 +58,8 @@ public class TestAuthors {
 
         var actual = await TestUtils.UseTestDatabase(async (connection) => {
             await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                var archiveId = await ArchiveUtils.Create(c, "archive1.zip");
+
                 var langId1 = await LanguageUtils.Create(c, "Lang1", true);
                 var langId2 = await LanguageUtils.Create(c, "Lang2", false);
 
@@ -69,7 +71,7 @@ public class TestAuthors {
                                                      deleted: false,
                                                      extension: "fb2",
                                                      date: "2025-11-07",
-                                                     folder: "archive1.zip",
+                                                     archiveId: archiveId,
                                                      libRate: 0,
                                                      languageId: langId1);
                 var bookId2 = await BookUtils.Create(c,
@@ -80,7 +82,7 @@ public class TestAuthors {
                                                      deleted: false,
                                                      extension: "fb2",
                                                      date: "2025-11-07",
-                                                     folder: "archive1.zip",
+                                                     archiveId: archiveId,
                                                      libRate: 0,
                                                      languageId: langId2);
                 var bookId3 = await BookUtils.Create(c,
@@ -91,7 +93,7 @@ public class TestAuthors {
                                                      deleted: false,
                                                      extension: "fb2",
                                                      date: "2025-11-07",
-                                                     folder: "archive1.zip",
+                                                     archiveId: archiveId,
                                                      libRate: 0,
                                                      languageId: langId2);
 

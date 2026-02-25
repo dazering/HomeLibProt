@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using HomeLibProt.Domain.DataAccess;
 using HomeLibProt.Domain.Tests.Entities;
@@ -46,5 +47,26 @@ public class TestArchives {
         });
 
         Assert.That(actual, Is.EqualTo(expected));
+    }
+
+    [Test]
+    public async Task TestGetArchivesAsync() {
+        var expected = new[] {
+                new Archive(Id: 1, Name: "archive1.zip"),
+                new Archive(Id: 2, Name: "archive2.zip")
+            };
+
+        var actual = await TestUtils.UseTestDatabase(async (connection) => {
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await ArchiveUtils.Create(c, "archive1.zip");
+                await ArchiveUtils.Create(c, "archive2.zip");
+            });
+
+            return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                return Archives.GetArchivesAsync(c).ToBlockingEnumerable().ToArray();
+            });
+        });
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }
 }

@@ -23,6 +23,8 @@ let setUpData (connection: DbConnection) : Task<unit> =
         let! _ = KeywordUtils.Create(connection, name = "Keyword 2")
         let! _ = LanguageUtils.Create(connection, name = "Lang 1")
         let! _ = LanguageUtils.Create(connection, name = "Lang 2")
+        let! _ = ArchiveUtils.Create(connection, name = "archive1.zip")
+        let! _ = ArchiveUtils.Create(connection, name = "archive2.zip")
         do ()
     }
 
@@ -39,7 +41,7 @@ let TestInsertBookAsync () =
                    Deleted = 0,
                    Extension = "fb2",
                    Date = "2025-11-07",
-                   Folder = "archive.zip",
+                   ArchiveId = 1,
                    LibRate = Nullable(2L),
                    LanguageId = 1L
                ) |]
@@ -58,6 +60,7 @@ let TestInsertBookAsync () =
         let keywords = [| "Keyword 1", 1L |] |> Map
         let series = [| "Series 1", 1L |] |> Map
         let languages = [| "Lang 1", 1L |] |> Map
+        let archives = [| "archive1.zip", 1L |] |> Map
 
         let book =
             { Authors =
@@ -74,7 +77,7 @@ let TestInsertBookAsync () =
               Deleted = false
               Extension = "fb2"
               Date = "2025-11-07"
-              Folder = "archive.zip"
+              Folder = "archive1.zip"
               Lang = "Lang 1"
               LibRate = Nullable 2
               Keywords = [| "Keyword 1" |] }
@@ -89,7 +92,9 @@ let TestInsertBookAsync () =
                             connection,
                             fun connection ->
                                 task {
-                                    do! book |> insertBookAsync authors genres series keywords languages connection
+                                    do!
+                                        book
+                                        |> insertBookAsync authors genres series keywords languages archives connection
                                 }
                         )
 
