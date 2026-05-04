@@ -10,6 +10,7 @@ type ImportInpxParameters =
       BatchSize: int
       PathToArchives: string
       MaxCountLeafs: int
+      FullCreation: bool
       ProgressReport: string -> unit
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
@@ -20,7 +21,9 @@ type ReimportAHSParameters =
 
 let importCollectionToDb (parameters: ImportInpxParameters) (connection: DbConnection) : Task =
     task {
-        do! (connection, DbStructure.CreateImportInpxStructure) |> parameters.DoInTransactionAsync
+        do!
+            (connection, (fun (c: DbConnection) -> DbStructure.CreateImportInpxStructure(c, parameters.FullCreation)))
+            |> parameters.DoInTransactionAsync
 
         let inpxImporterParameters: InpxImporter.InpxImporterParameters =
             { PathToInpx = parameters.PathToInpx

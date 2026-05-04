@@ -208,7 +208,7 @@ create table Archives (
 drop table if exists Archives;
 ";
 
-    private static IEnumerable<string> getDropImportInpxCommands() {
+    private static IEnumerable<string> getDropImportInpxCommands(bool fullCreation) {
         yield return dropAuthorHierarchicalSearchResultsSql;
         yield return dropAuthorHierarchicalSearchNodesSql;
         yield return dropBookGenresSql;
@@ -220,7 +220,9 @@ drop table if exists Archives;
         yield return dropAuthorshipsSql;
         yield return dropAuthorsSql;
         yield return dropBooksSql;
-        yield return dropLanguagesSql;
+        if (fullCreation) {
+            yield return dropLanguagesSql;
+        }
         yield return dropArchivesSql;
     }
 
@@ -229,11 +231,13 @@ drop table if exists Archives;
         yield return dropAuthorHierarchicalSearchNodesSql;
     }
 
-    private static IEnumerable<string> getCreateImportInpxCommands() {
+    private static IEnumerable<string> getCreateImportInpxCommands(bool fullCreation) {
         yield return createAuthorsSql;
         yield return createIndexAuthorsForFullNameSql;
-        yield return createLanguagesSql;
-        yield return createIndexLanguagesForNameSql;
+        if (fullCreation) {
+            yield return createLanguagesSql;
+            yield return createIndexLanguagesForNameSql;
+        }
         yield return createArchivesSql;
         yield return createBooksSql;
         yield return createAuthorshipsSql;
@@ -269,9 +273,9 @@ drop table if exists Archives;
         }
     }
 
-    public static async Task CreateImportInpxStructure(DbConnection connection) {
-        await ExecuteSqlsAsync(connection, getDropImportInpxCommands());
-        await ExecuteSqlsAsync(connection, getCreateImportInpxCommands());
+    public static async Task CreateImportInpxStructure(DbConnection connection, bool fullCreation) {
+        await ExecuteSqlsAsync(connection, getDropImportInpxCommands(fullCreation));
+        await ExecuteSqlsAsync(connection, getCreateImportInpxCommands(fullCreation));
     }
 
     public static async Task CreateAHSStructure(DbConnection connection) {

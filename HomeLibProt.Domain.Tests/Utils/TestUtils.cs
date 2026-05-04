@@ -14,7 +14,7 @@ public static class TestUtils {
     public static async Task<T> UseTestDatabase<T>(Func<DbConnection, Task<T>> action) {
         using var connection = new SqliteConnection(ConnectionUtils.MakeConnectionString(dataSource));
         return await ConnectionUtils.WithConnectionAsync(connection, async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => await DbStructure.CreateImportInpxStructure(c));
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => await DbStructure.CreateImportInpxStructure(c, true));
             return await action(connection);
         });
     }
