@@ -20,6 +20,7 @@ let importInpxAsync (args: ParseResults<ImportInpxArgs>) : Task<unit> =
         let pathToInpx = args.GetResult ImportInpxArgs.PathToInpx
         let pathToArchives = args.GetResult ImportInpxArgs.PathToArchives
         let pathToDb = args.GetResult ImportInpxArgs.PathToDatabase
+        let fullCreation = args.Contains ImportInpxArgs.FullCreation
 
         let batchSize =
             args.TryGetResult ImportInpxArgs.BatchSize
@@ -39,6 +40,7 @@ let importInpxAsync (args: ParseResults<ImportInpxArgs>) : Task<unit> =
               PathToArchives = pathToArchives
               BatchSize = batchSize
               MaxCountLeafs = maxCountLeafs
+              FullCreation = fullCreation
               ProgressReport = printProgressReport
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
