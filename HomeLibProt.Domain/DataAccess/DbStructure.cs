@@ -213,6 +213,27 @@ drop table if exists Archives;
         yield return dropAuthorHierarchicalSearchNodesSql;
     }
 
+    private static IEnumerable<string> getCreateImportInpxCommands() {
+        yield return createAuthorsSql;
+        yield return createLanguagesSql;
+        yield return createArchivesSql;
+        yield return createBooksSql;
+        yield return createAuthorshipsSql;
+        yield return createSeriesSql;
+        yield return createBookSeriesSql;
+        yield return createGenresSql;
+        yield return createBookGenresSql;
+        yield return createKeywordsSql;
+        yield return createBookKeywordsSql;
+        yield return createAuthorHierarchicalSearchNodesSql;
+        yield return createAuthorHierarchicalSearchResultsSql;
+    }
+
+    private static IEnumerable<string> getCreateImportAHSCommands() {
+        yield return createAuthorHierarchicalSearchNodesSql;
+        yield return createAuthorHierarchicalSearchResultsSql;
+    }
+
     private static async Task ExecuteSqlAsync(DbConnection connection, string sql) {
         var _ = await connection.ExecuteAsync(sql);
     }
@@ -225,24 +246,11 @@ drop table if exists Archives;
 
     public static async Task CreateFullStructure(DbConnection connection) {
         await ExecuteSqlsAsync(connection, getDropImportInpxCommands());
-        await ExecuteSqlAsync(connection, createAuthorsSql);
-        await ExecuteSqlAsync(connection, createLanguagesSql);
-        await ExecuteSqlAsync(connection, createArchivesSql);
-        await ExecuteSqlAsync(connection, createBooksSql);
-        await ExecuteSqlAsync(connection, createAuthorshipsSql);
-        await ExecuteSqlAsync(connection, createSeriesSql);
-        await ExecuteSqlAsync(connection, createBookSeriesSql);
-        await ExecuteSqlAsync(connection, createGenresSql);
-        await ExecuteSqlAsync(connection, createBookGenresSql);
-        await ExecuteSqlAsync(connection, createKeywordsSql);
-        await ExecuteSqlAsync(connection, createBookKeywordsSql);
-        await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchNodesSql);
-        await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchResultsSql);
+        await ExecuteSqlsAsync(connection, getCreateImportInpxCommands());
     }
 
     public static async Task CreateAHSStructure(DbConnection connection) {
         await ExecuteSqlsAsync(connection, getDropImportAHSCommands());
-        await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchNodesSql);
-        await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchResultsSql);
+        await ExecuteSqlsAsync(connection, getCreateImportAHSCommands());
     }
 }
