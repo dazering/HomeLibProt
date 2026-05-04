@@ -244,7 +244,7 @@ drop table if exists Archives;
         }
     }
 
-    public static async Task CreateFullStructure(DbConnection connection) {
+    public static async Task CreateImportInpxStructure(DbConnection connection) {
         await ExecuteSqlsAsync(connection, getDropImportInpxCommands());
         await ExecuteSqlsAsync(connection, getCreateImportInpxCommands());
     }

@@ -20,7 +20,7 @@ type ReimportAHSParameters =
 
 let importCollectionToDb (parameters: ImportInpxParameters) (connection: DbConnection) : Task =
     task {
-        do! (connection, DbStructure.CreateFullStructure) |> parameters.DoInTransactionAsync
+        do! (connection, DbStructure.CreateImportInpxStructure) |> parameters.DoInTransactionAsync
 
         let inpxImporterParameters: InpxImporter.InpxImporterParameters =
             { PathToInpx = parameters.PathToInpx
