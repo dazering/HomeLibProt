@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Threading.Tasks;
 using Dapper;
@@ -5,25 +6,6 @@ using Dapper;
 namespace HomeLibProt.Domain.DataAccess;
 
 public static class DbStructure {
-    private static readonly string dropExistingInpxTablesSql = @"
-drop table if exists BookGenres;
-drop table if exists Genres;
-drop table if exists BookSeries;
-drop table if exists Series;
-drop table if exists BookKeywords;
-drop table if exists Keywords;
-drop table if exists Authorships;
-drop table if exists Authors;
-drop table if exists Books;
-drop table if exists Languages;
-drop table if exists Archives;
-";
-
-    private static readonly string dropExistingAHSTablesSql = @"
-drop table if exists AuthorHierarchicalSearchResults;
-drop table if exists AuthorHierarchicalSearchNodes;
-";
-
     private static readonly string createAuthorsSql = @"
 create table Authors(
     Id integer primary key autoincrement,
@@ -36,6 +18,10 @@ create table Authors(
 );
 
 create index idx_authors_full_names on Authors (FullName);
+";
+
+    private static readonly string dropAuthorsSql = @"
+drop table if exists Authors;
 ";
 
     private static readonly string createBooksSql = @"
@@ -54,6 +40,10 @@ create table Books (
 );
 ";
 
+    private static readonly string dropBooksSql = @"
+drop table if exists Books;
+";
+
     private static readonly string createAuthorshipsSql = @"
 create table Authorships (
     Id integer primary key,
@@ -61,6 +51,10 @@ create table Authorships (
     BookId integer not null references Books(Id),
     unique(AuthorId, BookId)
 );
+";
+
+    private static readonly string dropAuthorshipsSql = @"
+drop table if exists Authorships;
 ";
 
     private static readonly string createSeriesSql = @"
@@ -72,6 +66,10 @@ create table Series (
 create index idx_series_names on Series (Name);
 ";
 
+    private static readonly string dropSeriesSql = @"
+drop table if exists Series;
+";
+
     private static readonly string createBookSeriesSql = @"
 create table BookSeries (
     Id integer primary key,
@@ -79,6 +77,10 @@ create table BookSeries (
     SeriesId integer not null references Series(Id),
     SeriesNumber integer not null
 );
+";
+
+    private static readonly string dropBookSeriesSql = @"
+drop table if exists BookSeries;
 ";
 
     private static readonly string createGenresSql = @"
@@ -91,12 +93,20 @@ create table Genres (
 create index idx_genres_keys on Genres (Key);
 ";
 
+    private static readonly string dropGenresSql = @"
+drop table if exists Genres;
+";
+
     private static readonly string createBookGenresSql = @"
 create table BookGenres (
     Id integer primary key,
     BookId integer not null references Books(Id),
     GenreId integer not null references Genres(Id)
 );
+";
+
+    private static readonly string dropBookGenresSql = @"
+drop table if exists BookGenres;
 ";
 
     private static readonly string createKeywordsSql = @"
@@ -108,12 +118,20 @@ create table Keywords (
 create index idx_keywords_names on Keywords (Name);
 ";
 
+    private static readonly string dropKeywordsSql = @"
+drop table if exists Keywords;
+";
+
     private static readonly string createBookKeywordsSql = @"
 create table BookKeywords (
     Id integer primary key,
     BookId integer not null references Books(Id),
     KeywordId integer not null References Keywords(Id)
 );
+";
+
+    private static readonly string dropBookKeywordsSql = @"
+drop table if exists BookKeywords;
 ";
 
     private static readonly string createAuthorHierarchicalSearchNodesSql = @"
@@ -125,6 +143,10 @@ create table AuthorHierarchicalSearchNodes (
 );
 
 create index idx_author_hierarchical_search_nodes_previous_ids on AuthorHierarchicalSearchNodes (PreviousId);
+";
+
+    private static readonly string dropAuthorHierarchicalSearchNodesSql = @"
+drop table if exists AuthorHierarchicalSearchNodes;
 ";
 
     private static readonly string createAuthorHierarchicalSearchResultsSql = @"
@@ -139,6 +161,10 @@ create table AuthorHierarchicalSearchResults (
 create index idx_author_hierarchical_search_results_node_ids on AuthorHierarchicalSearchResults (NodeId);
 ";
 
+    private static readonly string dropAuthorHierarchicalSearchResultsSql = @"
+drop table if exists AuthorHierarchicalSearchResults;
+";
+
     private static readonly string createLanguagesSql = @"
 create table Languages (
     Id integer primary key,
@@ -147,6 +173,10 @@ create table Languages (
 
     unique (Name)
 );
+";
+
+    private static readonly string dropLanguagesSql = @"
+drop table if exists Languages;
 ";
 
     private static readonly string createArchivesSql = @"
@@ -158,13 +188,43 @@ create table Archives (
 );
 ";
 
+    private static readonly string dropArchivesSql = @"
+drop table if exists Archives;
+";
+
+    private static IEnumerable<string> getDropImportInpxCommands() {
+        yield return dropAuthorHierarchicalSearchResultsSql;
+        yield return dropAuthorHierarchicalSearchNodesSql;
+        yield return dropBookGenresSql;
+        yield return dropGenresSql;
+        yield return dropBookSeriesSql;
+        yield return dropSeriesSql;
+        yield return dropBookKeywordsSql;
+        yield return dropKeywordsSql;
+        yield return dropAuthorshipsSql;
+        yield return dropAuthorsSql;
+        yield return dropBooksSql;
+        yield return dropLanguagesSql;
+        yield return dropArchivesSql;
+    }
+
+    private static IEnumerable<string> getDropImportAHSCommands() {
+        yield return dropAuthorHierarchicalSearchResultsSql;
+        yield return dropAuthorHierarchicalSearchNodesSql;
+    }
+
     private static async Task ExecuteSqlAsync(DbConnection connection, string sql) {
         var _ = await connection.ExecuteAsync(sql);
     }
 
+    private static async Task ExecuteSqlsAsync(DbConnection connection, IEnumerable<string> sqls) {
+        foreach (var sql in sqls) {
+            await ExecuteSqlAsync(connection, sql);
+        }
+    }
+
     public static async Task CreateFullStructure(DbConnection connection) {
-        await ExecuteSqlAsync(connection, dropExistingAHSTablesSql);
-        await ExecuteSqlAsync(connection, dropExistingInpxTablesSql);
+        await ExecuteSqlsAsync(connection, getDropImportInpxCommands());
         await ExecuteSqlAsync(connection, createAuthorsSql);
         await ExecuteSqlAsync(connection, createLanguagesSql);
         await ExecuteSqlAsync(connection, createArchivesSql);
@@ -181,7 +241,7 @@ create table Archives (
     }
 
     public static async Task CreateAHSStructure(DbConnection connection) {
-        await ExecuteSqlAsync(connection, dropExistingAHSTablesSql);
+        await ExecuteSqlsAsync(connection, getDropImportAHSCommands());
         await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchNodesSql);
         await ExecuteSqlAsync(connection, createAuthorHierarchicalSearchResultsSql);
     }
