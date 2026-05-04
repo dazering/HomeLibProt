@@ -44,14 +44,17 @@ OPTIONS:
 ### Import inpx
 
 ```
-USAGE: HomeLibProt.CommandLineImporter importinpx [--help] --pathtoinpx <string> --pathtodatabase <string> [--batchsize <int>] [--maxcountleafs <int>]
+USAGE: HomeLibProt.CommandLineImporter importinpx [--help] --pathtoinpx <string> --pathtoarchives <string> --pathtodatabase <string> [--fullcreation] [--batchsize <int>] [--maxcountleafs <int>]
 
 OPTIONS:
 
     --pathtoinpx, -i <string>
                           Path to Inpx file on local file system
+    --pathtoarchives, -a <string>
+                          Path to Zip archives directory on local file system
     --pathtodatabase, -d <string>
                           Path to database on local file system
+    --fullcreation, -f    [Optional] Create full database structure
     --batchsize, -b <int> [Optional] Max count inp records imported per time. Default: 100.
     --maxcountleafs, -l <int>
                           [Optional] Max count leafs for author hierarchical search. Default: 50.
