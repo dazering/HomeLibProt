@@ -16,7 +16,9 @@ create table Authors(
 
     unique (FullName)
 );
+";
 
+    private static readonly string createIndexAuthorsForFullNameSql = @"
 create index idx_authors_full_names on Authors (FullName);
 ";
 
@@ -62,7 +64,9 @@ create table Series (
     Id integer primary key autoincrement,
     Name text not null
 );
+";
 
+    private static readonly string createIndexSeriesForNameSql = @"
 create index idx_series_names on Series (Name);
 ";
 
@@ -89,7 +93,9 @@ create table Genres (
     Key text unique,
     Name text
 );
+";
 
+    private static readonly string createIndexGenresForKeySql = @"
 create index idx_genres_keys on Genres (Key);
 ";
 
@@ -114,7 +120,9 @@ create table Keywords (
     Id integer primary key autoincrement,
     Name text not null
 );
+";
 
+    private static readonly string createIndexKeywordsForNameSql = @"
 create index idx_keywords_names on Keywords (Name);
 ";
 
@@ -141,7 +149,9 @@ create table AuthorHierarchicalSearchNodes (
     PreviousId integer null references AuthorHierarchicalSearchNodes(Id),
     AuthorsCount integer not null
 );
+";
 
+    private static readonly string createIndexAuthorHierarchicalSearchNodesForPreviousIdSql = @"
 create index idx_author_hierarchical_search_nodes_previous_ids on AuthorHierarchicalSearchNodes (PreviousId);
 ";
 
@@ -157,7 +167,9 @@ create table AuthorHierarchicalSearchResults (
 
     unique (NodeId, AuthorId)
 );
+";
 
+    private static readonly string createIndexAuthorHierarchicalSearchResultsForNodeIdSql = @"
 create index idx_author_hierarchical_search_results_node_ids on AuthorHierarchicalSearchResults (NodeId);
 ";
 
@@ -173,6 +185,10 @@ create table Languages (
 
     unique (Name)
 );
+";
+
+    private static readonly string createIndexLanguagesForNameSql = @"
+create index idx_languages_name on Languages (Name);
 ";
 
     private static readonly string dropLanguagesSql = @"
@@ -215,23 +231,32 @@ drop table if exists Archives;
 
     private static IEnumerable<string> getCreateImportInpxCommands() {
         yield return createAuthorsSql;
+        yield return createIndexAuthorsForFullNameSql;
         yield return createLanguagesSql;
+        yield return createIndexLanguagesForNameSql;
         yield return createArchivesSql;
         yield return createBooksSql;
         yield return createAuthorshipsSql;
         yield return createSeriesSql;
+        yield return createIndexSeriesForNameSql;
         yield return createBookSeriesSql;
         yield return createGenresSql;
+        yield return createIndexGenresForKeySql;
         yield return createBookGenresSql;
         yield return createKeywordsSql;
+        yield return createIndexKeywordsForNameSql;
         yield return createBookKeywordsSql;
         yield return createAuthorHierarchicalSearchNodesSql;
+        yield return createIndexAuthorHierarchicalSearchNodesForPreviousIdSql;
         yield return createAuthorHierarchicalSearchResultsSql;
+        yield return createIndexAuthorHierarchicalSearchResultsForNodeIdSql;
     }
 
     private static IEnumerable<string> getCreateImportAHSCommands() {
         yield return createAuthorHierarchicalSearchNodesSql;
+        yield return createIndexAuthorHierarchicalSearchNodesForPreviousIdSql;
         yield return createAuthorHierarchicalSearchResultsSql;
+        yield return createIndexAuthorHierarchicalSearchResultsForNodeIdSql;
     }
 
     private static async Task ExecuteSqlAsync(DbConnection connection, string sql) {
