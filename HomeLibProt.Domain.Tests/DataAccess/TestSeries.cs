@@ -47,4 +47,28 @@ public class TestSeries {
 
         Assert.That(actual, Is.EqualTo(expected));
     }
+
+    [Test]
+    public async Task TestInsertSeriesEntityAsync() {
+        var expected = new[] {
+            new TestSeriesEntity(Id: 1, Name: "Series 1"),
+            new TestSeriesEntity(Id: 2, Name: "Series 2"),
+            new TestSeriesEntity(Id: 30, Name: "Series 30"),
+        };
+
+        var actual = await TestUtils.UseTestDatabase(async (connection) => {
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await SeriesUtils.Create(c, name: "Series 1");
+                await SeriesUtils.Create(c, name: "Series 2");
+            });
+
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await Series.InsertSeriesEntityAsync(c, new SeriesEntityParam(Id: 30, Name: "Series 30"));
+            });
+
+            return await ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData);
+        });
+
+        Assert.That(actual, Is.EqualTo(expected));
+    }
 }
