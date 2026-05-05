@@ -7,6 +7,8 @@ namespace HomeLibProt.Domain.DataAccess;
 
 public record SeriesEntity(long Id, string Name);
 
+public record SeriesEntityParam(long Id, string Name);
+
 public static class Series {
     public static async Task<SeriesEntity[]> GetSeriesByNameAsync(DbConnection connection, string[] seriesNames) {
         var sql =
@@ -31,5 +33,16 @@ values (@Name)
         foreach (var s in series) {
             var _ = await connection.ExecuteAsync(sql, new { Name = s });
         }
+    }
+
+    public static async Task InsertSeriesEntityAsync(DbConnection connection, SeriesEntityParam series) {
+        var sql =
+            @"
+insert into
+Series (Id, Name)
+values (@Id, @Name)
+";
+
+        var _ = await connection.ExecuteAsync(sql, series);
     }
 }
