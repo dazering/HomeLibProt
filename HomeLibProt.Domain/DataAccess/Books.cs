@@ -9,6 +9,8 @@ public record BookParam(string Title, string FileName, long Size, string LibId, 
 
 public record ArchiveEntity(string FileName, string Extension);
 
+public record BookEntityParam(long Id, string Title, string FileName, long Size, string LibId, bool Deleted, string Extension, string Date, long ArchiveId, int? LibRate, long LanguageId);
+
 public static class Books {
     public static async Task<long> InsertBookAsync(DbConnection connection, BookParam bookParam) {
         var sql =
@@ -40,6 +42,39 @@ returning Id
 ";
 
         return await connection.QuerySingleAsync<long>(sql, bookParam);
+    }
+
+    public static async Task InsertBookEntityAsync(DbConnection connection, BookEntityParam bookEntity) {
+        var sql =
+            @"
+insert into
+Books
+    (Id,
+    Title,
+    FileName,
+    Size,
+    LibId,
+    Deleted,
+    Extension,
+    Date,
+    ArchiveId,
+    LibRate,
+    LanguageId)
+values
+    (@Id,
+    @Title,
+    @FileName,
+    @Size,
+    @LibId,
+    @Deleted,
+    @Extension,
+    @Date,
+    @ArchiveId,
+    @LibRate,
+    @LanguageId)
+";
+
+        await connection.ExecuteAsync(sql, bookEntity);
     }
 
     public static IAsyncEnumerable<ArchiveEntity> GetArchiveEntitiesByArchiveIdAsync(DbConnection connection, long archiveId) {
