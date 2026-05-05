@@ -50,6 +50,30 @@ public class TestAuthors {
     }
 
     [Test]
+    public async Task TestInsertAuthorEntityAsync() {
+        var expected = new[] {
+            new TestAuthor(Id: 1, FullName: "A A A", LastName: "A", FirstName: "A", MiddleName: "A"),
+            new TestAuthor(Id: 2, FullName: "B B B", LastName: "B", FirstName: "B", MiddleName: "B"),
+            new TestAuthor(Id: 30, FullName: "C C C", LastName: "C", FirstName: "C", MiddleName: "C")
+        };
+
+        var actual = await TestUtils.UseTestDatabase(async (connection) => {
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+                await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
+            });
+
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await Authors.InsertAuthorEntityAsync(c, new AuthorEntityParam(Id: 30, FullName: "C C C", LastName: "C", FirstName: "C", MiddleName: "C"));
+            });
+
+            return await ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData);
+        });
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
+    }
+
+    [Test]
     public async Task TestGetAuthorsFilterByIncludedLanguageAsync() {
         var expected = new[] {
             new Author(Id: 1, Name: "A A A"),
