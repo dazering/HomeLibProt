@@ -10,6 +10,8 @@ public record Author(long Id, string Name);
 
 public record AuthorParam(string FullName, string LastName, string FirstName, string MiddleName);
 
+public record AuthorEntityParam(long Id, string FullName, string LastName, string FirstName, string MiddleName);
+
 public static class Authors {
     public static async Task<Author[]> GetAuthorsByNameAsync(DbConnection connection, string[] authorNames) {
         var sql =
@@ -34,6 +36,17 @@ values (@FullName, @FirstName, @MiddleName, @LastName)
         foreach (var a in authorNames) {
             var _ = await connection.ExecuteAsync(sql, a);
         }
+    }
+
+    public static async Task InsertAuthorEntityAsync(DbConnection connection, AuthorEntityParam author) {
+        var sql =
+            @"
+insert into
+Authors (Id, FullName, FirstName, MiddleName, LastName)
+values (@Id, @FullName, @FirstName, @MiddleName, @LastName)
+";
+
+        await connection.ExecuteAsync(sql, author);
     }
 
     public static IAsyncEnumerable<Author> GetAuthorsFilterByIncludedLanguageAsync(DbConnection connection) {
