@@ -13,6 +13,8 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HomeLibProt.CollectionImpor
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HomeLibProt.CommandLineImporter", "HomeLibProt.CommandLineImporter\HomeLibProt.CommandLineImporter.fsproj", "{2FB6BFBE-C11E-477E-890D-2856E949B5F6}"
 EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "HomeLibProt.CollectionManager", "HomeLibProt.CollectionManager\HomeLibProt.CollectionManager.fsproj", "{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -83,6 +85,18 @@ Global
 		{2FB6BFBE-C11E-477E-890D-2856E949B5F6}.Release|x64.Build.0 = Release|Any CPU
 		{2FB6BFBE-C11E-477E-890D-2856E949B5F6}.Release|x86.ActiveCfg = Release|Any CPU
 		{2FB6BFBE-C11E-477E-890D-2856E949B5F6}.Release|x86.Build.0 = Release|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Debug|x64.Build.0 = Debug|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Debug|x86.Build.0 = Debug|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Release|x64.ActiveCfg = Release|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Release|x64.Build.0 = Release|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Release|x86.ActiveCfg = Release|Any CPU
+		{32DDFAA6-BA2D-472E-AA8D-80FDD38D9262}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
