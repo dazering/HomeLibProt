@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Compile Include="RegEx\RegExGrops.fs" />
+    <Compile Include="RegEx\RegExResults.fs" />
     <Compile Include="RegEx\Flibusta.fs" />
     <Compile Include="SqlDumps\Flibusta.fs" />
     <Compile Include="Program.fs" />
