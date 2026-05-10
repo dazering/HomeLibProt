@@ -231,6 +231,20 @@ drop table if exists Archives;
         yield return dropAuthorHierarchicalSearchNodesSql;
     }
 
+    private static IEnumerable<string> getDropImportSqlDumpCommands() {
+        yield return dropBookGenresSql;
+        yield return dropGenresSql;
+        yield return dropBookSeriesSql;
+        yield return dropSeriesSql;
+        yield return dropBookKeywordsSql;
+        yield return dropKeywordsSql;
+        yield return dropAuthorshipsSql;
+        yield return dropAuthorsSql;
+        yield return dropBooksSql;
+        yield return dropLanguagesSql;
+        yield return dropArchivesSql;
+    }
+
     private static IEnumerable<string> getCreateImportInpxCommands(bool fullCreation) {
         yield return createAuthorsSql;
         yield return createIndexAuthorsForFullNameSql;
@@ -263,6 +277,24 @@ drop table if exists Archives;
         yield return createIndexAuthorHierarchicalSearchResultsForNodeIdSql;
     }
 
+    private static IEnumerable<string> getCreateImportSqlDumpCommands() {
+        yield return createAuthorsSql;
+        yield return createLanguagesSql;
+        yield return createIndexLanguagesForNameSql;
+        yield return createArchivesSql;
+        yield return createBooksSql;
+        yield return createAuthorshipsSql;
+        yield return createSeriesSql;
+        yield return createIndexSeriesForNameSql;
+        yield return createBookSeriesSql;
+        yield return createGenresSql;
+        yield return createIndexGenresForKeySql;
+        yield return createBookGenresSql;
+        yield return createKeywordsSql;
+        yield return createIndexKeywordsForNameSql;
+        yield return createBookKeywordsSql;
+    }
+
     private static async Task ExecuteSqlAsync(DbConnection connection, string sql) {
         var _ = await connection.ExecuteAsync(sql);
     }
@@ -281,5 +313,10 @@ drop table if exists Archives;
     public static async Task CreateAHSStructure(DbConnection connection) {
         await ExecuteSqlsAsync(connection, getDropImportAHSCommands());
         await ExecuteSqlsAsync(connection, getCreateImportAHSCommands());
+    }
+
+    public static async Task CreateImportSqlDumpStructure(DbConnection connection) {
+        await ExecuteSqlsAsync(connection, getDropImportSqlDumpCommands());
+        await ExecuteSqlsAsync(connection, getCreateImportSqlDumpCommands());
     }
 }
