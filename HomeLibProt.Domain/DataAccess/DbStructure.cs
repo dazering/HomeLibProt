@@ -12,14 +12,12 @@ create table Authors(
     FullName text not null,
     LastName text not null,
     FirstName text not null,
-    MiddleName text not null,
-
-    unique (FullName)
+    MiddleName text not null
 );
 ";
 
     private static readonly string createIndexAuthorsForFullNameSql = @"
-create index idx_authors_full_names on Authors (FullName);
+create unique index idx_authors_full_names on Authors (FullName);
 ";
 
     private static readonly string dropAuthorsSql = @"
