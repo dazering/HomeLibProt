@@ -11,7 +11,12 @@
     <Compile Include="RegEx\Flibusta.fs" />
     <Compile Include="SqlDumps\Flibusta.fs" />
     <Compile Include="SqlDumps\SqlDumpParser.fs" />
+    <Compile Include="SqlDumps\SqlDumpImporter.fs" />
     <Compile Include="Program.fs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\HomeLibProt.Domain\HomeLibProt.Domain.csproj" />
   </ItemGroup>
 
 </Project>
