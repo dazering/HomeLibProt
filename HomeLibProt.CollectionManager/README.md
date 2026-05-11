@@ -1,9 +1,6 @@
 # HomeLibProt.CollectionManager
 
-Console application for managing collection:
-
-Features:
-- Import SQL dumps to SQLite database
+Console application for managing collection
 
 ## Requirements
 
