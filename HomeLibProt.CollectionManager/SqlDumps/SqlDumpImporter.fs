@@ -9,6 +9,7 @@ open System.Threading.Tasks
 open HomeLibProt.Domain.DataAccess
 open HomeLibProt.CollectionManager.RegEx.RegExResults
 open HomeLibProt.CollectionManager.SqlDumps.SqlDumpParser
+open Microsoft.Data.Sqlite
 
 type SqlDumpImporterParameters =
     { PathToSqlDumps: string
@@ -16,6 +17,19 @@ type SqlDumpImporterParameters =
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
 let private archiveName = "SQL_Dump"
+
+let private authorshipsResultToParam (authorships: AuthorshipsResult) : AuthorshipParam =
+    AuthorshipParam(BookId = authorships.BookId, AuthorId = authorships.AuthorId)
+
+let private importAuthorshipsResult (connection: DbConnection) (result: AuthorshipsResult) : Task<unit> =
+    task {
+        let entityParam = result |> authorshipsResultToParam
+
+        try
+            do! Authorships.InsertAuthorshipsAsync(connection, [| entityParam |])
+        with :? SqliteException ->
+            eprintfn $"Author or Book not found. Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}"
+    }
 
 let private bookResultToEntityParam (archiveId: int64) (languageId: int64) (book: BookResult) : BookEntityParam =
     BookEntityParam(
@@ -131,6 +145,7 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
         do! parameters.DoInTransactionAsync(connection, DbStructure.CreateImportSqlDumpStructure)
 
         let authors = Path.Combine(parameters.PathToSqlDumps, Flibusta.authors)
+        let authorships = Path.Combine(parameters.PathToSqlDumps, Flibusta.authorships)
         let books = Path.Combine(parameters.PathToSqlDumps, Flibusta.books)
 
         parameters.ProgressReport $"Importing: {Flibusta.authors}"
@@ -165,6 +180,23 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                                 HomeLibProt.CollectionManager.RegEx.Flibusta.books
                                 (importBookResult archiveId)
                                 getBookResult
+                                c
+                    }
+            )
+
+        parameters.ProgressReport $"Importing: {Flibusta.authorships}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                authorships
+                                HomeLibProt.CollectionManager.RegEx.Flibusta.authorships
+                                importAuthorshipsResult
+                                getAuthorshipsResult
                                 c
                     }
             )
