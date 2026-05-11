@@ -10,6 +10,8 @@ open HomeLibProt.Domain.DataAccess
 
 let parser = ArgumentParser.Create<CLIArguments>()
 
+let printProgressReport (message: string) : unit = printfn $"{message}"
+
 let importSqlDumps (args: ParseResults<ImportSqlDumps>) : Task<unit> =
     task {
         let pathToDb = args.GetResult ImportSqlDumps.PathToDatabase
@@ -23,6 +25,7 @@ let importSqlDumps (args: ParseResults<ImportSqlDumps>) : Task<unit> =
 
         let parameters: SqlDumpImporter.SqlDumpImporterParameters =
             { PathToSqlDumps = pathToSqlDumps
+              ProgressReport = printProgressReport
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
         match site with

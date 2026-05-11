@@ -12,6 +12,7 @@ open HomeLibProt.CollectionManager.SqlDumps.SqlDumpParser
 
 type SqlDumpImporterParameters =
     { PathToSqlDumps: string
+      ProgressReport: string -> unit
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
 let private authorResultToEntityParam (author: AuthorResult) : AuthorEntityParam =
@@ -53,6 +54,8 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
         do! parameters.DoInTransactionAsync(connection, DbStructure.CreateImportSqlDumpStructure)
 
         let authors = Path.Combine(parameters.PathToSqlDumps, Flibusta.authors)
+
+        parameters.ProgressReport $"Importing: {Flibusta.authors}"
 
         do!
             parameters.DoInTransactionAsync(
