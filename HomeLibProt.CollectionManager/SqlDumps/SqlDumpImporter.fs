@@ -18,6 +18,16 @@ type SqlDumpImporterParameters =
 
 let private archiveName = "SQL_Dump"
 
+let private seriesResultToEntityParam (series: SeriesResult) : SeriesEntityParam =
+    SeriesEntityParam(Id = series.Id, Name = series.Name)
+
+let private importSeriesResult (connection: DbConnection) (result: SeriesResult) : Task<unit> =
+    task {
+        let entityParam = result |> seriesResultToEntityParam
+
+        do! Series.InsertSeriesEntityAsync(connection, entityParam)
+    }
+
 let private bookGenreResultToEntityParam (bookGenre: BookGenreResult) : BookGenreParam =
     BookGenreParam(BookId = bookGenre.BookId, GenreId = bookGenre.GenreId)
 
@@ -172,6 +182,7 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
         let books = Path.Combine(parameters.PathToSqlDumps, Flibusta.books)
         let genres = Path.Combine(parameters.PathToSqlDumps, Flibusta.genres)
         let bookGenres = Path.Combine(parameters.PathToSqlDumps, Flibusta.bookGenres)
+        let series = Path.Combine(parameters.PathToSqlDumps, Flibusta.series)
 
         parameters.ProgressReport $"Importing: {Flibusta.authors}"
 
@@ -256,6 +267,23 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                                 HomeLibProt.CollectionManager.RegEx.Flibusta.bookGenres
                                 importBookGenreResult
                                 getBookGenreResult
+                                c
+                    }
+            )
+
+        parameters.ProgressReport $"Importing: {Flibusta.series}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                series
+                                HomeLibProt.CollectionManager.RegEx.Flibusta.series
+                                importSeriesResult
+                                getSeriesResult
                                 c
                     }
             )
