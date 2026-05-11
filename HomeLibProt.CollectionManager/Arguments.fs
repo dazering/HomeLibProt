@@ -4,6 +4,7 @@ open Argu
 
 type Site =
     | Flibusta = 1
+    | Librusec = 2
 
 type CLIArguments =
     | [<CliPrefix(CliPrefix.None)>] ImportSqlDumps of ParseResults<ImportSqlDumps>
