@@ -44,7 +44,7 @@ OPTIONS:
 ### Import SQL dumps
 
 ```
-USAGE: HomeLibProt.CollectionManager importsqldumps [--help] --pathtosqldumps <string> --pathtodatabase <string> --site <flibusta>
+USAGE: HomeLibProt.CollectionManager importsqldumps [--help] --pathtosqldumps <string> --pathtodatabase <string> --site <flibusta|librusec>
 
 OPTIONS:
 
@@ -52,7 +52,8 @@ OPTIONS:
                           Path to where save sql dumps on local file system
     --pathtodatabase, -d <string>
                           Path to database on local file system
-    --site, -s <flibusta> Source of sql dumps
+    --site, -s <flibusta|librusec>
+                          Source of sql dumps
     --help                display this list of options.
 ```
 
