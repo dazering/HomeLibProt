@@ -319,3 +319,137 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                     }
             )
     }
+
+let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connection: DbConnection) : Task<unit> =
+    task {
+        do! parameters.DoInTransactionAsync(connection, DbStructure.CreateImportSqlDumpStructure)
+
+        let authors = Path.Combine(parameters.PathToSqlDumps, Librusec.authors)
+        let authorships = Path.Combine(parameters.PathToSqlDumps, Librusec.authorships)
+        let books = Path.Combine(parameters.PathToSqlDumps, Librusec.books)
+        let genres = Path.Combine(parameters.PathToSqlDumps, Librusec.genres)
+        let bookGenres = Path.Combine(parameters.PathToSqlDumps, Librusec.bookGenres)
+        let series = Path.Combine(parameters.PathToSqlDumps, Librusec.series)
+        let bookSeries = Path.Combine(parameters.PathToSqlDumps, Librusec.bookSeries)
+
+        parameters.ProgressReport $"Importing: {Librusec.authors}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                authors
+                                HomeLibProt.CollectionManager.RegEx.Librusec.authors
+                                importAuthorResult
+                                getAuthorResult
+                                c
+                    }
+            )
+
+        parameters.ProgressReport $"Importing: {Librusec.books}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        let! archiveId = getArchiveId c
+
+                        do!
+                            importFromGZip
+                                books
+                                HomeLibProt.CollectionManager.RegEx.Librusec.books
+                                (importBookResult archiveId)
+                                getBookResult
+                                c
+                    }
+            )
+
+        parameters.ProgressReport $"Importing: {Librusec.authorships}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                authorships
+                                HomeLibProt.CollectionManager.RegEx.Librusec.authorships
+                                importAuthorshipsResult
+                                getAuthorshipsResult
+                                c
+                    }
+            )
+
+        parameters.ProgressReport $"Importing: {Librusec.genres}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                genres
+                                HomeLibProt.CollectionManager.RegEx.Librusec.genres
+                                importGenreResult
+                                getGenreResult
+                                c
+                    }
+            )
+
+        parameters.ProgressReport $"Importing: {Librusec.bookGenres}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                bookGenres
+                                HomeLibProt.CollectionManager.RegEx.Librusec.bookGenres
+                                importBookGenreResult
+                                getBookGenreResult
+                                c
+                    }
+            )
+
+        parameters.ProgressReport $"Importing: {Librusec.series}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                series
+                                HomeLibProt.CollectionManager.RegEx.Librusec.series
+                                importSeriesResult
+                                getSeriesResult
+                                c
+                    }
+            )
+
+        parameters.ProgressReport $"Importing: {Librusec.bookSeries}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                bookSeries
+                                HomeLibProt.CollectionManager.RegEx.Librusec.bookSeries
+                                importBookSeriesResult
+                                getBookSeriesResult
+                                c
+                    }
+            )
+    }

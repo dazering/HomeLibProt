@@ -31,6 +31,8 @@ let importSqlDumps (args: ParseResults<ImportSqlDumps>) : Task<unit> =
         match site with
         | Site.Flibusta ->
             do! ConnectionUtils.WithConnectionAsync(connection, SqlDumpImporter.importSqlDumpsFlibustaAsync parameters)
+        | Site.Librusec ->
+            do! ConnectionUtils.WithConnectionAsync(connection, SqlDumpImporter.importSqlDumpsLibrusecAsync parameters)
         | _ -> failwith $"Unknown sql dump source: {site}"
 
     }
