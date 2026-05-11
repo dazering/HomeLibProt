@@ -18,6 +18,19 @@ type SqlDumpImporterParameters =
 
 let private archiveName = "SQL_Dump"
 
+let private bookSeriesResultToEntityParam (bookSeries: BookSeriesResult) : BookSeriesParam =
+    BookSeriesParam(BookId = bookSeries.BookId, SeriesId = bookSeries.SeriesId, SeriesNumber = bookSeries.SeriesNumber)
+
+let private importBookSeriesResult (connection: DbConnection) (result: BookSeriesResult) : Task<unit> =
+    task {
+        let entityParam = result |> bookSeriesResultToEntityParam
+
+        try
+            do! BookSeries.InsertBookSeriesAsync(connection, entityParam)
+        with :? SqliteException ->
+            eprintfn $"Book or Series not found. Book Id: {entityParam.BookId}, Series Id: {entityParam.SeriesId}"
+    }
+
 let private seriesResultToEntityParam (series: SeriesResult) : SeriesEntityParam =
     SeriesEntityParam(Id = series.Id, Name = series.Name)
 
@@ -183,6 +196,7 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
         let genres = Path.Combine(parameters.PathToSqlDumps, Flibusta.genres)
         let bookGenres = Path.Combine(parameters.PathToSqlDumps, Flibusta.bookGenres)
         let series = Path.Combine(parameters.PathToSqlDumps, Flibusta.series)
+        let bookSeries = Path.Combine(parameters.PathToSqlDumps, Flibusta.bookSeries)
 
         parameters.ProgressReport $"Importing: {Flibusta.authors}"
 
@@ -284,6 +298,23 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                                 HomeLibProt.CollectionManager.RegEx.Flibusta.series
                                 importSeriesResult
                                 getSeriesResult
+                                c
+                    }
+            )
+
+        parameters.ProgressReport $"Importing: {Flibusta.bookSeries}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                bookSeries
+                                HomeLibProt.CollectionManager.RegEx.Flibusta.bookSeries
+                                importBookSeriesResult
+                                getBookSeriesResult
                                 c
                     }
             )
