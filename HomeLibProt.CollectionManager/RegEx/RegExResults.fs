@@ -4,6 +4,8 @@ open System
 open System.Text.RegularExpressions
 open System.Globalization
 
+type BookGenreResult = { BookId: int64; GenreId: int64 }
+
 type GenreResult =
     { Id: int64; Key: string; Name: string }
 
@@ -38,6 +40,10 @@ let private convertStringToBool (value: string) : bool =
     | _ -> true
 
 let private extractGroupValue (group: Group) : string = group.Value
+
+let getBookGenreResult (groups: GroupCollection) : BookGenreResult =
+    { BookId = groups.[RegExGroups.BookGenres.bookId] |> extractGroupValue |> int64
+      GenreId = groups.[RegExGroups.BookGenres.genreId] |> extractGroupValue |> int64 }
 
 let getGenreResult (groups: GroupCollection) : GenreResult =
     { Id = groups.[RegExGroups.Genres.genreId] |> extractGroupValue |> int64
