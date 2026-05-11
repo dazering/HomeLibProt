@@ -18,6 +18,16 @@ type SqlDumpImporterParameters =
 
 let private archiveName = "SQL_Dump"
 
+let private genreResultToEntityParam (genre: GenreResult) : GenreEntityParam =
+    GenreEntityParam(Id = genre.Id, Key = genre.Key, Name = genre.Name)
+
+let private importGenreResult (connection: DbConnection) (result: GenreResult) : Task<unit> =
+    task {
+        let entityParam = result |> genreResultToEntityParam
+
+        do! Genres.InsertGenreEntityAsync(connection, entityParam)
+    }
+
 let private authorshipsResultToParam (authorships: AuthorshipsResult) : AuthorshipParam =
     AuthorshipParam(BookId = authorships.BookId, AuthorId = authorships.AuthorId)
 
@@ -147,6 +157,7 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
         let authors = Path.Combine(parameters.PathToSqlDumps, Flibusta.authors)
         let authorships = Path.Combine(parameters.PathToSqlDumps, Flibusta.authorships)
         let books = Path.Combine(parameters.PathToSqlDumps, Flibusta.books)
+        let genres = Path.Combine(parameters.PathToSqlDumps, Flibusta.genres)
 
         parameters.ProgressReport $"Importing: {Flibusta.authors}"
 
@@ -197,6 +208,23 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                                 HomeLibProt.CollectionManager.RegEx.Flibusta.authorships
                                 importAuthorshipsResult
                                 getAuthorshipsResult
+                                c
+                    }
+            )
+
+        parameters.ProgressReport $"Importing: {Flibusta.genres}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                genres
+                                HomeLibProt.CollectionManager.RegEx.Flibusta.genres
+                                importGenreResult
+                                getGenreResult
                                 c
                     }
             )
