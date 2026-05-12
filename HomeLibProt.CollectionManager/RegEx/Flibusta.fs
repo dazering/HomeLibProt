@@ -21,3 +21,6 @@ let genres =
     $@"\((?<{Genres.genreId}>\d*),'(?<{Genres.key}>.*)','(?<{Genres.name}>.*)','(?<meta>.*)'\)"
 
 let series = $@"\((?<{Series.seriesId}>\d*),'(?<{Series.name}>.*)'\)"
+
+let rates =
+    $@"\((?<id>\d*),(?<{Rates.bookId}>\d*),(?<userId>\d*),'(?<{Rates.rate}>[^']*)'\)"
