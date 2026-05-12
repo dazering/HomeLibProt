@@ -12,7 +12,7 @@ let bookGenres =
     $@"\((?<id>\d*),(?<{BookGenres.bookId}>\d*),(?<{BookGenres.genreId}>\d*)\)"
 
 let books =
-    $@"\((?<{Books.bookId}>\d*),(?<{Books.fileSize}>\d*),'(?<{Books.time}>.*)','(?<{Books.title}>.*)','(?<title1>.*)','(?<{Languages.lang}>.*)',(?<langEx>\d*),'(?<srcLang>.*)','(?<{Books.fileType}>.*)','(?<encoding>.*)',(?<year>\d*),'(?<{Books.deleted}>.*)','(?<ver>.*)','(?<fileAuthor>.*)',(?<n>\d*),'(?<{Keywords.keywords}>.*)','(?<md5>.*)','(?<modified>.*)','(?<pmd5>.*)',(?<infoCode>\d*),(?<pages>\d*),(?<chars>\d*)\)"
+    $@"\((?<{Books.bookId}>\d*),(?<{Books.fileSize}>\d*),'(?<{Books.time}>\d\d\d\d-\d\d-\d\d) \d\d:\d\d:\d\d','(?<{Books.title}>.*)','(?<title1>.*)','(?<{Languages.lang}>.*)',(?<langEx>\d*),'(?<srcLang>.*)','(?<{Books.fileType}>.*)','(?<encoding>.*)',(?<year>\d*),'(?<{Books.deleted}>.*)','(?<ver>.*)','(?<fileAuthor>.*)',(?<n>\d*),'(?<{Keywords.keywords}>.*)','(?<md5>.*)','(?<modified>.*)','(?<pmd5>.*)',(?<infoCode>\d*),(?<pages>\d*),(?<chars>\d*)\)"
 
 let bookSeries =
     $@"\((?<{BookSeries.bookId}>\d*),(?<{BookSeries.seriesId}>\d*),(?<{BookSeries.seriesNumber}>\d*),(?<level>\d*),(?<type>\d*)\)"

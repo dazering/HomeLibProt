@@ -2,7 +2,6 @@ module HomeLibProt.CollectionManager.RegEx.RegExResults
 
 open System
 open System.Text.RegularExpressions
-open System.Globalization
 
 type BookSeriesResult =
     { BookId: int64
@@ -34,9 +33,6 @@ type BookResult =
       Extension: string
       Deleted: bool
       Keywords: string array }
-
-let formatDate (dateTime: string) =
-    DateTime.ParseExact(dateTime, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture).ToString("yyyy-MM-dd")
 
 let private makeKeywords (keywords: string) : string array =
     keywords.Split(',', StringSplitOptions.RemoveEmptyEntries ||| StringSplitOptions.TrimEntries)
@@ -73,7 +69,7 @@ let getAuthorshipsResult (groups: GroupCollection) : AuthorshipsResult =
 let getBookResult (groups: GroupCollection) : BookResult =
     { Id = groups.[RegExGroups.Books.bookId] |> extractGroupValue |> int64
       FileSize = groups.[RegExGroups.Books.fileSize] |> extractGroupValue |> int64
-      Date = groups.[RegExGroups.Books.time] |> extractGroupValue |> formatDate
+      Date = groups.[RegExGroups.Books.time] |> extractGroupValue
       Title = groups.[RegExGroups.Books.title] |> extractGroupValue
       Lang = groups.[RegExGroups.Languages.lang] |> extractGroupValue
       Extension = groups.[RegExGroups.Books.fileType] |> extractGroupValue
