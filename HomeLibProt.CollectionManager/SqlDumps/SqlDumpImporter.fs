@@ -1,5 +1,6 @@
 module HomeLibProt.CollectionManager.SqlDumps.SqlDumpImporter
 
+open System
 open System.Data.Common
 open System.IO
 open System.IO.Compression
@@ -17,6 +18,19 @@ type SqlDumpImporterParameters =
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
 let private archiveName = "SQL_Dump"
+
+let private rateResultToEntityParam (rate: RateResult) : RateEntityParam =
+    RateEntityParam(BookId = rate.BookId, Rate = rate.Rate)
+
+let private importRateResult (connection: DbConnection) (result: RateResult) : Task<unit> =
+    task {
+        let entityParam = result |> rateResultToEntityParam
+
+        try
+            do! Rates.InsertRateEntityAsync(connection, entityParam)
+        with :? SqliteException ->
+            eprintfn $"Book not found. Book Id: {entityParam.BookId}"
+    }
 
 let private bookSeriesResultToEntityParam (bookSeries: BookSeriesResult) : BookSeriesParam =
     BookSeriesParam(BookId = bookSeries.BookId, SeriesId = bookSeries.SeriesId, SeriesNumber = bookSeries.SeriesNumber)
@@ -88,7 +102,7 @@ let private bookResultToEntityParam (archiveId: int64) (languageId: int64) (book
         Extension = book.Extension,
         Date = book.Date,
         ArchiveId = archiveId,
-        LibRate = 0,
+        LibRate = Nullable(),
         LanguageId = languageId
     )
 
@@ -197,6 +211,7 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
         let bookGenres = Path.Combine(parameters.PathToSqlDumps, Flibusta.bookGenres)
         let series = Path.Combine(parameters.PathToSqlDumps, Flibusta.series)
         let bookSeries = Path.Combine(parameters.PathToSqlDumps, Flibusta.bookSeries)
+        let rates = Path.Combine(parameters.PathToSqlDumps, Flibusta.rates)
 
         parameters.ProgressReport $"Importing: {Flibusta.authors}"
 
@@ -318,6 +333,23 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                                 c
                     }
             )
+
+        parameters.ProgressReport $"Importing: {Flibusta.rates}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                rates
+                                HomeLibProt.CollectionManager.RegEx.Flibusta.rates
+                                importRateResult
+                                getRateResult
+                                c
+                    }
+            )
     }
 
 let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connection: DbConnection) : Task<unit> =
@@ -331,6 +363,7 @@ let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connect
         let bookGenres = Path.Combine(parameters.PathToSqlDumps, Librusec.bookGenres)
         let series = Path.Combine(parameters.PathToSqlDumps, Librusec.series)
         let bookSeries = Path.Combine(parameters.PathToSqlDumps, Librusec.bookSeries)
+        let rates = Path.Combine(parameters.PathToSqlDumps, Librusec.rates)
 
         parameters.ProgressReport $"Importing: {Librusec.authors}"
 
@@ -449,6 +482,23 @@ let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connect
                                 HomeLibProt.CollectionManager.RegEx.Librusec.bookSeries
                                 importBookSeriesResult
                                 getBookSeriesResult
+                                c
+                    }
+            )
+
+        parameters.ProgressReport $"Importing: {Librusec.rates}"
+
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun (c: DbConnection) ->
+                    task {
+                        do!
+                            importFromGZip
+                                rates
+                                HomeLibProt.CollectionManager.RegEx.Librusec.rates
+                                importRateResult
+                                getRateResult
                                 c
                     }
             )
