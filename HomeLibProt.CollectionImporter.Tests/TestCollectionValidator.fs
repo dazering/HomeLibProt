@@ -33,69 +33,72 @@ let TestValidateCollectionAsync () =
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
         do!
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun c ->
-                                task {
-                                    let! archiveId1 = ArchiveUtils.Create(c, "000001-000002.zip")
-                                    let! archiveId2 = ArchiveUtils.Create(c, "000003-000003.zip")
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun c ->
+                                    task {
+                                        let! archiveId1 = ArchiveUtils.Create(c, "000001-000002.zip")
+                                        let! archiveId2 = ArchiveUtils.Create(c, "000003-000003.zip")
 
-                                    let! langId = LanguageUtils.Create(c, "Lang 1")
+                                        let! langId = LanguageUtils.Create(c, "Lang 1")
 
-                                    let! _ =
-                                        BookUtils.Create(
-                                            c,
-                                            title = "Title1",
-                                            fileName = "1",
-                                            size = 1,
-                                            libId = "1",
-                                            deleted = false,
-                                            extension = "fb2",
-                                            date = "2025-11-07",
-                                            archiveId = archiveId1,
-                                            libRate = 0,
-                                            languageId = langId
-                                        )
+                                        let! _ =
+                                            BookUtils.Create(
+                                                c,
+                                                title = "Title1",
+                                                fileName = "1",
+                                                size = 1,
+                                                libId = "1",
+                                                deleted = false,
+                                                extension = "fb2",
+                                                date = "2025-11-07",
+                                                archiveId = archiveId1,
+                                                libRate = 0,
+                                                languageId = langId
+                                            )
 
-                                    let! _ =
-                                        BookUtils.Create(
-                                            c,
-                                            title = "Title2",
-                                            fileName = "2",
-                                            size = 1,
-                                            libId = "2",
-                                            deleted = false,
-                                            extension = "fb2",
-                                            date = "2025-11-07",
-                                            archiveId = archiveId1,
-                                            libRate = 0,
-                                            languageId = langId
-                                        )
+                                        let! _ =
+                                            BookUtils.Create(
+                                                c,
+                                                title = "Title2",
+                                                fileName = "2",
+                                                size = 1,
+                                                libId = "2",
+                                                deleted = false,
+                                                extension = "fb2",
+                                                date = "2025-11-07",
+                                                archiveId = archiveId1,
+                                                libRate = 0,
+                                                languageId = langId
+                                            )
 
-                                    let! _ =
-                                        BookUtils.Create(
-                                            c,
-                                            title = "Title3",
-                                            fileName = "3",
-                                            size = 1,
-                                            libId = "3",
-                                            deleted = false,
-                                            extension = "fb2",
-                                            date = "2025-11-07",
-                                            archiveId = archiveId2,
-                                            libRate = 0,
-                                            languageId = langId
-                                        )
+                                        let! _ =
+                                            BookUtils.Create(
+                                                c,
+                                                title = "Title3",
+                                                fileName = "3",
+                                                size = 1,
+                                                libId = "3",
+                                                deleted = false,
+                                                extension = "fb2",
+                                                date = "2025-11-07",
+                                                archiveId = archiveId2,
+                                                libRate = 0,
+                                                languageId = langId
+                                            )
 
-                                    do ()
-                                }
-                        )
+                                        do ()
+                                    }
+                            )
 
-                    do! validateCollectionAsync collectionValidatorParameters connection
-                })
+                        do! validateCollectionAsync collectionValidatorParameters connection
+                    }
+            )
 
         Assert.That(actualMessages, Is.EqualTo(expected).AsCollection)
 

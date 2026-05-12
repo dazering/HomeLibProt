@@ -10,16 +10,18 @@ public class TestSeries {
     public async Task TestGetSeriesByNameAsync() {
         var expected = new[] { new SeriesEntity(Id: 2, Name: "Series 2") };
 
-        var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await SeriesUtils.Create(c, name: "Series 1");
-                await SeriesUtils.Create(c, name: "Series 2");
-            });
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await SeriesUtils.Create(c, name: "Series 1");
+                    await SeriesUtils.Create(c, name: "Series 2");
+                });
 
-            return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                return await Series.GetSeriesByNameAsync(c, ["Series 2", "Series 3"]);
+                return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    return await Series.GetSeriesByNameAsync(c, ["Series 2", "Series 3"]);
+                });
             });
-        });
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }
@@ -32,18 +34,20 @@ public class TestSeries {
             new TestSeriesEntity(Id: 3, Name: "Series 3"),
         };
 
-        var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await SeriesUtils.Create(c, name: "Series 1");
-                await SeriesUtils.Create(c, name: "Series 2");
-            });
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await SeriesUtils.Create(c, name: "Series 1");
+                    await SeriesUtils.Create(c, name: "Series 2");
+                });
 
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await Series.InsertSeriesAsync(c, ["Series 3"]);
-            });
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await Series.InsertSeriesAsync(c, ["Series 3"]);
+                });
 
-            return await ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData);
-        });
+                return await ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData);
+            });
 
         Assert.That(actual, Is.EqualTo(expected));
     }
@@ -56,18 +60,20 @@ public class TestSeries {
             new TestSeriesEntity(Id: 30, Name: "Series 30"),
         };
 
-        var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await SeriesUtils.Create(c, name: "Series 1");
-                await SeriesUtils.Create(c, name: "Series 2");
-            });
+        var actual = await TestUtils.UseTestDatabase(
+            DbStructure.CreateImportSqlDumpStructure,
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await SeriesUtils.Create(c, name: "Series 1");
+                    await SeriesUtils.Create(c, name: "Series 2");
+                });
 
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await Series.InsertSeriesEntityAsync(c, new SeriesEntityParam(Id: 30, Name: "Series 30"));
-            });
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await Series.InsertSeriesEntityAsync(c, new SeriesEntityParam(Id: 30, Name: "Series 30"));
+                });
 
-            return await ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData);
-        });
+                return await ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData);
+            });
 
         Assert.That(actual, Is.EqualTo(expected));
     }

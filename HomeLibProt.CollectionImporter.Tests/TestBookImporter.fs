@@ -83,29 +83,42 @@ let TestInsertBookAsync () =
               Keywords = [| "Keyword 1" |] }
 
         let! books, authorships, bookGenres, bookKeywords, bookSeries =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    do!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection ->
-                                task {
-                                    do!
-                                        book
-                                        |> insertBookAsync authors genres series keywords languages archives connection
-                                }
-                        )
+                        do!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection ->
+                                    task {
+                                        do!
+                                            book
+                                            |> insertBookAsync
+                                                authors
+                                                genres
+                                                series
+                                                keywords
+                                                languages
+                                                archives
+                                                connection
+                                    }
+                            )
 
-                    let! books = ConnectionUtils.DoInTransactionAsync(connection, BookUtils.GetTestData)
-                    let! authorships = ConnectionUtils.DoInTransactionAsync(connection, AuthorshipUtils.GetTestData)
-                    let! bookGenres = ConnectionUtils.DoInTransactionAsync(connection, BookGenreUtils.GetTestData)
-                    let! bookKeywords = ConnectionUtils.DoInTransactionAsync(connection, BookKeywordUtils.GetTestData)
-                    let! bookSeries = ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.GetTestData)
+                        let! books = ConnectionUtils.DoInTransactionAsync(connection, BookUtils.GetTestData)
+                        let! authorships = ConnectionUtils.DoInTransactionAsync(connection, AuthorshipUtils.GetTestData)
+                        let! bookGenres = ConnectionUtils.DoInTransactionAsync(connection, BookGenreUtils.GetTestData)
 
-                    return books, authorships, bookGenres, bookKeywords, bookSeries
-                })
+                        let! bookKeywords =
+                            ConnectionUtils.DoInTransactionAsync(connection, BookKeywordUtils.GetTestData)
+
+                        let! bookSeries = ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.GetTestData)
+
+                        return books, authorships, bookGenres, bookKeywords, bookSeries
+                    }
+            )
 
         Assert.That(books, Is.EqualTo expectedBooks)
         Assert.That(authorships, Is.EqualTo(expectedAuthorships).AsCollection)
@@ -123,16 +136,19 @@ let TestGetLanguagesMapAsyncAsync () =
         let languages = [| "Lang 1" |] |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    return!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { return! languages |> getLanguagesMapAsync connection }
-                        )
-                })
+                        return!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { return! languages |> getLanguagesMapAsync connection }
+                            )
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
@@ -149,18 +165,21 @@ let TestInsertUnexistedArchivesAsync () =
         let archives = [| "archive2.zip"; "archive3.zip" |] |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    do!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { do! archives |> insertUnexistedArchivesAsync connection }
-                        )
+                        do!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { do! archives |> insertUnexistedArchivesAsync connection }
+                            )
 
-                    return! ConnectionUtils.DoInTransactionAsync(connection, ArchiveUtils.GetTestData)
-                })
+                        return! ConnectionUtils.DoInTransactionAsync(connection, ArchiveUtils.GetTestData)
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
@@ -174,16 +193,19 @@ let TestGetArchivesMapAsyncAsync () =
         let archives = [| "archive1.zip" |] |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    return!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { return! archives |> getArchivesMapAsync connection }
-                        )
-                })
+                        return!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { return! archives |> getArchivesMapAsync connection }
+                            )
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
@@ -200,18 +222,21 @@ let TestInsertUnexistedLanguagesAsync () =
         let languages = [| "Lang 2"; "Lang 3" |] |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    do!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { do! languages |> insertUnexistedLanguagesAsync connection }
-                        )
+                        do!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { do! languages |> insertUnexistedLanguagesAsync connection }
+                            )
 
-                    return! ConnectionUtils.DoInTransactionAsync(connection, LanguageUtils.GetTestData)
-                })
+                        return! ConnectionUtils.DoInTransactionAsync(connection, LanguageUtils.GetTestData)
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
@@ -225,16 +250,19 @@ let TestGetKeywordsMapAsyncAsync () =
         let keywords = [| "Keyword 1" |] |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    return!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { return! keywords |> getKeywordsMapAsync connection }
-                        )
-                })
+                        return!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { return! keywords |> getKeywordsMapAsync connection }
+                            )
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
@@ -251,18 +279,21 @@ let TestInsertUnexistedKeywordsAsync () =
         let keywords = [| "Keyword 2"; "Keyword 3" |] |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    do!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { do! keywords |> insertUnexistedKeywordsAsync connection }
-                        )
+                        do!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { do! keywords |> insertUnexistedKeywordsAsync connection }
+                            )
 
-                    return! ConnectionUtils.DoInTransactionAsync(connection, KeywordUtils.GetTestData)
-                })
+                        return! ConnectionUtils.DoInTransactionAsync(connection, KeywordUtils.GetTestData)
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
@@ -276,16 +307,19 @@ let TestGetSeriesMapAsyncAsync () =
         let series = [| "Series 1" |] |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    return!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { return! series |> getSeriesMapAsync connection }
-                        )
-                })
+                        return!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { return! series |> getSeriesMapAsync connection }
+                            )
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
@@ -302,18 +336,21 @@ let TestInsertUnexistedSeriesAsync () =
         let series = [| "Series 2"; "Series 3" |] |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    do!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { do! series |> insertUnexistedSeriesAsync connection }
-                        )
+                        do!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { do! series |> insertUnexistedSeriesAsync connection }
+                            )
 
-                    return! ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData)
-                })
+                        return! ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData)
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
@@ -327,16 +364,19 @@ let TestGetGenresMapAsyncAsync () =
         let genres = [| "genre1" |] |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    return!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { return! genres |> getGenresMapAsync connection }
-                        )
-                })
+                        return!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { return! genres |> getGenresMapAsync connection }
+                            )
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
@@ -353,18 +393,21 @@ let TestInsertUnexistedGenresAsync () =
         let genres = [| "genre2"; "genre3" |] |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    do!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { do! genres |> insertUnexistedGenresAsync connection }
-                        )
+                        do!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { do! genres |> insertUnexistedGenresAsync connection }
+                            )
 
-                    return! ConnectionUtils.DoInTransactionAsync(connection, GenreUtils.GetTestData)
-                })
+                        return! ConnectionUtils.DoInTransactionAsync(connection, GenreUtils.GetTestData)
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
@@ -383,16 +426,19 @@ let TestGetAuthorsMapAsyncAsync () =
             |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    return!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { return! authors |> getAuthorsMapAsync connection }
-                        )
-                })
+                        return!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { return! authors |> getAuthorsMapAsync connection }
+                            )
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 
@@ -418,18 +464,21 @@ let TestInsertUnexistedAuthorsAsync () =
             |> Set.ofArray
 
         let! actual =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do! ConnectionUtils.DoInTransactionAsync(connection, setUpData)
 
-                    do!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun connection -> task { do! authors |> insertUnexistedAuthorsAsync connection }
-                        )
+                        do!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun connection -> task { do! authors |> insertUnexistedAuthorsAsync connection }
+                            )
 
-                    return! ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData)
-                })
+                        return! ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData)
+                    }
+            )
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection)
 

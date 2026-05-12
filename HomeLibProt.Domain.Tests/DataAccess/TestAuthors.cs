@@ -11,16 +11,18 @@ public class TestAuthors {
     public async Task TestGetAuthorsByNameAsync() {
         var expected = new[] { new Author(Id: 2, Name: "B B B") };
 
-        var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
-                await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
-            });
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+                    await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
+                });
 
-            return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                return await Authors.GetAuthorsByNameAsync(c, ["B B B", "C C C"]);
+                return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    return await Authors.GetAuthorsByNameAsync(c, ["B B B", "C C C"]);
+                });
             });
-        });
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }
@@ -33,18 +35,20 @@ public class TestAuthors {
             new TestAuthor(Id: 3, FullName: "C C C", LastName: "C", FirstName: "C", MiddleName: "C")
         };
 
-        var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
-                await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
-            });
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+                    await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
+                });
 
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await Authors.InsertAuthorsAsync(c, [new AuthorParam(FullName: "C C C", LastName: "C", FirstName: "C", MiddleName: "C")]);
-            });
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await Authors.InsertAuthorsAsync(c, [new AuthorParam(FullName: "C C C", LastName: "C", FirstName: "C", MiddleName: "C")]);
+                });
 
-            return await ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData);
-        });
+                return await ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData);
+            });
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }
@@ -57,18 +61,20 @@ public class TestAuthors {
             new TestAuthor(Id: 30, FullName: "C C C", LastName: "C", FirstName: "C", MiddleName: "C")
         };
 
-        var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
-                await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
-            });
+        var actual = await TestUtils.UseTestDatabase(
+            DbStructure.CreateImportSqlDumpStructure,
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+                    await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
+                });
 
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await Authors.InsertAuthorEntityAsync(c, new AuthorEntityParam(Id: 30, FullName: "C C C", LastName: "C", FirstName: "C", MiddleName: "C"));
-            });
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await Authors.InsertAuthorEntityAsync(c, new AuthorEntityParam(Id: 30, FullName: "C C C", LastName: "C", FirstName: "C", MiddleName: "C"));
+                });
 
-            return await ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData);
-        });
+                return await ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData);
+            });
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }
@@ -80,60 +86,62 @@ public class TestAuthors {
             new Author(Id: 2, Name: "B B B")
          };
 
-        var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                var archiveId = await ArchiveUtils.Create(c, "archive1.zip");
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    var archiveId = await ArchiveUtils.Create(c, "archive1.zip");
 
-                var langId1 = await LanguageUtils.Create(c, "Lang1", true);
-                var langId2 = await LanguageUtils.Create(c, "Lang2", false);
+                    var langId1 = await LanguageUtils.Create(c, "Lang1", true);
+                    var langId2 = await LanguageUtils.Create(c, "Lang2", false);
 
-                var bookId1 = await BookUtils.Create(c,
-                                                     title: "Title1",
-                                                     fileName: "File1",
-                                                     size: 1,
-                                                     libId: "File1",
-                                                     deleted: false,
-                                                     extension: "fb2",
-                                                     date: "2025-11-07",
-                                                     archiveId: archiveId,
-                                                     libRate: 0,
-                                                     languageId: langId1);
-                var bookId2 = await BookUtils.Create(c,
-                                                     title: "Title2",
-                                                     fileName: "File2",
-                                                     size: 1,
-                                                     libId: "File2",
-                                                     deleted: false,
-                                                     extension: "fb2",
-                                                     date: "2025-11-07",
-                                                     archiveId: archiveId,
-                                                     libRate: 0,
-                                                     languageId: langId2);
-                var bookId3 = await BookUtils.Create(c,
-                                                     title: "Title3",
-                                                     fileName: "File3",
-                                                     size: 1,
-                                                     libId: "File3",
-                                                     deleted: false,
-                                                     extension: "fb2",
-                                                     date: "2025-11-07",
-                                                     archiveId: archiveId,
-                                                     libRate: 0,
-                                                     languageId: langId2);
+                    var bookId1 = await BookUtils.Create(c,
+                                                         title: "Title1",
+                                                         fileName: "File1",
+                                                         size: 1,
+                                                         libId: "File1",
+                                                         deleted: false,
+                                                         extension: "fb2",
+                                                         date: "2025-11-07",
+                                                         archiveId: archiveId,
+                                                         libRate: 0,
+                                                         languageId: langId1);
+                    var bookId2 = await BookUtils.Create(c,
+                                                         title: "Title2",
+                                                         fileName: "File2",
+                                                         size: 1,
+                                                         libId: "File2",
+                                                         deleted: false,
+                                                         extension: "fb2",
+                                                         date: "2025-11-07",
+                                                         archiveId: archiveId,
+                                                         libRate: 0,
+                                                         languageId: langId2);
+                    var bookId3 = await BookUtils.Create(c,
+                                                         title: "Title3",
+                                                         fileName: "File3",
+                                                         size: 1,
+                                                         libId: "File3",
+                                                         deleted: false,
+                                                         extension: "fb2",
+                                                         date: "2025-11-07",
+                                                         archiveId: archiveId,
+                                                         libRate: 0,
+                                                         languageId: langId2);
 
-                var authorId1 = await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
-                var authorId2 = await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
-                var authorId3 = await AuthorUtils.Create(connection, fullName: "C C C", lastName: "C", firstName: "C", middleName: "C");
+                    var authorId1 = await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+                    var authorId2 = await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
+                    var authorId3 = await AuthorUtils.Create(connection, fullName: "C C C", lastName: "C", firstName: "C", middleName: "C");
 
-                await AuthorshipUtils.Create(c, bookId: bookId1, authorId: authorId1);
-                await AuthorshipUtils.Create(c, bookId: bookId1, authorId: authorId2);
-                await AuthorshipUtils.Create(c, bookId: bookId2, authorId: authorId2);
-                await AuthorshipUtils.Create(c, bookId: bookId2, authorId: authorId3);
+                    await AuthorshipUtils.Create(c, bookId: bookId1, authorId: authorId1);
+                    await AuthorshipUtils.Create(c, bookId: bookId1, authorId: authorId2);
+                    await AuthorshipUtils.Create(c, bookId: bookId2, authorId: authorId2);
+                    await AuthorshipUtils.Create(c, bookId: bookId2, authorId: authorId3);
+                });
+                return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    return Authors.GetAuthorsFilterByIncludedLanguageAsync(c).ToBlockingEnumerable().ToArray();
+                });
             });
-            return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                return Authors.GetAuthorsFilterByIncludedLanguageAsync(c).ToBlockingEnumerable().ToArray();
-            });
-        });
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }

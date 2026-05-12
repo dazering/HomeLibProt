@@ -103,57 +103,60 @@ let TestInsertTree () =
                    )) ]
 
         let! searchNodes, searchResults =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun c ->
-                                task {
-                                    let! _ =
-                                        AuthorUtils.Create(
-                                            c,
-                                            fullName = "B B B",
-                                            lastName = "B",
-                                            firstName = "B",
-                                            middleName = "B"
-                                        )
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun c ->
+                                    task {
+                                        let! _ =
+                                            AuthorUtils.Create(
+                                                c,
+                                                fullName = "B B B",
+                                                lastName = "B",
+                                                firstName = "B",
+                                                middleName = "B"
+                                            )
 
-                                    let! _ =
-                                        AuthorUtils.Create(
-                                            c,
-                                            fullName = "Baa Baa Baa",
-                                            lastName = "Baa",
-                                            firstName = "Baa",
-                                            middleName = "Baa"
-                                        )
+                                        let! _ =
+                                            AuthorUtils.Create(
+                                                c,
+                                                fullName = "Baa Baa Baa",
+                                                lastName = "Baa",
+                                                firstName = "Baa",
+                                                middleName = "Baa"
+                                            )
 
-                                    let! _ =
-                                        AuthorUtils.Create(
-                                            c,
-                                            fullName = "Bab Bab Bab",
-                                            lastName = "Bab",
-                                            firstName = "Bab",
-                                            middleName = "Bab"
-                                        )
+                                        let! _ =
+                                            AuthorUtils.Create(
+                                                c,
+                                                fullName = "Bab Bab Bab",
+                                                lastName = "Bab",
+                                                firstName = "Bab",
+                                                middleName = "Bab"
+                                            )
 
-                                    do ()
-                                }
-                        )
+                                        do ()
+                                    }
+                            )
 
-                    do!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun c -> task { do! insertTree c tree None 1 }
-                        )
+                        do!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun c -> task { do! insertTree c tree None 1 }
+                            )
 
-                    let! searchNodes = ConnectionUtils.DoInTransactionAsync(connection, SearchNodeUtils.GetTestData)
+                        let! searchNodes = ConnectionUtils.DoInTransactionAsync(connection, SearchNodeUtils.GetTestData)
 
-                    let! searchResults =
-                        ConnectionUtils.DoInTransactionAsync(connection, SearchResultUtils.GetTestData)
+                        let! searchResults =
+                            ConnectionUtils.DoInTransactionAsync(connection, SearchResultUtils.GetTestData)
 
-                    return searchNodes, searchResults
-                })
+                        return searchNodes, searchResults
+                    }
+            )
 
         Assert.That(searchNodes, Is.EqualTo(expectedSearchNode).AsCollection)
         Assert.That(searchResults, Is.EqualTo(expectedSearchResults).AsCollection)
@@ -179,76 +182,82 @@ let TestImportAuthorHierarchicalSearchToDbAsync () =
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
         let! searchNodes, searchResults =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
-                    do!
-                        ConnectionUtils.DoInTransactionAsync(
-                            connection,
-                            fun c ->
-                                task {
-                                    let! archiveId = ArchiveUtils.Create(c, "archive1.zip")
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
+                        do!
+                            ConnectionUtils.DoInTransactionAsync(
+                                connection,
+                                fun c ->
+                                    task {
+                                        let! archiveId = ArchiveUtils.Create(c, "archive1.zip")
 
-                                    let! langId = LanguageUtils.Create(c, "Lang1", true)
+                                        let! langId = LanguageUtils.Create(c, "Lang1", true)
 
-                                    let! bookId =
-                                        BookUtils.Create(
-                                            c,
-                                            title = "Title1",
-                                            fileName = "1",
-                                            size = 1,
-                                            libId = "1",
-                                            deleted = false,
-                                            extension = "fb2",
-                                            date = "2025-11-07",
-                                            archiveId = archiveId,
-                                            libRate = 0,
-                                            languageId = langId
-                                        )
+                                        let! bookId =
+                                            BookUtils.Create(
+                                                c,
+                                                title = "Title1",
+                                                fileName = "1",
+                                                size = 1,
+                                                libId = "1",
+                                                deleted = false,
+                                                extension = "fb2",
+                                                date = "2025-11-07",
+                                                archiveId = archiveId,
+                                                libRate = 0,
+                                                languageId = langId
+                                            )
 
-                                    let! authorId1 =
-                                        AuthorUtils.Create(
-                                            c,
-                                            fullName = "B B B",
-                                            lastName = "B",
-                                            firstName = "B",
-                                            middleName = "B"
-                                        )
+                                        let! authorId1 =
+                                            AuthorUtils.Create(
+                                                c,
+                                                fullName = "B B B",
+                                                lastName = "B",
+                                                firstName = "B",
+                                                middleName = "B"
+                                            )
 
-                                    let! authorId2 =
-                                        AuthorUtils.Create(
-                                            c,
-                                            fullName = "Baa Baa Baa",
-                                            lastName = "Baa",
-                                            firstName = "Baa",
-                                            middleName = "Baa"
-                                        )
+                                        let! authorId2 =
+                                            AuthorUtils.Create(
+                                                c,
+                                                fullName = "Baa Baa Baa",
+                                                lastName = "Baa",
+                                                firstName = "Baa",
+                                                middleName = "Baa"
+                                            )
 
-                                    let! authorId3 =
-                                        AuthorUtils.Create(
-                                            c,
-                                            fullName = "Bab Bab Bab",
-                                            lastName = "Bab",
-                                            firstName = "Bab",
-                                            middleName = "Bab"
-                                        )
+                                        let! authorId3 =
+                                            AuthorUtils.Create(
+                                                c,
+                                                fullName = "Bab Bab Bab",
+                                                lastName = "Bab",
+                                                firstName = "Bab",
+                                                middleName = "Bab"
+                                            )
 
-                                    let! _ = AuthorshipUtils.Create(c, bookId = bookId, authorId = authorId1)
-                                    let! _ = AuthorshipUtils.Create(c, bookId = bookId, authorId = authorId2)
-                                    let! _ = AuthorshipUtils.Create(c, bookId = bookId, authorId = authorId3)
+                                        let! _ = AuthorshipUtils.Create(c, bookId = bookId, authorId = authorId1)
+                                        let! _ = AuthorshipUtils.Create(c, bookId = bookId, authorId = authorId2)
+                                        let! _ = AuthorshipUtils.Create(c, bookId = bookId, authorId = authorId3)
 
-                                    do ()
-                                }
-                        )
+                                        do ()
+                                    }
+                            )
 
-                    do! importAuthorHierarchicalSearchToDbAsync authorHierarchicalSearchImporterParameters connection
+                        do!
+                            importAuthorHierarchicalSearchToDbAsync
+                                authorHierarchicalSearchImporterParameters
+                                connection
 
-                    let! searchNodes = ConnectionUtils.DoInTransactionAsync(connection, SearchNodeUtils.GetTestData)
+                        let! searchNodes = ConnectionUtils.DoInTransactionAsync(connection, SearchNodeUtils.GetTestData)
 
-                    let! searchResults =
-                        ConnectionUtils.DoInTransactionAsync(connection, SearchResultUtils.GetTestData)
+                        let! searchResults =
+                            ConnectionUtils.DoInTransactionAsync(connection, SearchResultUtils.GetTestData)
 
-                    return searchNodes, searchResults
-                })
+                        return searchNodes, searchResults
+                    }
+            )
 
         Assert.That(searchNodes, Is.EqualTo(expectedSearchNode).AsCollection)
         Assert.That(searchResults, Is.EqualTo(expectedSearchResults).AsCollection)

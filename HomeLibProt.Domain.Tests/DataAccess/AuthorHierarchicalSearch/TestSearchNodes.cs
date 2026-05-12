@@ -16,15 +16,17 @@ public class TestSearchNodes {
             new TestSearchNode(Id: 3, Letters: "A A", AuthorsCount: 2, PreviousId: 2)
         };
 
-        var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                var searchNodeId1 = await SearchNodes.InsertSearchNodeAsync(c, new SearchNodeParam(Letters: "A", AuthorsCount: 2, PreviousId: null));
-                var searchNodeId2 = await SearchNodes.InsertSearchNodeAsync(c, new SearchNodeParam(Letters: "A ", AuthorsCount: 2, PreviousId: searchNodeId1));
-                await SearchNodes.InsertSearchNodeAsync(c, new SearchNodeParam(Letters: "A A", AuthorsCount: 2, PreviousId: searchNodeId2));
-            });
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    var searchNodeId1 = await SearchNodes.InsertSearchNodeAsync(c, new SearchNodeParam(Letters: "A", AuthorsCount: 2, PreviousId: null));
+                    var searchNodeId2 = await SearchNodes.InsertSearchNodeAsync(c, new SearchNodeParam(Letters: "A ", AuthorsCount: 2, PreviousId: searchNodeId1));
+                    await SearchNodes.InsertSearchNodeAsync(c, new SearchNodeParam(Letters: "A A", AuthorsCount: 2, PreviousId: searchNodeId2));
+                });
 
-            return await ConnectionUtils.DoInTransactionAsync(connection, SearchNodeUtils.GetTestData);
-        });
+                return await ConnectionUtils.DoInTransactionAsync(connection, SearchNodeUtils.GetTestData);
+            });
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }

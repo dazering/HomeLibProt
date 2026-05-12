@@ -92,36 +92,42 @@ let TestInsertBookAsync () =
              bookSeries,
              languages,
              archives =
-            TestUtils.UseTestDatabase(fun connection ->
-                task {
+            TestUtils.UseTestDatabase(
+                fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
+                , fun connection ->
+                    task {
 
-                    do! importInpxToDb inpxImporterParameters connection
+                        do! importInpxToDb inpxImporterParameters connection
 
-                    let! books = ConnectionUtils.DoInTransactionAsync(connection, BookUtils.GetTestData)
-                    let! authors = ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData)
-                    let! authorships = ConnectionUtils.DoInTransactionAsync(connection, AuthorshipUtils.GetTestData)
-                    let! genres = ConnectionUtils.DoInTransactionAsync(connection, GenreUtils.GetTestData)
-                    let! bookGenres = ConnectionUtils.DoInTransactionAsync(connection, BookGenreUtils.GetTestData)
-                    let! keywords = ConnectionUtils.DoInTransactionAsync(connection, KeywordUtils.GetTestData)
-                    let! bookKeywords = ConnectionUtils.DoInTransactionAsync(connection, BookKeywordUtils.GetTestData)
-                    let! series = ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData)
-                    let! bookSeries = ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.GetTestData)
-                    let! languages = ConnectionUtils.DoInTransactionAsync(connection, LanguageUtils.GetTestData)
-                    let! archives = ConnectionUtils.DoInTransactionAsync(connection, ArchiveUtils.GetTestData)
+                        let! books = ConnectionUtils.DoInTransactionAsync(connection, BookUtils.GetTestData)
+                        let! authors = ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData)
+                        let! authorships = ConnectionUtils.DoInTransactionAsync(connection, AuthorshipUtils.GetTestData)
+                        let! genres = ConnectionUtils.DoInTransactionAsync(connection, GenreUtils.GetTestData)
+                        let! bookGenres = ConnectionUtils.DoInTransactionAsync(connection, BookGenreUtils.GetTestData)
+                        let! keywords = ConnectionUtils.DoInTransactionAsync(connection, KeywordUtils.GetTestData)
 
-                    return
-                        books,
-                        authors,
-                        authorships,
-                        genres,
-                        bookGenres,
-                        keywords,
-                        bookKeywords,
-                        series,
-                        bookSeries,
-                        languages,
-                        archives
-                })
+                        let! bookKeywords =
+                            ConnectionUtils.DoInTransactionAsync(connection, BookKeywordUtils.GetTestData)
+
+                        let! series = ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData)
+                        let! bookSeries = ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.GetTestData)
+                        let! languages = ConnectionUtils.DoInTransactionAsync(connection, LanguageUtils.GetTestData)
+                        let! archives = ConnectionUtils.DoInTransactionAsync(connection, ArchiveUtils.GetTestData)
+
+                        return
+                            books,
+                            authors,
+                            authorships,
+                            genres,
+                            bookGenres,
+                            keywords,
+                            bookKeywords,
+                            series,
+                            bookSeries,
+                            languages,
+                            archives
+                    }
+            )
 
         Assert.That(books, Is.EqualTo expectedBooks)
         Assert.That(authors, Is.EqualTo expectedAuthors)
