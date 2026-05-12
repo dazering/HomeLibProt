@@ -80,4 +80,37 @@ public class TestRates {
 
         Assert.That(actual, Is.EqualTo(expected));
     }
+
+    [Test]
+    [TestCase(1, RatesCheckResult.BookExsists)]
+    [TestCase(0, RatesCheckResult.NoRecord)]
+    public async Task TestCheckIfBookGenreExistsAsync(long bookId, RatesCheckResult expected) {
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    var archiveId = await ArchiveUtils.Create(c, "archive1.zip");
+
+                    var langId = await LanguageUtils.Create(c, "Lang 1");
+
+                    await BookUtils.Create(c,
+                                           title: "Title1",
+                                           fileName: "File1",
+                                           size: 1,
+                                           libId: "File1",
+                                           deleted: false,
+                                           extension: "fb2",
+                                           date: "2025-11-07",
+                                           archiveId: archiveId,
+                                           libRate: 0,
+                                           languageId: langId);
+                });
+
+                return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    return await Rates.CheckIfBookExistsAsync(c, new RateEntityParam(BookId: bookId, Rate: 1));
+                });
+            });
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
+    }
 }
