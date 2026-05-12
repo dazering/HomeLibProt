@@ -206,6 +206,22 @@ create table Archives (
 drop table if exists Archives;
 ";
 
+    private static readonly string createRatesSql = @"
+create table Rates (
+    Id integer primary key,
+    BookId integer not null references Books(Id),
+    Rate integer not null
+);
+";
+
+    private static readonly string createIndexRatesForBookIdSql = @"
+create index idx_rates_book_ids on Rates (BookId);
+";
+
+    private static readonly string dropRatesSql = @"
+drop table if exists Rates;
+";
+
     private static IEnumerable<string> getDropImportInpxCommands(bool fullCreation) {
         yield return dropAuthorHierarchicalSearchResultsSql;
         yield return dropAuthorHierarchicalSearchNodesSql;
@@ -230,6 +246,7 @@ drop table if exists Archives;
     }
 
     private static IEnumerable<string> getDropImportSqlDumpCommands() {
+        yield return dropRatesSql;
         yield return dropBookGenresSql;
         yield return dropGenresSql;
         yield return dropBookSeriesSql;
@@ -291,6 +308,8 @@ drop table if exists Archives;
         yield return createKeywordsSql;
         yield return createIndexKeywordsForNameSql;
         yield return createBookKeywordsSql;
+        yield return createRatesSql;
+        yield return createIndexRatesForBookIdSql;
     }
 
     private static async Task ExecuteSqlAsync(DbConnection connection, string sql) {
