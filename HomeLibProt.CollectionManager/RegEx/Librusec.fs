@@ -11,7 +11,7 @@ let authorships =
 let bookGenres = $@"\((?<{BookGenres.bookId}>\d*),(?<{BookGenres.genreId}>\d*)\)"
 
 let books =
-    $@"\((?<{Books.bookId}>\d*),(?<{Books.fileSize}>\d*),'(?<{Books.time}>.*)','(?<{Books.title}>.*)','(?<title1>.*)','(?<{Languages.lang}>.*)','(?<srcLang>.*)','(?<{Books.fileType}>.*)',(?<year>\d*),(?<year1>\d*),'(?<{Books.deleted}>.*)','(?<ver>.*)','(?<fileAuthor>.*)','(?<{Keywords.keywords}>.*)','(?<blocked>.*)','(?<md5>.*)','(?<broken>.*)','(?<modified>.*)',(?<authors>\d*),(?<replacedBy>\d*),(?<pages>\d*),'(?<metaphone>.*)'\)"
+    $@"\((?<{Books.bookId}>\d*),(?<{Books.fileSize}>\d*),'(?<{Books.time}>\d\d\d\d-\d\d-\d\d) \d\d:\d\d:\d\d','(?<{Books.title}>.*)','(?<title1>.*)','(?<{Languages.lang}>.*)','(?<srcLang>.*)','(?<{Books.fileType}>.*)',(?<year>\d*),(?<year1>\d*),'(?<{Books.deleted}>.*)','(?<ver>.*)','(?<fileAuthor>.*)','(?<{Keywords.keywords}>.*)','(?<blocked>.*)','(?<md5>.*)','(?<broken>.*)','(?<modified>.*)',(?<authors>\d*),(?<replacedBy>\d*),(?<pages>\d*),'(?<metaphone>.*)'\)"
 
 let bookSeries =
     $@"\((?<{BookSeries.bookId}>\d*),(?<{BookSeries.seriesId}>\d*),(?<{BookSeries.seriesNumber}>\d*)\.\d*,(?<sort>\d*)\)"
