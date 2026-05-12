@@ -56,9 +56,9 @@ public class TestBooks {
                 });
 
                 await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                    await Books.InsertBookEntityAsync(c, new BookEntityParam(Id: 1,Title: "Title 1", FileName: "File1", Size: 1, LibId: "File1", Deleted: false, Extension: "fb2", Date: "2025-11-07", ArchiveId: archiveId, LibRate: null, LanguageId: langId));
-                    await Books.InsertBookEntityAsync(c, new BookEntityParam(Id: 2,Title: "Title 2", FileName: "File2", Size: 2, LibId: "File2", Deleted: false, Extension: "fb2", Date: "2025-11-07", ArchiveId: archiveId, LibRate: 1, LanguageId: langId));
-                    await Books.InsertBookEntityAsync(c, new BookEntityParam(Id: 30,Title: "Title 3", FileName: "File3", Size: 3, LibId: "File3", Deleted: true, Extension: "fb2", Date: "2025-11-07", ArchiveId: archiveId, LibRate: null, LanguageId: langId));
+                    await Books.InsertBookEntityAsync(c, new BookEntityParam(Id: 1, Title: "Title 1", FileName: "File1", Size: 1, LibId: "File1", Deleted: false, Extension: "fb2", Date: "2025-11-07", ArchiveId: archiveId, LibRate: null, LanguageId: langId));
+                    await Books.InsertBookEntityAsync(c, new BookEntityParam(Id: 2, Title: "Title 2", FileName: "File2", Size: 2, LibId: "File2", Deleted: false, Extension: "fb2", Date: "2025-11-07", ArchiveId: archiveId, LibRate: 1, LanguageId: langId));
+                    await Books.InsertBookEntityAsync(c, new BookEntityParam(Id: 30, Title: "Title 3", FileName: "File3", Size: 3, LibId: "File3", Deleted: true, Extension: "fb2", Date: "2025-11-07", ArchiveId: archiveId, LibRate: null, LanguageId: langId));
                 });
 
                 return await ConnectionUtils.DoInTransactionAsync(connection, BookUtils.GetTestData);
