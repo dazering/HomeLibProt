@@ -85,10 +85,15 @@ let private importAuthorshipsResult (connection: DbConnection) (result: Authorsh
     task {
         let entityParam = result |> authorshipsResultToParam
 
-        try
-            do! Authorships.InsertAuthorshipsAsync(connection, [| entityParam |])
-        with :? SqliteException ->
-            eprintfn $"Author or Book not found. Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}"
+        match! Authorships.CheckIfAuthorshipsExistsAsync(connection, entityParam) with
+        | AuthorshipsCheckResult.AllExsists -> do! Authorships.InsertAuthorshipsAsync(connection, [| entityParam |])
+        | AuthorshipsCheckResult.OnlyBook ->
+            eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Author not found."
+        | AuthorshipsCheckResult.OnlyAuthor ->
+            eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Book not found."
+        | AuthorshipsCheckResult.NoRecords ->
+            eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Author and Book not found."
+        | r -> raise (InvalidOperationException $"Unsupported check result: {r}")
     }
 
 let private bookResultToEntityParam (archiveId: int64) (languageId: int64) (book: BookResult) : BookEntityParam =
