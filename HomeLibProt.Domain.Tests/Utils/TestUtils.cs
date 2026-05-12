@@ -11,10 +11,10 @@ namespace HomeLibProt.Domain.Tests.Utils;
 public static class TestUtils {
     private static readonly string dataSource = ":memory:";
 
-    public static async Task<T> UseTestDatabase<T>(Func<DbConnection, Task<T>> action) {
+    public static async Task<T> UseTestDatabase<T>(Func<DbConnection, Task> createStructure, Func<DbConnection, Task<T>> action) {
         using var connection = new SqliteConnection(ConnectionUtils.MakeConnectionString(dataSource));
         return await ConnectionUtils.WithConnectionAsync(connection, async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => await DbStructure.CreateImportInpxStructure(c, true));
+            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => await createStructure(connection));
             return await action(connection);
         });
     }
