@@ -39,10 +39,18 @@ let private importBookSeriesResult (connection: DbConnection) (result: BookSerie
     task {
         let entityParam = result |> bookSeriesResultToEntityParam
 
-        try
-            do! BookSeries.InsertBookSeriesAsync(connection, entityParam)
-        with :? SqliteException ->
-            eprintfn $"Book or Series not found. Book Id: {entityParam.BookId}, Series Id: {entityParam.SeriesId}"
+        match! BookSeries.CheckIfBookSeriesExistsAsync(connection, entityParam) with
+        | BookSeriesCheckResult.AllExsists -> do! BookSeries.InsertBookSeriesAsync(connection, entityParam)
+        | BookSeriesCheckResult.OnlyBook ->
+            eprintfn
+                $"Book Id: {entityParam.BookId}, Series Id: {entityParam.SeriesId}, Series Number: {entityParam.SeriesNumber}. Series not found."
+        | BookSeriesCheckResult.OnlySeries ->
+            eprintfn
+                $"Book Id: {entityParam.BookId}, Series Id: {entityParam.SeriesId}, Series Number: {entityParam.SeriesNumber}. Book not found."
+        | BookSeriesCheckResult.NoRecords ->
+            eprintfn
+                $"Book Id: {entityParam.BookId}, Series Id: {entityParam.SeriesId}, Series Number: {entityParam.SeriesNumber}. Book and Series not found."
+        | r -> raise (InvalidOperationException $"Unsupported check result: {r}")
     }
 
 let private seriesResultToEntityParam (series: SeriesResult) : SeriesEntityParam =
