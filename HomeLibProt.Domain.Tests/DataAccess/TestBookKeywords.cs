@@ -12,34 +12,36 @@ public class TestBookKeywords {
                 new TestBookKeyword(BookId: 1, KeywordId: 1)
             };
 
-        var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            var (bookId, keywordId) = await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                var archiveId = await ArchiveUtils.Create(c, "archive1.zip");
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                var (bookId, keywordId) = await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    var archiveId = await ArchiveUtils.Create(c, "archive1.zip");
 
-                var langId = await LanguageUtils.Create(c, "Lang 1");
+                    var langId = await LanguageUtils.Create(c, "Lang 1");
 
-                var bookId = await BookUtils.Create(c,
-                                                    title: "Title1",
-                                                    fileName: "File1",
-                                                    size: 1,
-                                                    libId: "File1",
-                                                    deleted: false,
-                                                    extension: "fb2",
-                                                    date: "2025-11-07",
-                                                    archiveId: archiveId,
-                                                    libRate: 0,
-                                                    languageId: langId);
-                var keywordId = await KeywordUtils.Create(c, name: "Keyword 1");
+                    var bookId = await BookUtils.Create(c,
+                                                        title: "Title1",
+                                                        fileName: "File1",
+                                                        size: 1,
+                                                        libId: "File1",
+                                                        deleted: false,
+                                                        extension: "fb2",
+                                                        date: "2025-11-07",
+                                                        archiveId: archiveId,
+                                                        libRate: 0,
+                                                        languageId: langId);
+                    var keywordId = await KeywordUtils.Create(c, name: "Keyword 1");
 
-                return (bookId, keywordId);
+                    return (bookId, keywordId);
+                });
+
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await BookKeywords.InsertBookKeywordsAsync(c, [new BookKeywordParam(BookId: bookId, KeywordId: keywordId)]);
+                });
+
+                return await ConnectionUtils.DoInTransactionAsync(connection, BookKeywordUtils.GetTestData);
             });
-
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await BookKeywords.InsertBookKeywordsAsync(c, [new BookKeywordParam(BookId: bookId, KeywordId: keywordId)]);
-            });
-
-            return await ConnectionUtils.DoInTransactionAsync(connection, BookKeywordUtils.GetTestData);
-        });
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }

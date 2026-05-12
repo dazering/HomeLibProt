@@ -10,16 +10,18 @@ public class TestKeywords {
     public async Task TestGetKeywordsByNameAsync() {
         var expected = new[] { new Keyword(Id: 2, Name: "Keyword 2") };
 
-        var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await KeywordUtils.Create(c, name: "Keyword 1");
-                await KeywordUtils.Create(c, name: "Keyword 2");
-            });
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await KeywordUtils.Create(c, name: "Keyword 1");
+                    await KeywordUtils.Create(c, name: "Keyword 2");
+                });
 
-            return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                return await Keywords.GetKeywordsByNameAsync(c, ["Keyword 2", "Keyword 3"]);
+                return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    return await Keywords.GetKeywordsByNameAsync(c, ["Keyword 2", "Keyword 3"]);
+                });
             });
-        });
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }
@@ -32,18 +34,20 @@ public class TestKeywords {
             new TestKeyword(Id: 3, Name: "Keyword 3"),
         };
 
-        var actual = await TestUtils.UseTestDatabase(async (connection) => {
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await KeywordUtils.Create(c, name: "Keyword 1");
-                await KeywordUtils.Create(c, name: "Keyword 2");
-            });
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await KeywordUtils.Create(c, name: "Keyword 1");
+                    await KeywordUtils.Create(c, name: "Keyword 2");
+                });
 
-            await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
-                await Keywords.InsertKeywordsAsync(c, ["Keyword 3"]);
-            });
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await Keywords.InsertKeywordsAsync(c, ["Keyword 3"]);
+                });
 
-            return await ConnectionUtils.DoInTransactionAsync(connection, KeywordUtils.GetTestData);
-        });
+                return await ConnectionUtils.DoInTransactionAsync(connection, KeywordUtils.GetTestData);
+            });
 
         Assert.That(actual, Is.EqualTo(expected));
     }
