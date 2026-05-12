@@ -10,7 +10,6 @@ open System.Threading.Tasks
 open HomeLibProt.Domain.DataAccess
 open HomeLibProt.CollectionManager.RegEx.RegExResults
 open HomeLibProt.CollectionManager.SqlDumps.SqlDumpParser
-open Microsoft.Data.Sqlite
 
 type SqlDumpImporterParameters =
     { PathToSqlDumps: string
@@ -26,10 +25,11 @@ let private importRateResult (connection: DbConnection) (result: RateResult) : T
     task {
         let entityParam = result |> rateResultToEntityParam
 
-        try
-            do! Rates.InsertRateEntityAsync(connection, entityParam)
-        with :? SqliteException ->
-            eprintfn $"Book not found. Book Id: {entityParam.BookId}"
+        match! Rates.CheckIfBookExistsAsync(connection, entityParam) with
+        | RatesCheckResult.BookExsists -> do! Rates.InsertRateEntityAsync(connection, entityParam)
+        | RatesCheckResult.NoRecord ->
+            eprintfn $"Book Id: {entityParam.BookId}, Rate: {entityParam.Rate}. Book not found."
+        | r -> raise (InvalidOperationException $"Unsupported check result: {r}")
     }
 
 let private bookSeriesResultToEntityParam (bookSeries: BookSeriesResult) : BookSeriesParam =
