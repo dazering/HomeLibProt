@@ -62,10 +62,15 @@ let private importBookGenreResult (connection: DbConnection) (result: BookGenreR
     task {
         let entityParam = result |> bookGenreResultToEntityParam
 
-        try
-            do! BookGenres.InsertBookGenresAsync(connection, [| entityParam |])
-        with :? SqliteException ->
-            eprintfn $"Book or Genre not found. Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}"
+        match! BookGenres.CheckIfBookGenreExistsAsync(connection, entityParam) with
+        | BookGenreCheckResult.AllExsists -> do! BookGenres.InsertBookGenresAsync(connection, [| entityParam |])
+        | BookGenreCheckResult.OnlyBook ->
+            eprintfn $"Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}. Genre not found."
+        | BookGenreCheckResult.OnlyGenre ->
+            eprintfn $"Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}. Book not found."
+        | BookGenreCheckResult.NoRecords ->
+            eprintfn $"Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}. Book and Genre not found."
+        | r -> raise (InvalidOperationException $"Unsupported check result: {r}")
     }
 
 let private genreResultToEntityParam (genre: GenreResult) : GenreEntityParam =
