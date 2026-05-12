@@ -41,3 +41,7 @@ module Languages =
 module Series =
     let seriesId = "seriesId"
     let name = "name"
+
+module Rates =
+    let bookId = "bookId"
+    let rate = "rate"
