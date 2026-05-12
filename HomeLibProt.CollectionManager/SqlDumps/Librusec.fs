@@ -13,3 +13,5 @@ let bookSeries = "libseq.sql.gz"
 let genres = "libgenres.sql.gz"
 
 let series = "libseqs.sql.gz"
+
+let rates = "librate.sql.gz"
