@@ -48,6 +48,7 @@ public class TestBookSeries {
     }
 
     [Test]
+    [TestCase(1, 2, BookSeriesCheckResult.Duplicate)]
     [TestCase(1, 1, BookSeriesCheckResult.AllExsists)]
     [TestCase(1, 0, BookSeriesCheckResult.OnlyBook)]
     [TestCase(0, 1, BookSeriesCheckResult.OnlySeries)]
@@ -61,18 +62,20 @@ public class TestBookSeries {
 
                     var langId = await LanguageUtils.Create(c, "Lang 1");
 
-                    await BookUtils.Create(c,
-                                           title: "Title1",
-                                           fileName: "File1",
-                                           size: 1,
-                                           libId: "File1",
-                                           deleted: false,
-                                           extension: "fb2",
-                                           date: "2025-11-07",
-                                           archiveId: archiveId,
-                                           libRate: 0,
-                                           languageId: langId);
+                    var bookId = await BookUtils.Create(c,
+                                                        title: "Title1",
+                                                        fileName: "File1",
+                                                        size: 1,
+                                                        libId: "File1",
+                                                        deleted: false,
+                                                        extension: "fb2",
+                                                        date: "2025-11-07",
+                                                        archiveId: archiveId,
+                                                        libRate: 0,
+                                                        languageId: langId);
                     await SeriesUtils.Create(c, name: "Series 1");
+                    var seriesId = await SeriesUtils.Create(c, name: "Series 2");
+                    await BookSeriesUtils.Create(c, bookId: bookId, seriesId: seriesId, seriesNumber: 1);
                 });
 
                 return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
