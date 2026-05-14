@@ -48,6 +48,7 @@ public class TestBookGenres {
     }
 
     [Test]
+    [TestCase(1, 2, BookGenreCheckResult.Duplicate)]
     [TestCase(1, 1, BookGenreCheckResult.AllExsists)]
     [TestCase(1, 0, BookGenreCheckResult.OnlyBook)]
     [TestCase(0, 1, BookGenreCheckResult.OnlyGenre)]
@@ -61,18 +62,21 @@ public class TestBookGenres {
 
                     var langId = await LanguageUtils.Create(c, "Lang 1");
 
-                    await BookUtils.Create(c,
-                                           title: "Title1",
-                                           fileName: "File1",
-                                           size: 1,
-                                           libId: "File1",
-                                           deleted: false,
-                                           extension: "fb2",
-                                           date: "2025-11-07",
-                                           archiveId: archiveId,
-                                           libRate: 0,
-                                           languageId: langId);
+                    var bookId = await BookUtils.Create(c,
+                                                        title: "Title1",
+                                                        fileName: "File1",
+                                                        size: 1,
+                                                        libId: "File1",
+                                                        deleted: false,
+                                                        extension: "fb2",
+                                                        date: "2025-11-07",
+                                                        archiveId: archiveId,
+                                                        libRate: 0,
+                                                        languageId: langId);
                     await GenreUtils.Create(c, key: "genre1", name: "Genre 1");
+                    var genreId = await GenreUtils.Create(c, key: "genre2", name: "Genre 2");
+
+                    await BookGenreUtils.Create(c, bookId: bookId, genreId: genreId);
                 });
 
                 return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
