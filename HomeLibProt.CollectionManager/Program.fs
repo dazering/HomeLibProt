@@ -17,6 +17,7 @@ let importSqlDumps (args: ParseResults<ImportSqlDumps>) : Task<unit> =
         let pathToDb = args.GetResult ImportSqlDumps.PathToDatabase
         let pathToSqlDumps = args.GetResult ImportSqlDumps.PathToSqlDumps
         let site = args.GetResult ImportSqlDumps.Site
+        let keepSqlDumps = args.Contains ImportSqlDumps.KeepSqlDumps
 
         let connection =
             pathToDb
@@ -25,6 +26,7 @@ let importSqlDumps (args: ParseResults<ImportSqlDumps>) : Task<unit> =
 
         let parameters: SqlDumpImporter.SqlDumpImporterParameters =
             { PathToSqlDumps = pathToSqlDumps
+              KeepSqlDumps = keepSqlDumps
               ProgressReport = printProgressReport
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
