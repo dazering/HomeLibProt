@@ -48,9 +48,16 @@ drop table if exists Books;
 create table Authorships (
     Id integer primary key,
     AuthorId integer not null references Authors(Id),
-    BookId integer not null references Books(Id),
-    unique(AuthorId, BookId)
+    BookId integer not null references Books(Id)
 );
+";
+
+    private static readonly string createIndexAuthorshipsForBookIdAndAuthorIdSql = @"
+create unique index idx_authorships_book_id_author_id on Authorships (BookId, AuthorId);
+";
+
+    private static readonly string createIndexAuthorshipsForAuthorIdSql = @"
+create index idx_authorships_author_id on Authorships (AuthorId);
 ";
 
     private static readonly string dropAuthorshipsSql = @"
@@ -81,6 +88,14 @@ create table BookSeries (
 );
 ";
 
+    private static readonly string createIndexBookSeriesForBookIdAndSeriesIdSql = @"
+create unique index idx_book_series_book_id_series_id on BookSeries (BookId, SeriesId);
+";
+
+    private static readonly string createIndexBookSeriesForBookIdSql = @"
+create index idx_book_series_book_id on BookSeries (BookId);
+";
+
     private static readonly string dropBookSeriesSql = @"
 drop table if exists BookSeries;
 ";
@@ -107,6 +122,14 @@ create table BookGenres (
     BookId integer not null references Books(Id),
     GenreId integer not null references Genres(Id)
 );
+";
+
+    private static readonly string createIndexBookGenresForBookIdAndGenreIdSql = @"
+create unique index idx_book_genres_book_id_genre_id on BookGenres (BookId, GenreId);
+";
+
+    private static readonly string createIndexBookGenresForBookIdSql = @"
+create index idx_book_genres_book_id on BookGenres (BookId);
 ";
 
     private static readonly string dropBookGenresSql = @"
@@ -270,12 +293,15 @@ drop table if exists Rates;
         yield return createArchivesSql;
         yield return createBooksSql;
         yield return createAuthorshipsSql;
+        yield return createIndexAuthorshipsForAuthorIdSql;
         yield return createSeriesSql;
         yield return createIndexSeriesForNameSql;
         yield return createBookSeriesSql;
+        yield return createIndexBookSeriesForBookIdSql;
         yield return createGenresSql;
         yield return createIndexGenresForKeySql;
         yield return createBookGenresSql;
+        yield return createIndexBookGenresForBookIdSql;
         yield return createKeywordsSql;
         yield return createIndexKeywordsForNameSql;
         yield return createBookKeywordsSql;
@@ -299,12 +325,15 @@ drop table if exists Rates;
         yield return createArchivesSql;
         yield return createBooksSql;
         yield return createAuthorshipsSql;
+        yield return createIndexAuthorshipsForBookIdAndAuthorIdSql;
         yield return createSeriesSql;
         yield return createIndexSeriesForNameSql;
         yield return createBookSeriesSql;
+        yield return createIndexBookSeriesForBookIdAndSeriesIdSql;
         yield return createGenresSql;
         yield return createIndexGenresForKeySql;
         yield return createBookGenresSql;
+        yield return createIndexBookGenresForBookIdAndGenreIdSql;
         yield return createKeywordsSql;
         yield return createIndexKeywordsForNameSql;
         yield return createBookKeywordsSql;
