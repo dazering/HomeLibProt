@@ -98,18 +98,18 @@ let private importAuthorshipsResult (connection: DbConnection) (result: Authorsh
     task {
         let entityParam = result |> authorshipsResultToParam
 
-        try
-            match! Authorships.CheckIfAuthorshipsExistsAsync(connection, entityParam) with
-            | AuthorshipsCheckResult.AllExsists -> do! Authorships.InsertAuthorshipsAsync(connection, [| entityParam |])
-            | AuthorshipsCheckResult.OnlyBook ->
-                eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Author not found."
-            | AuthorshipsCheckResult.OnlyAuthor ->
-                eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Book not found."
-            | AuthorshipsCheckResult.NoRecords ->
-                eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Author and Book not found."
-            | r -> raise (InvalidOperationException $"Unsupported check result: {r}")
-        with :? Microsoft.Data.Sqlite.SqliteException ->
-            eprintfn $"Unable to insert Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}."
+        match! Authorships.CheckIfAuthorshipsExistsAsync(connection, entityParam) with
+        | AuthorshipsCheckResult.Duplicate ->
+            eprintfn
+                $"Unable to insert duplicate of authorship with Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}."
+        | AuthorshipsCheckResult.AllExsists -> do! Authorships.InsertAuthorshipsAsync(connection, [| entityParam |])
+        | AuthorshipsCheckResult.OnlyBook ->
+            eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Author not found."
+        | AuthorshipsCheckResult.OnlyAuthor ->
+            eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Book not found."
+        | AuthorshipsCheckResult.NoRecords ->
+            eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Author and Book not found."
+        | r -> raise (InvalidOperationException $"Unsupported check result: {r}")
     }
 
 let private bookResultToEntityParam (archiveId: int64) (languageId: int64) (book: BookResult) : BookEntityParam =
