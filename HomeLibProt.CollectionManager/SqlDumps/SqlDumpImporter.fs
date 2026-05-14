@@ -13,6 +13,7 @@ open HomeLibProt.CollectionManager.SqlDumps.SqlDumpParser
 
 type SqlDumpImporterParameters =
     { PathToSqlDumps: string
+      KeepSqlDumps: bool
       ProgressReport: string -> unit
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
@@ -377,6 +378,17 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                                 c
                     }
             )
+
+        if parameters.KeepSqlDumps |> not then
+            parameters.ProgressReport "Removing sql dumps"
+            File.Delete authors
+            File.Delete authorships
+            File.Delete books
+            File.Delete genres
+            File.Delete bookGenres
+            File.Delete series
+            File.Delete bookSeries
+            File.Delete rates
     }
 
 let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connection: DbConnection) : Task<unit> =
@@ -529,4 +541,15 @@ let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connect
                                 c
                     }
             )
+
+        if parameters.KeepSqlDumps |> not then
+            parameters.ProgressReport "Removing sql dumps"
+            File.Delete authors
+            File.Delete authorships
+            File.Delete books
+            File.Delete genres
+            File.Delete bookGenres
+            File.Delete series
+            File.Delete bookSeries
+            File.Delete rates
     }
