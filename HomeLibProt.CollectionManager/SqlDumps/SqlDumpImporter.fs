@@ -71,6 +71,9 @@ let private importBookGenreResult (connection: DbConnection) (result: BookGenreR
         let entityParam = result |> bookGenreResultToEntityParam
 
         match! BookGenres.CheckIfBookGenreExistsAsync(connection, entityParam) with
+        | BookGenreCheckResult.Duplicate ->
+            eprintfn
+                $"Unable to insert duplicate of book genre with Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}."
         | BookGenreCheckResult.AllExsists -> do! BookGenres.InsertBookGenresAsync(connection, [| entityParam |])
         | BookGenreCheckResult.OnlyBook ->
             eprintfn $"Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}. Genre not found."
