@@ -47,6 +47,7 @@ public class TestAuthorships {
     }
 
     [Test]
+    [TestCase(1, 2, AuthorshipsCheckResult.Duplicate)]
     [TestCase(1, 1, AuthorshipsCheckResult.AllExsists)]
     [TestCase(1, 0, AuthorshipsCheckResult.OnlyBook)]
     [TestCase(0, 1, AuthorshipsCheckResult.OnlyAuthor)]
@@ -60,18 +61,21 @@ public class TestAuthorships {
 
                     var langId = await LanguageUtils.Create(c, "Lang 1");
 
-                    await BookUtils.Create(c,
-                                           title: "Title1",
-                                           fileName: "File1",
-                                           size: 1,
-                                           libId: "File1",
-                                           deleted: false,
-                                           extension: "fb2",
-                                           date: "2025-11-07",
-                                           archiveId: archiveId,
-                                           libRate: 0,
-                                           languageId: langId);
+                    var bookId = await BookUtils.Create(c,
+                                                        title: "Title1",
+                                                        fileName: "File1",
+                                                        size: 1,
+                                                        libId: "File1",
+                                                        deleted: false,
+                                                        extension: "fb2",
+                                                        date: "2025-11-07",
+                                                        archiveId: archiveId,
+                                                        libRate: 0,
+                                                        languageId: langId);
                     await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+                    var authorId = await AuthorUtils.Create(connection, fullName: "B B B", lastName: "B", firstName: "B", middleName: "B");
+
+                    await AuthorshipUtils.Create(connection, bookId: bookId, authorId: authorId);
                 });
 
                 return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
