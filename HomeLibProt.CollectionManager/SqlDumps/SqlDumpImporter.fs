@@ -40,6 +40,9 @@ let private importBookSeriesResult (connection: DbConnection) (result: BookSerie
         let entityParam = result |> bookSeriesResultToEntityParam
 
         match! BookSeries.CheckIfBookSeriesExistsAsync(connection, entityParam) with
+        | BookSeriesCheckResult.Duplicate ->
+            eprintfn
+                $"Unable to insert duplicate of book series with Book Id: {entityParam.BookId}, Series Id: {entityParam.SeriesId}."
         | BookSeriesCheckResult.AllExsists -> do! BookSeries.InsertBookSeriesAsync(connection, entityParam)
         | BookSeriesCheckResult.OnlyBook ->
             eprintfn

@@ -7,7 +7,8 @@ namespace HomeLibProt.Domain.DataAccess;
 public record BookSeriesParam(long BookId, long SeriesId, long SeriesNumber);
 
 public enum BookSeriesCheckResult {
-    AllExsists = 1,
+    Duplicate = 0,
+    AllExsists,
     OnlyBook,
     OnlySeries,
     NoRecords
@@ -28,16 +29,18 @@ values (@BookId, @SeriesId, @SeriesNumber)
         var sql =
             @"
 with
+    BookSeriesResult as (select max(1) as BookSeriesExsists from BookSeries where BookId = @BookId and SeriesId = @SeriesId),
     Book as (select max(1) as BookExsists from Books where Id = @BookId),
     SeriesResult as (select max(1) as SeriesExsists from Series where Id = @SeriesId)
 select
     case
+        when BookSeriesResult.BookSeriesExsists then 0
         when Book.BookExsists and SeriesResult.SeriesExsists then 1
         when Book.BookExsists then 2
         when SeriesResult.SeriesExsists then 3
         else 4
     end as Result
-from Book, SeriesResult
+from Book, SeriesResult, BookSeriesResult
 ";
 
         return await connection.QuerySingleAsync<BookSeriesCheckResult>(sql, new { BookId = bookSeriesParam.BookId, SeriesId = bookSeriesParam.SeriesId });
