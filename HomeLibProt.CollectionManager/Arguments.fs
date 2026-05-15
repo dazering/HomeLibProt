@@ -13,7 +13,7 @@ type CLIArguments =
     interface IArgParserTemplate with
         member this.Usage =
             match this with
-            | ImportSqlDumps _ -> "Import inpx file to database."
+            | ImportSqlDumps _ -> "Import sql dumps to database."
             | DownloadSqlDumps _ -> "Download sql dumps."
 
 and ImportSqlDumps =
@@ -25,7 +25,7 @@ and ImportSqlDumps =
     interface IArgParserTemplate with
         member this.Usage =
             match this with
-            | PathToSqlDumps _ -> "Path to where save sql dumps on local file system"
+            | PathToSqlDumps _ -> "Path to sql dumps on local file system"
             | PathToDatabase _ -> "Path to database on local file system"
             | Site _ -> "Source of sql dumps"
             | KeepSqlDumps -> "[Optional] If not set after import sql dumps will be deleted"
