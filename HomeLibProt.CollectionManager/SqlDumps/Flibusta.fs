@@ -1,5 +1,7 @@
 module HomeLibProt.CollectionManager.SqlDumps.Flibusta
 
+let url = "http://https.flibusta.is/sql/"
+
 let authors = "lib.libavtorname.sql.gz"
 
 let authorships = "lib.libavtor.sql.gz"
