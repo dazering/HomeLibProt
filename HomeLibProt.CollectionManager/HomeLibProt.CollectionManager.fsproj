@@ -14,6 +14,7 @@
     <Compile Include="SqlDumps\Librusec.fs" />
     <Compile Include="SqlDumps\SqlDumpParser.fs" />
     <Compile Include="SqlDumps\SqlDumpImporter.fs" />
+    <Compile Include="SqlDumps\SqlDumpsDownloader.fs" />
     <Compile Include="Arguments.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
