@@ -332,3 +332,6 @@ ASALocalRun/
 /TestApp
 /HomeLib/Logs
 *.vscode
+
+# C# Dev Kit
+*.lscache
