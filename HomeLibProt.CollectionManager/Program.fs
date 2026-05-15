@@ -2,6 +2,7 @@
 
 open Argu
 open System.Diagnostics
+open System.Net.Http
 open System.Threading.Tasks
 
 open HomeLibProt.CollectionManager.Arguments
@@ -11,6 +12,27 @@ open HomeLibProt.Domain.DataAccess
 let parser = ArgumentParser.Create<CLIArguments>()
 
 let printProgressReport (message: string) : unit = printfn $"{message}"
+
+let downloadSqlDumps (args: ParseResults<DownloadSqlDumps>) : Task<unit> =
+    task {
+        let pathToSqlDumps = args.GetResult DownloadSqlDumps.PathToSqlDumps
+        let site = args.GetResult DownloadSqlDumps.Site
+        let retries = args.GetResult DownloadSqlDumps.Retries
+
+        use httpClient = new HttpClient()
+
+        let parameters: SqlDumpsDownloader.SqlDumpDownloaderParameters =
+            { PathToSqlDumps = pathToSqlDumps
+              HttpClient = httpClient
+              Retries = retries
+              ProgressReport = printProgressReport }
+
+        match site with
+        | Site.Flibusta -> do! SqlDumpsDownloader.downloadSqlDumpsFlibustaAsync parameters
+        | Site.Librusec -> do! SqlDumpsDownloader.downloadSqlDumpsLibrusecAsync parameters
+        | _ -> failwith $"Unknown sql dump source: {site}"
+
+    }
 
 let importSqlDumps (args: ParseResults<ImportSqlDumps>) : Task<unit> =
     task {
@@ -43,6 +65,7 @@ let runAsync (arguments: ParseResults<CLIArguments>) : Task<unit> =
     task {
         match arguments.GetSubCommand() with
         | ImportSqlDumps args -> do! importSqlDumps args
+        | DownloadSqlDumps args -> do! downloadSqlDumps args
     }
 
 let withStopwatchAsync (stopwatch: Stopwatch) (actionAsync: unit -> Task<unit>) : Task<Stopwatch> =
