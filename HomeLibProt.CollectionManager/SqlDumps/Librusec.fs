@@ -1,5 +1,7 @@
 module HomeLibProt.CollectionManager.SqlDumps.Librusec
 
+let url = "http://209.42.197.18/sql"
+
 let authors = "libavtors.sql.gz"
 
 let authorships = "libavtor.sql.gz"
