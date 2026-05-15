@@ -17,13 +17,13 @@ dotnet build .\HomeLibProt.CommandLineImporter\HomeLibProt.CommandLineImporter.f
 Linux
 
 ```
-dotnet publish .\HomeLibProt.CommandLineImporter\HomeLibProt.CommandLineImporter.fsproj -o .\HomeLibProt.CommandLineImporter\publish\linux-x64 -r linux-x64
+dotnet publish .\HomeLibProt.CommandLineImporter\HomeLibProt.CommandLineImporter.fsproj -o .\publish\HomeLibProt.CommandLineImporter\linux-x64 -r linux-x64
 ```
 
 Windows
 
 ```
-dotnet publish .\HomeLibProt.CommandLineImporter\HomeLibProt.CommandLineImporter.fsproj -o .\HomeLibProt.CommandLineImporter\publish\win-x64 -r win-x64
+dotnet publish .\HomeLibProt.CommandLineImporter\HomeLibProt.CommandLineImporter.fsproj -o .\publish\HomeLibProt.CommandLineImporter\win-x64 -r win-x64
 ```
 
 ## Usage

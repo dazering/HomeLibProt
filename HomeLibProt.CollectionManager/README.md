@@ -17,13 +17,13 @@ dotnet build .\HomeLibProt.CollectionManager\HomeLibProt.CollectionManager.fspro
 Linux
 
 ```
-dotnet publish .\HomeLibProt.CollectionManager\HomeLibProt.CollectionManager.fsproj -o .\HomeLibProt.CollectionManager\publish\linux-x64 -r linux-x64
+dotnet publish .\HomeLibProt.CollectionManager\HomeLibProt.CollectionManager.fsproj -o .\publish\HomeLibProt.CollectionManager\linux-x64 -r linux-x64
 ```
 
 Windows
 
 ```
-dotnet publish .\HomeLibProt.CollectionManager\HomeLibProt.CollectionManager.fsproj -o .\HomeLibProt.CollectionManager\publish\win-x64 -r win-x64
+dotnet publish .\HomeLibProt.CollectionManager\HomeLibProt.CollectionManager.fsproj -o .\publish\HomeLibProt.CollectionManager\win-x64 -r win-x64
 ```
 
 ## Usage
@@ -32,7 +32,9 @@ dotnet publish .\HomeLibProt.CollectionManager\HomeLibProt.CollectionManager.fsp
 SUBCOMMANDS:
 
     importsqldumps <options>
-                          Import inpx file to database.
+                          Import sql dumps to database.
+    downloadsqldumps <options>
+                          Download sql dumps.
 
     Use 'HomeLibProt.CollectionManager <subcommand> --help' for additional information.
 
@@ -41,24 +43,46 @@ OPTIONS:
     --help                display this list of options.
 ```
 
-### Import SQL dumps
+### Download SQL dumps
 
 ```
-USAGE: HomeLibProt.CollectionManager importsqldumps [--help] --pathtosqldumps <string> --pathtodatabase <string> --site <flibusta|librusec>
+USAGE: HomeLibProt.CollectionManager downloadsqldumps [--help] --pathtosqldumps <string> --site <flibusta|librusec> --retries <uint>
 
 OPTIONS:
 
     --pathtosqldumps, -i <string>
                           Path to where save sql dumps on local file system
-    --pathtodatabase, -d <string>
-                          Path to database on local file system
     --site, -s <flibusta|librusec>
                           Source of sql dumps
+    --retries, -r <uint>  Count of retries
     --help                display this list of options.
 ```
 
 Example
 
 ```
-HomeLibProt.CollectionManager.exe importsqldumps -i C:\BookDemo\flibusta_sql\ -d C:\BookDemo\sql_dump.db -s flibusta
+HomeLibProt.CollectionManager.exe downloadsqldumps -i C:\BookDemo\flibusta_sql\ -s flibusta -r 10
+```
+
+### Import SQL dumps
+
+```
+USAGE: HomeLibProt.CollectionManager importsqldumps [--help] --pathtosqldumps <string> --pathtodatabase <string> --site <flibusta|librusec> [--keepsqldumps]
+
+OPTIONS:
+
+    --pathtosqldumps, -i <string>
+                          Path to sql dumps on local file system
+    --pathtodatabase, -d <string>
+                          Path to database on local file system
+    --site, -s <flibusta|librusec>
+                          Source of sql dumps
+    --keepsqldumps, -k    [Optional] If not set after import sql dumps will be deleted
+    --help                display this list of options.
+```
+
+Example
+
+```
+HomeLibProt.CollectionManager.exe importsqldumps -i C:\BookDemo\flibusta_sql\ -d C:\BookDemo\sql_dump.db -s flibusta -k
 ```

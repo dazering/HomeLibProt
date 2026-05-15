@@ -5,6 +5,7 @@ Catalog of fiction books based on inpx.
 # HomeLibProt.CollectionManager
 
 Features:
+- Download SQL dumps
 - Import SQL dumps to SQLite database
 
 See [README.md](HomeLibProt.CollectionManager/README.md)
