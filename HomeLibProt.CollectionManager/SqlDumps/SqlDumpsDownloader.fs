@@ -1,55 +1,16 @@
 module HomeLibProt.CollectionManager.SqlDumps.SqlDumpsDownloader
 
-open System.IO
 open System.Net.Http
 open System
 open System.Threading.Tasks
+
+open HomeLibProt.CollectionManager.Common
 
 type SqlDumpDownloaderParameters =
     { PathToSqlDumps: string
       HttpClient: HttpClient
       Retries: uint
       ProgressReport: string -> unit }
-
-let private downloadSqlDumpAsync
-    (pathToSqlDumps: string)
-    (httpClient: HttpClient)
-    (uri: Uri)
-    (fileName: string)
-    : Task<option<unit>> =
-    task {
-        try
-            let! responseStream = httpClient.GetStreamAsync uri
-
-            use fileStrean = File.Create(Path.Combine(pathToSqlDumps, fileName))
-
-            do! responseStream.CopyToAsync fileStrean
-
-            return Some()
-        with :? HttpRequestException as exe ->
-            return None
-
-    }
-
-let rec downloadSqkDumpWithRetryAsync
-    (pathToSqlDumps: string)
-    (httpClient: HttpClient)
-    (reportProgress: string -> unit)
-    (uri: Uri)
-    (fileName: string)
-    (retries: uint)
-    : Task<unit> =
-    task {
-        if retries <= 0u then
-            raise (InvalidOperationException $"Count of retries is exhausted for {fileName}")
-
-        match! downloadSqlDumpAsync pathToSqlDumps httpClient uri fileName with
-        | Some() -> return ()
-        | None ->
-            reportProgress $"Attempt download {fileName} failed. Remaing retries {retries - 1u}"
-            do! downloadSqkDumpWithRetryAsync pathToSqlDumps httpClient reportProgress uri fileName (retries - 1u)
-
-    }
 
 let downloadSqlDumpsFlibustaAsync (parameters: SqlDumpDownloaderParameters) : Task<unit> =
     task {
@@ -67,14 +28,13 @@ let downloadSqlDumpsFlibustaAsync (parameters: SqlDumpDownloaderParameters) : Ta
             parameters.ProgressReport $"Downloading: {fileName}"
 
             do!
-                downloadSqkDumpWithRetryAsync
+                FileDownloader.downloadFileAsync
                     parameters.PathToSqlDumps
                     parameters.HttpClient
                     parameters.ProgressReport
                     uri
                     fileName
                     parameters.Retries
-
     }
 
 let downloadSqlDumpsLibrusecAsync (parameters: SqlDumpDownloaderParameters) =
@@ -93,7 +53,7 @@ let downloadSqlDumpsLibrusecAsync (parameters: SqlDumpDownloaderParameters) =
             parameters.ProgressReport $"Downloading: {fileName}"
 
             do!
-                downloadSqkDumpWithRetryAsync
+                FileDownloader.downloadFileAsync
                     parameters.PathToSqlDumps
                     parameters.HttpClient
                     parameters.ProgressReport
