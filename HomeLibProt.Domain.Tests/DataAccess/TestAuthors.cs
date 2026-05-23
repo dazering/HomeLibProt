@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using HomeLibProt.Domain.DataAccess;
@@ -140,6 +141,46 @@ public class TestAuthors {
                 });
                 return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                     return Authors.GetAuthorsFilterByIncludedLanguageAsync(c).ToBlockingEnumerable().ToArray();
+                });
+            });
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
+    }
+
+    public static TestCaseData[] GetAuthorInpxInfosByBookIdAsyncTestCases = {
+        new(1, new AuthorInpxInfo[] { new(LastName: "A", FirstName: "A", MiddleName: "A")}),
+        new(-1, Array.Empty<AuthorInpxInfo>())
+    };
+
+    [Test]
+    [TestCaseSource(nameof(GetAuthorInpxInfosByBookIdAsyncTestCases))]
+    public async Task TestGetAuthorInpxInfosByBookIdAsync(long bookId, AuthorInpxInfo[] expected) {
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    var archiveId = await ArchiveUtils.Create(c, "archive1.zip");
+
+                    var langId = await LanguageUtils.Create(c, "Lang1", true);
+
+                    var bookId = await BookUtils.Create(c,
+                                                         title: "Title1",
+                                                         fileName: "File1",
+                                                         size: 1,
+                                                         libId: "File1",
+                                                         deleted: false,
+                                                         extension: "fb2",
+                                                         date: "2025-11-07",
+                                                         archiveId: archiveId,
+                                                         libRate: 0,
+                                                         languageId: langId);
+
+                    var authorId = await AuthorUtils.Create(connection, fullName: "A A A", lastName: "A", firstName: "A", middleName: "A");
+
+                    await AuthorshipUtils.Create(c, bookId: bookId, authorId: authorId);
+                });
+                return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    return await Authors.GetAuthorInpxInfosByBookIdAsync(c, bookId: bookId);
                 });
             });
 
