@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using HomeLibProt.Domain.DataAccess;
 using HomeLibProt.Domain.Tests.Entities;
@@ -50,5 +51,46 @@ public class TestKeywords {
             });
 
         Assert.That(actual, Is.EqualTo(expected));
+    }
+
+    public static TestCaseData[] GetKeywordsByBookIdAsyncTestCases = {
+        new(1, new string[] { "Keyword 1" }),
+        new(-1, Array.Empty<string>()),
+    };
+
+    [Test]
+    [TestCaseSource(nameof(GetKeywordsByBookIdAsyncTestCases))]
+    public async Task TestGetKeywordsByBookIdAsync(long bookId, string[] expected) {
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    var archiveId = await ArchiveUtils.Create(c, "archive1.zip");
+
+                    var langId = await LanguageUtils.Create(c, "Lang 1");
+
+                    var bookId = await BookUtils.Create(c,
+                                                        title: "Title1",
+                                                        fileName: "File1",
+                                                        size: 1,
+                                                        libId: "File1",
+                                                        deleted: false,
+                                                        extension: "fb2",
+                                                        date: "2025-11-07",
+                                                        archiveId: archiveId,
+                                                        libRate: 0,
+                                                        languageId: langId);
+
+                    var keywordId = await KeywordUtils.Create(c, name: "Keyword 1");
+
+                    await BookKeywordUtils.Create(c, bookId: bookId, keywordId: keywordId);
+                });
+
+                return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    return await Keywords.GetKeywordsByBookIdAsync(c, bookId: bookId);
+                });
+            });
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }
 }
