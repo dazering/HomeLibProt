@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,6 +9,8 @@ namespace HomeLibProt.Domain.DataAccess;
 public record Genre(long Id, string Key);
 
 public record GenreEntityParam(long Id, string Key, string Name);
+
+public record GenreInpxEntity(string Key, string Name);
 
 public static class Genres {
     public static async Task<Genre[]> GetGenresByKeyAsync(DbConnection connection, string[] genreKeys) {
@@ -59,5 +62,14 @@ where bg.BookId = @BookId
         var genreKeys = await connection.QueryAsync<string>(sql, new { BookId = bookId });
 
         return genreKeys.ToArray();
+    }
+
+    public static IAsyncEnumerable<GenreInpxEntity> GetGenresInpxEntitiesAsync(DbConnection connection) {
+        var sql =
+            @"
+select Key, Name from Genres
+";
+
+        return connection.QueryUnbufferedAsync<GenreInpxEntity>(sql);
     }
 }
