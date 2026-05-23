@@ -32,4 +32,19 @@ values (@Name)
             var _ = await connection.ExecuteAsync(sql, new { Name = k });
         }
     }
+
+    public static async Task<string[]> GetKeywordsByBookIdAsync(DbConnection connection, long bookId) {
+        var sql =
+            @"
+select
+  k.Name
+from Keywords k
+inner join BookKeywords bk on bk.KeywordId = k.Id
+where bk.BookId = @BookId
+";
+
+        var keywords = await connection.QueryAsync<string>(sql, new { BookId = bookId });
+
+        return keywords.ToArray();
+    }
 }
