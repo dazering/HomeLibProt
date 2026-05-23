@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 using HomeLibProt.Domain.DataAccess;
@@ -114,5 +115,76 @@ public class TestBooks {
             });
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
+    }
+
+    public static TestCaseData[] GetBookInpxInfoByIdAsyncTestCases = {
+        new(1, new[] { new BookInpxInfo(Title: "Title1", Series: "Series 1", SeriesNumber: 1, Deleted: 0, Extension: "fb2", Date: "2025-11-07", Language: "Lang 1") }),
+        new(2, new[] {
+            new BookInpxInfo(Title: "Title2", Series: "Series 1", SeriesNumber: 1, Deleted: 0, Extension: "fb2", Date: "2025-11-07", Language: "Lang 1"),
+            new BookInpxInfo(Title: "Title2", Series: "Series 2", SeriesNumber: 1, Deleted: 0, Extension: "fb2", Date: "2025-11-07", Language: "Lang 1")
+            }),
+        new(3, new[] { new BookInpxInfo(Title: "Title3", Series: null, SeriesNumber: null, Deleted: 0, Extension: "fb2", Date: "2025-11-07", Language: "Lang 1")} ),
+        new(-1, Array.Empty<BookInpxInfo>()),
+    };
+
+    [Test]
+    [TestCaseSource(nameof(GetBookInpxInfoByIdAsyncTestCases))]
+    public async Task TestGetBookInpxInfosByIdAsync(long bookId, BookInpxInfo[] expected) {
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    var archiveId = await ArchiveUtils.Create(c, "archive1.zip");
+
+                    var langId = await LanguageUtils.Create(c, "Lang 1");
+
+                    var bookId1 = await BookUtils.Create(c,
+                                                         title: "Title1",
+                                                         fileName: "File1",
+                                                         size: 1,
+                                                         libId: "File1",
+                                                         deleted: false,
+                                                         extension: "fb2",
+                                                         date: "2025-11-07",
+                                                         archiveId: archiveId,
+                                                         libRate: 0,
+                                                         languageId: langId);
+                    var bookId2 = await BookUtils.Create(c,
+                                                         title: "Title2",
+                                                         fileName: "File2",
+                                                         size: 1,
+                                                         libId: "File2",
+                                                         deleted: false,
+                                                         extension: "fb2",
+                                                         date: "2025-11-07",
+                                                         archiveId: archiveId,
+                                                         libRate: 0,
+                                                         languageId: langId);
+                    await BookUtils.Create(c,
+                                           title: "Title3",
+                                           fileName: "File3",
+                                           size: 1,
+                                           libId: "File3",
+                                           deleted: false,
+                                           extension: "fb2",
+                                           date: "2025-11-07",
+                                           archiveId: archiveId,
+                                           libRate: 0,
+                                           languageId: langId);
+
+                    var seriesId1 = await SeriesUtils.Create(c, name: "Series 1");
+                    var seriesId2 = await SeriesUtils.Create(c, name: "Series 2");
+
+                    await BookSeriesUtils.Create(c, bookId: bookId1, seriesId: seriesId1, seriesNumber: 1);
+                    await BookSeriesUtils.Create(c, bookId: bookId2, seriesId: seriesId1, seriesNumber: 1);
+                    await BookSeriesUtils.Create(c, bookId: bookId2, seriesId: seriesId2, seriesNumber: 1);
+                });
+
+                return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    return await Books.GetBookInpxInfosByIdAsync(c, bookId: bookId);
+                });
+            });
+
+        Assert.That(actual, Is.EqualTo(expected));
     }
 }
