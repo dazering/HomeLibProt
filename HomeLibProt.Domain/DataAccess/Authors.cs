@@ -12,6 +12,8 @@ public record AuthorParam(string FullName, string LastName, string FirstName, st
 
 public record AuthorEntityParam(long Id, string FullName, string LastName, string FirstName, string MiddleName);
 
+public record AuthorInpxInfo(string LastName, string FirstName, string MiddleName);
+
 public static class Authors {
     public static async Task<Author[]> GetAuthorsByNameAsync(DbConnection connection, string[] authorNames) {
         var sql =
@@ -60,5 +62,22 @@ order by a.FullName
 ";
 
         return connection.QueryUnbufferedAsync<Author>(sql);
+    }
+
+    public static async Task<AuthorInpxInfo[]> GetAuthorInpxInfosByBookIdAsync(DbConnection connection, long bookId) {
+        var sql =
+            @"
+select
+  a.LastName,
+  a.FirstName,
+  a.MiddleName
+from Authors a
+inner join Authorships asp on asp.AuthorId = a.Id
+where asp.BookId = @BookId
+";
+
+        var inpxInfos = await connection.QueryAsync<AuthorInpxInfo>(sql, new { BookId = bookId });
+
+        return inpxInfos.ToArray();
     }
 }
