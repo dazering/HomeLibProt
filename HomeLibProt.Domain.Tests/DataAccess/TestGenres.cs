@@ -120,4 +120,26 @@ public class TestGenres {
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }
+
+    [Test]
+    public async Task TestGetGenresInpxEntitiesAsync() {
+        var expected = new[] {
+            new GenreInpxEntity(Key: "genre1" , Name: "Genre 1"),
+            new GenreInpxEntity(Key: "genre2" , Name: "Genre 2"),
+         };
+
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await GenreUtils.Create(connection, key: "genre1", name: "Genre 1");
+                    await GenreUtils.Create(connection, key: "genre2", name: "Genre 2");
+                });
+                return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    return Genres.GetGenresInpxEntitiesAsync(c).ToBlockingEnumerable().ToArray();
+                });
+            });
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
+    }
 }
