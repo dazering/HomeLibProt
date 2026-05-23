@@ -45,4 +45,19 @@ values (@Id, @Key, @Name)
 
         await connection.ExecuteAsync(sql, genre);
     }
+
+    public static async Task<string[]> GetGenreKeysByBookIdAsync(DbConnection connection, long bookId) {
+        var sql =
+            @"
+select
+  g.Key
+from Genres g
+inner join BookGenres bg on bg.GenreId = g.Id
+where bg.BookId = @BookId
+";
+
+        var genreKeys = await connection.QueryAsync<string>(sql, new { BookId = bookId });
+
+        return genreKeys.ToArray();
+    }
 }

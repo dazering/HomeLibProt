@@ -1,3 +1,5 @@
+using System;
+using System.Linq;
 using System.Threading.Tasks;
 using HomeLibProt.Domain.DataAccess;
 using HomeLibProt.Domain.Tests.Entities;
@@ -76,5 +78,46 @@ public class TestGenres {
             });
 
         Assert.That(actual, Is.EqualTo(expected));
+    }
+
+    public static TestCaseData[] GetGenreKeysByBookIdAsyncTestCases = {
+        new(1, new string[] { "genre1" }),
+        new(-1, Array.Empty<string>()),
+    };
+
+    [Test]
+    [TestCaseSource(nameof(GetGenreKeysByBookIdAsyncTestCases))]
+    public async Task TestGetGenreKeysByBookIdAsync(long bookId, string[] expected) {
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    var archiveId = await ArchiveUtils.Create(c, "archive1.zip");
+
+                    var langId = await LanguageUtils.Create(c, "Lang 1");
+
+                    var bookId = await BookUtils.Create(c,
+                                                        title: "Title1",
+                                                        fileName: "File1",
+                                                        size: 1,
+                                                        libId: "File1",
+                                                        deleted: false,
+                                                        extension: "fb2",
+                                                        date: "2025-11-07",
+                                                        archiveId: archiveId,
+                                                        libRate: 0,
+                                                        languageId: langId);
+
+                    var genreId = await GenreUtils.Create(c, key: "genre1", name: "Genre 1");
+
+                    await BookGenreUtils.Create(c, bookId: bookId, genreId: genreId);
+                });
+
+                return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    return await Genres.GetGenreKeysByBookIdAsync(c, bookId: bookId);
+                });
+            });
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }
 }
