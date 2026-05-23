@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Data.Common;
+using System.Linq;
 using System.Threading.Tasks;
 using Dapper;
 
@@ -10,6 +11,8 @@ public record BookParam(string Title, string FileName, long Size, string LibId, 
 public record ArchiveEntity(string FileName, string Extension);
 
 public record BookEntityParam(long Id, string Title, string FileName, long Size, string LibId, bool Deleted, string Extension, string Date, long ArchiveId, int? LibRate, long LanguageId);
+
+public record BookInpxInfo(string Title, string? Series, long? SeriesNumber, long Deleted, string Extension, string Date, string Language);
 
 public static class Books {
     public static async Task<long> InsertBookAsync(DbConnection connection, BookParam bookParam) {
@@ -86,5 +89,28 @@ order by FileName
 ";
 
         return connection.QueryUnbufferedAsync<ArchiveEntity>(sql, new { ArchiveId = archiveId });
+    }
+
+    public static async Task<BookInpxInfo[]> GetBookInpxInfosByIdAsync(DbConnection connection, long bookId) {
+        var sql =
+            @"
+select
+  b.Title,
+  s.Name as Series,
+  bs.SeriesNumber,
+  b.Deleted,
+  b.Extension,
+  b.Date,
+  l.Name as Language
+from Books b
+left join BookSeries bs on bs.BookId = b.Id
+left join Series s on s.Id = bs.SeriesId
+inner join Languages l on l.Id = b.LanguageId
+where b.Id = @BookId
+";
+
+        var bookInpxInfos = await connection.QueryAsync<BookInpxInfo>(sql, new { BookId = bookId });
+
+        return bookInpxInfos.ToArray();
     }
 }
