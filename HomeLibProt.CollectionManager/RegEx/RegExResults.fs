@@ -36,6 +36,8 @@ type BookResult =
       Deleted: bool
       Keywords: string array }
 
+let private removeEscapeSymbol (value: string) : string = value.Replace("\\", String.Empty)
+
 let private makeKeywords (keywords: string) : string array =
     keywords.Split(',', StringSplitOptions.RemoveEmptyEntries ||| StringSplitOptions.TrimEntries)
 
@@ -57,7 +59,7 @@ let getBookSeriesResult (groups: GroupCollection) : BookSeriesResult =
 
 let getSeriesResult (groups: GroupCollection) : SeriesResult =
     { Id = groups.[RegExGroups.Series.seriesId] |> extractGroupValue |> int64
-      Name = groups.[RegExGroups.Series.name] |> extractGroupValue }
+      Name = groups.[RegExGroups.Series.name] |> extractGroupValue |> removeEscapeSymbol }
 
 let getBookGenreResult (groups: GroupCollection) : BookGenreResult =
     { BookId = groups.[RegExGroups.BookGenres.bookId] |> extractGroupValue |> int64
@@ -66,7 +68,7 @@ let getBookGenreResult (groups: GroupCollection) : BookGenreResult =
 let getGenreResult (groups: GroupCollection) : GenreResult =
     { Id = groups.[RegExGroups.Genres.genreId] |> extractGroupValue |> int64
       Key = groups.[RegExGroups.Genres.key] |> extractGroupValue
-      Name = groups.[RegExGroups.Genres.name] |> extractGroupValue }
+      Name = groups.[RegExGroups.Genres.name] |> extractGroupValue |> removeEscapeSymbol }
 
 let getAuthorshipsResult (groups: GroupCollection) : AuthorshipsResult =
     { BookId = groups.[RegExGroups.Authorships.bookId] |> extractGroupValue |> int64
@@ -76,15 +78,25 @@ let getBookResult (groups: GroupCollection) : BookResult =
     { Id = groups.[RegExGroups.Books.bookId] |> extractGroupValue |> int64
       FileSize = groups.[RegExGroups.Books.fileSize] |> extractGroupValue |> int64
       Date = groups.[RegExGroups.Books.time] |> extractGroupValue
-      Title = groups.[RegExGroups.Books.title] |> extractGroupValue
+      Title = groups.[RegExGroups.Books.title] |> extractGroupValue |> removeEscapeSymbol
       Lang = groups.[RegExGroups.Languages.lang] |> extractGroupValue
       Extension = groups.[RegExGroups.Books.fileType] |> extractGroupValue
       Deleted = groups.[RegExGroups.Books.deleted] |> extractGroupValue |> convertStringToBool
-      Keywords = groups.[RegExGroups.Keywords.keywords] |> extractGroupValue |> makeKeywords }
+      Keywords =
+        groups.[RegExGroups.Keywords.keywords]
+        |> extractGroupValue
+        |> makeKeywords
+        |> Array.map removeEscapeSymbol }
 
 let getAuthorResult (groups: GroupCollection) : AuthorResult =
     { Id = groups.[RegExGroups.Authors.authorId] |> extractGroupValue |> int64
-      FirstName = groups.[RegExGroups.Authors.firstName] |> extractGroupValue
-      MiddleName = groups.[RegExGroups.Authors.middleName] |> extractGroupValue
-      LastName = groups.[RegExGroups.Authors.lastName] |> extractGroupValue
+      FirstName =
+        groups.[RegExGroups.Authors.firstName]
+        |> extractGroupValue
+        |> removeEscapeSymbol
+      MiddleName =
+        groups.[RegExGroups.Authors.middleName]
+        |> extractGroupValue
+        |> removeEscapeSymbol
+      LastName = groups.[RegExGroups.Authors.lastName] |> extractGroupValue |> removeEscapeSymbol
       FullName = String.Empty }
