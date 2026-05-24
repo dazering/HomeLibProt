@@ -13,6 +13,26 @@ let parser = ArgumentParser.Create<CLIArguments>()
 
 let printProgressReport (message: string) : unit = printfn $"{message}"
 
+let generateInpx (args: ParseResults<GenerateInpx>) : Task<unit> =
+    task {
+        let pathToDb = args.GetResult GenerateInpx.PathToDatabase
+        let pathToLibrary = args.GetResult GenerateInpx.PathToLibrary
+        let pathToInpx = args.GetResult GenerateInpx.PathToInpx
+
+        let connection =
+            pathToDb
+            |> ConnectionUtils.MakeConnectionString
+            |> ConnectionUtils.MakeConnection
+
+        let parameters: Inpx.InpxGenerator.InpxGeneratorParameters =
+            { PathToLibrary = pathToLibrary
+              PathToInpx = pathToInpx
+              ProgressReport = printProgressReport
+              DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
+
+        do! ConnectionUtils.WithConnectionAsync(connection, Inpx.InpxGenerator.generateInpxAsync parameters)
+    }
+
 let downloadSqlDumps (args: ParseResults<DownloadSqlDumps>) : Task<unit> =
     task {
         let pathToSqlDumps = args.GetResult DownloadSqlDumps.PathToSqlDumps
@@ -66,6 +86,7 @@ let runAsync (arguments: ParseResults<CLIArguments>) : Task<unit> =
         match arguments.GetSubCommand() with
         | ImportSqlDumps args -> do! importSqlDumps args
         | DownloadSqlDumps args -> do! downloadSqlDumps args
+        | GenerateInpx args -> do! generateInpx args
     }
 
 let withStopwatchAsync (stopwatch: Stopwatch) (actionAsync: unit -> Task<unit>) : Task<Stopwatch> =
