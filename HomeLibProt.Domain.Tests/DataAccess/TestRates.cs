@@ -45,14 +45,18 @@ public class TestRates {
         Assert.That(actual, Is.EqualTo(expected));
     }
 
-    [Test]
-    public async Task TestGetAvgRateByBookIdAsync() {
-        var expected = new Rate(BookId: 1, AvgRate: 2);
+    public static TestCaseData[] GetAvgRateByBookIdAsyncTestCases = {
+        new(1, new Rate(BookId: 1, AvgRate: 2)),
+        new(-1, null)
+    };
 
+    [Test]
+    [TestCaseSource(nameof(GetAvgRateByBookIdAsyncTestCases))]
+    public async Task TestGetAvgRateByBookIdAsync(long bookId, Rate? expected) {
         var actual = await TestUtils.UseTestDatabase(
             DbStructure.CreateImportSqlDumpStructure,
             async (connection) => {
-                var bookId = await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
                     var langId = await LanguageUtils.Create(c, "Lang 1");
                     var archiveId = await ArchiveUtils.Create(c, "archive1.zip");
                     var bookId = await BookUtils.Create(c,
@@ -69,8 +73,6 @@ public class TestRates {
                     await RateUtils.Create(c, bookId: bookId, rate: 1);
                     await RateUtils.Create(c, bookId: bookId, rate: 1);
                     await RateUtils.Create(c, bookId: bookId, rate: 3);
-
-                    return bookId;
                 });
 
                 return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {

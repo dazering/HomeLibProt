@@ -14,7 +14,7 @@ public enum RatesCheckResult {
 }
 
 public static class Rates {
-    public static async Task<Rate> GetAvgRateByBookIdAsync(DbConnection connection, long bookId) {
+    public static async Task<Rate?> GetAvgRateByBookIdAsync(DbConnection connection, long bookId) {
         var sql =
             @"
 select BookId, cast(round(avg(Rate)) as integer) as AvgRate from Rates
@@ -22,7 +22,7 @@ where BookId = @BookId
 group by BookId
 ";
 
-        return await connection.QuerySingleAsync<Rate>(sql, new { BookId = bookId });
+        return await connection.QuerySingleOrDefaultAsync<Rate>(sql, new { BookId = bookId });
     }
 
     public static async Task InsertRateEntityAsync(DbConnection connection, RateEntityParam rate) {
