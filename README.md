@@ -7,6 +7,7 @@ Catalog of fiction books based on inpx.
 Features:
 - Download SQL dumps
 - Import SQL dumps to SQLite database
+- Generate INPX
 
 See [README.md](HomeLibProt.CollectionManager/README.md)
 
@@ -23,6 +24,8 @@ Features:
 - Create hierarchical search structure for authors
 - Filter authors by included language (any new language include by default)
 - Validate inpx and collection archives for consistency
+
+# TODO:
 
 ## HomeLibProt
 - Introduce web interface for import collection
