@@ -159,6 +159,10 @@ create table BookKeywords (
 );
 ";
 
+    private static readonly string createIndexBookKeywordsForBookIdSql = @"
+create index idx_book_keywords_book_id on BookKeywords (BookId);
+";
+
     private static readonly string dropBookKeywordsSql = @"
 drop table if exists BookKeywords;
 ";
@@ -305,6 +309,7 @@ drop table if exists Rates;
         yield return createKeywordsSql;
         yield return createIndexKeywordsForNameSql;
         yield return createBookKeywordsSql;
+        yield return createIndexBookKeywordsForBookIdSql;
         yield return createAuthorHierarchicalSearchNodesSql;
         yield return createIndexAuthorHierarchicalSearchNodesForPreviousIdSql;
         yield return createAuthorHierarchicalSearchResultsSql;
@@ -330,13 +335,16 @@ drop table if exists Rates;
         yield return createIndexSeriesForNameSql;
         yield return createBookSeriesSql;
         yield return createIndexBookSeriesForBookIdAndSeriesIdSql;
+        yield return createIndexBookSeriesForBookIdSql;
         yield return createGenresSql;
         yield return createIndexGenresForKeySql;
         yield return createBookGenresSql;
         yield return createIndexBookGenresForBookIdAndGenreIdSql;
+        yield return createIndexBookGenresForBookIdSql;
         yield return createKeywordsSql;
         yield return createIndexKeywordsForNameSql;
         yield return createBookKeywordsSql;
+        yield return createIndexBookKeywordsForBookIdSql;
         yield return createRatesSql;
         yield return createIndexRatesForBookIdSql;
     }
