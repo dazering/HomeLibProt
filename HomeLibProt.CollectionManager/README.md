@@ -35,6 +35,8 @@ SUBCOMMANDS:
                           Import sql dumps to database.
     downloadsqldumps <options>
                           Download sql dumps.
+    generateinpx <options>
+                          Generate inpx.
 
     Use 'HomeLibProt.CollectionManager <subcommand> --help' for additional information.
 
@@ -85,4 +87,26 @@ Example
 
 ```
 HomeLibProt.CollectionManager.exe importsqldumps -i C:\BookDemo\flibusta_sql\ -d C:\BookDemo\sql_dump.db -s flibusta -k
+```
+
+### Generate INPX
+
+```
+USAGE: HomeLibProt.CollectionManager generateinpx [--help] --pathtolibrary <string> --pathtoinpx <string> --pathtodatabase <string>
+
+OPTIONS:
+
+    --pathtolibrary, -i <string>
+                          Path to library archives on local file system
+    --pathtoinpx, -o <string>
+                          Path to where save inpx on local file system
+    --pathtodatabase, -d <string>
+                          Path to database on local file system
+    --help                display this list of options.
+```
+
+Example
+
+```
+HomeLibProt.CollectionManager.exe generateinpx -i C:\BookDemo\Books\ -d C:\BookDemo\sql_dump.db -o C:\BookDemo\Inpx.inpx
 ```
