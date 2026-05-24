@@ -1,0 +1,164 @@
+module HomeLibProt.CollectionManager.Inpx.InpxGenerator
+
+open System
+open System.Data.Common
+open System.IO
+open System.IO.Compression
+open System.Threading.Tasks
+
+open HomeLibProt.Domain.DataAccess
+open HomeLibProt.Domain.Utils
+
+type InpxGeneratorParameters =
+    { PathToLibrary: string
+      PathToInpx: string
+      ProgressReport: string -> unit
+      DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
+
+let private authorInpxInfoToAuthorsName (author: AuthorInpxInfo) : InpLine.AuthorName =
+    { First = author.FirstName
+      Middle = author.MiddleName
+      Last = author.LastName }
+
+let private bookAttributesToInpRecord
+    (bookId: string)
+    (extension: string)
+    (size: string)
+    (rate: string)
+    (bookInpxInfo: BookInpxInfo)
+    (authors: AuthorInpxInfo array)
+    (genres: string array)
+    (keywords: string array)
+    : InpLine.InpRecord =
+    { AuthorNames = authors |> Array.map authorInpxInfoToAuthorsName
+      Genres = genres
+      Title = bookInpxInfo.Title
+      Series = bookInpxInfo.Series
+      SeriesNumber = bookInpxInfo.SeriesNumber.ToString()
+      FileName = bookId
+      Size = size
+      LibId = bookId
+      Del = bookInpxInfo.Deleted.ToString()
+      Extension = extension
+      Date = bookInpxInfo.Date
+      Lang = bookInpxInfo.Language
+      LibRate = rate
+      Keywords = keywords }
+
+let private getRateAsync (bookId: int64) (connection: DbConnection) : Task<string> =
+    task {
+        match! Rates.GetAvgRateByBookIdAsync(connection, bookId) with
+        | null -> return String.Empty
+        | r -> return r.AvgRate.ToString()
+    }
+
+let private getInpLinesAsync
+    (bookId: int64)
+    (extension: string)
+    (size: string)
+    (connection: DbConnection)
+    : Task<string array> =
+    task {
+        let! bookInfo = Books.GetBookInpxInfosByIdAsync(connection, bookId)
+
+        match bookInfo with
+        | [||] ->
+            eprintfn $"Not found any information in database for Book Id: {bookId}"
+            return [||]
+        | bf ->
+            let! authors = Authors.GetAuthorInpxInfosByBookIdAsync(connection, bookId)
+            let! genres = Genres.GetGenreKeysByBookIdAsync(connection, bookId)
+            let! keywords = Keywords.GetKeywordsByBookIdAsync(connection, bookId)
+            let! rate = getRateAsync bookId connection
+
+            return
+                bf
+                |> Array.map (fun bi ->
+                    bookAttributesToInpRecord (bookId.ToString()) extension size rate bi authors genres keywords
+                    |> InpLine.makeLine)
+    }
+
+let private tryToGetInpLinesAsync (entry: ZipArchiveEntry) (connection: DbConnection) : Task<string array option> =
+    task {
+        match Int64.TryParse(entry.Name |> Path.GetFileNameWithoutExtension) with
+        | true, bookId ->
+            let extension = (entry.Name |> Path.GetExtension).Replace(".", String.Empty)
+            let size = entry.Length.ToString()
+
+            let! lines = getInpLinesAsync bookId extension size connection
+
+            return Some lines
+        | false, _ -> return None
+    }
+
+let private createInp (inpx: ZipArchive) (name: string) : ZipArchiveEntry = inpx.CreateEntry name
+
+let private createInpFromLibraryArchive
+    (archiveName: string)
+    (inpx: ZipArchive)
+    (reportProgress: string -> unit)
+    (connection: DbConnection)
+    (libraryArchive: ZipArchive)
+    : Task =
+    task {
+        let inp = Path.ChangeExtension(archiveName, "inp") |> createInp inpx
+
+        use fs = inp.Open()
+        use sw = new StreamWriter(fs)
+
+        for entry in libraryArchive.Entries do
+
+            let! linesResult = tryToGetInpLinesAsync entry connection
+
+            match linesResult with
+            | Some lines ->
+                for line in lines do
+                    do! sw.WriteLineAsync line
+            | None -> ()
+    }
+
+let private fillInpxAsync
+    (pathToLibrary: string)
+    (reportProgress: string -> unit)
+    (connection: DbConnection)
+    (inpx: ZipArchive)
+    =
+    task {
+        let zipArchives = Directory.EnumerateFiles(pathToLibrary, "*.zip")
+
+        for archive in zipArchives do
+            let archiveName = Path.GetFileName archive
+
+            reportProgress $"Generating inp for {archiveName}"
+
+            try
+                do!
+                    ArchiveUtils.DoWithArchiveAsync(
+                        archive,
+                        createInpFromLibraryArchive archiveName inpx reportProgress connection
+                    )
+            with :? InvalidDataException as _ ->
+                eprintfn $"Invalid archive {archiveName}"
+    }
+
+let private createInpxAndFillAsync (path: string) (fillInpx: ZipArchive -> Task<unit>) : Task =
+    task {
+        use fs = File.Create path
+        use archive = new ZipArchive(fs, ZipArchiveMode.Create)
+        do! fillInpx archive
+    }
+
+let generateInpxAsync (parameters: InpxGeneratorParameters) (connection: DbConnection) : Task =
+    task {
+        do!
+            parameters.DoInTransactionAsync(
+                connection,
+                fun c ->
+                    task {
+                        do!
+                            createInpxAndFillAsync
+                                parameters.PathToInpx
+                                (fillInpxAsync parameters.PathToLibrary parameters.ProgressReport c)
+                    }
+            )
+    }

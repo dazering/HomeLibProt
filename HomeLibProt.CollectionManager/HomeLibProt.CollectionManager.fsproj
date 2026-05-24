@@ -22,6 +22,7 @@
     <Compile Include="SqlDumps\SqlDumpImporter.fs" />
     <Compile Include="SqlDumps\SqlDumpsDownloader.fs" />
     <Compile Include="Inpx\InpLine.fs" />
+    <Compile Include="Inpx\InpxGenerator.fs" />
     <Compile Include="Arguments.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
