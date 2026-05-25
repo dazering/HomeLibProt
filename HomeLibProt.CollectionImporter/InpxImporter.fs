@@ -7,6 +7,7 @@ open System.IO.Compression
 open System.Text.RegularExpressions
 open System.Threading.Tasks
 
+open HomeLibProt.Domain.DataAccess
 open HomeLibProt.CollectionImporter.InpLine
 
 type InpxImporterParameters =
@@ -53,6 +54,33 @@ let private getStructureInfoContentOrDefault (structureInfo: ZipArchiveEntry opt
     | Some si -> si |> readStructureInfoContent
     | None -> defaultStructure
 
+let private genreListLineToGenreLineParam (genre: GenreListLine.GenreListLine) : GenreLineParam =
+    GenreLineParam(Key = genre.Key, Name = genre.Name)
+
+let private tryToImportGenresListAsync
+    (connection: DbConnection)
+    (regEx: Regex)
+    (entry: ZipArchiveEntry option)
+    : Task<unit> =
+    task {
+        match entry with
+        | Some e ->
+            let lines = e |> useEntry readEntry
+
+            for line in lines do
+                let genreListParam =
+                    line
+                    |> GenreListLine.parseGenreListLine regEx
+                    |> GenreListLine.getGenreLine
+                    |> genreListLineToGenreLineParam
+
+                do! Genres.InsertGenreLineAsync(connection, genreListParam)
+        | None -> return ()
+    }
+
+let private tryToGetGenresListEntry (archive: ZipArchive) : ZipArchiveEntry option =
+    archive.Entries |> Seq.tryFind (fun e -> e.Name = "genres.list")
+
 let private importInpx
     (progressReport: string -> unit)
     (batchSize: int)
@@ -60,7 +88,12 @@ let private importInpx
     (inpx: ZipArchive)
     : Task =
     task {
-        let regEx =
+        do!
+            inpx
+            |> tryToGetGenresListEntry
+            |> tryToImportGenresListAsync connection (GenreListLine.getRegEx ())
+
+        let inpxRegEx =
             inpx |> tryGetStructureInfoEntry |> getStructureInfoContentOrDefault |> getRegEx
 
         let bookChunks =
@@ -71,7 +104,7 @@ let private importInpx
 
                 (readEntry, e)
                 ||> useEntry
-                |> Seq.map (parseLine regEx >> Book.convertInpLineToBook folderName))
+                |> Seq.map (parseLine inpxRegEx >> Book.convertInpLineToBook folderName))
             |> Seq.chunkBySize batchSize
 
         let chunkCount = bookChunks |> Seq.length
