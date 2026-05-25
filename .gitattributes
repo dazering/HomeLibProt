@@ -5,6 +5,7 @@
 * eol=crlf
 
 *.zip   binary
+*.inpx  binary
 
 ###############################################################################
 # Set default behavior for command prompt diff.
