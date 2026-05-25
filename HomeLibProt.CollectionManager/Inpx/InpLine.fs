@@ -22,7 +22,7 @@ type InpRecord =
       Keywords: string array }
 
 [<Literal>]
-let private InpSeparator = "\x04"
+let InpSeparator = "\x04"
 
 [<Literal>]
 let private EnumerationSeparator = ":"

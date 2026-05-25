@@ -117,6 +117,24 @@ let private createInpFromLibraryArchive
             | None -> ()
     }
 
+let private genreInpxEntityToString (genre: GenreInpxEntity) : string =
+    $"{genre.Key}{InpLine.InpSeparator}{genre.Name}"
+
+let private importGenreList (connection: DbConnection) (inpx: ZipArchive) : Task =
+    task {
+        let genresList = inpx.CreateEntry "genres.list"
+
+        use fs = genresList.Open()
+        use sw = new StreamWriter(fs)
+
+        let genres = Genres.GetGenresInpxEntitiesAsync connection
+
+        let genreEnumerator = genres.GetAsyncEnumerator()
+
+        while! genreEnumerator.MoveNextAsync() do
+            do! sw.WriteLineAsync(genreEnumerator.Current |> genreInpxEntityToString)
+    }
+
 let private fillInpxAsync
     (pathToLibrary: string)
     (reportProgress: string -> unit)
@@ -124,6 +142,10 @@ let private fillInpxAsync
     (inpx: ZipArchive)
     =
     task {
+        reportProgress $"Importing Genres List"
+
+        do! importGenreList connection inpx
+
         let zipArchives = Directory.EnumerateFiles(pathToLibrary, "*.zip")
 
         for archive in zipArchives do
