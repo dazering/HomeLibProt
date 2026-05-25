@@ -11,6 +11,7 @@
     <Compile Include="InpLine.fs" />
     <Compile Include="Book.fs" />
     <Compile Include="BookImporter.fs" />
+    <Compile Include="GenreListLine.fs" />
     <Compile Include="InpxImporter.fs" />
     <Compile Include="AuthorHierarchicalSearchImporter.fs" />
     <Compile Include="CollectionValidator.fs" />
