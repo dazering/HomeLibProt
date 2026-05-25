@@ -142,4 +142,23 @@ public class TestGenres {
 
         Assert.That(actual, Is.EqualTo(expected).AsCollection);
     }
+
+    [Test]
+    public async Task TestInsertGenreLineAsync() {
+        var expected = new[] {
+            new TestGenre(Id: 1, Key: "genre1", Name: "Genre 1")
+        };
+
+        var actual = await TestUtils.UseTestDatabase(
+            DbStructure.CreateImportSqlDumpStructure,
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await Genres.InsertGenreLineAsync(c, new GenreLineParam(Key: "genre1", Name: "Genre 1"));
+                });
+
+                return await ConnectionUtils.DoInTransactionAsync(connection, GenreUtils.GetTestData);
+            });
+
+        Assert.That(actual, Is.EqualTo(expected));
+    }
 }
