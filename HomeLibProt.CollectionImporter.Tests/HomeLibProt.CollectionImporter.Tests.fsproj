@@ -13,6 +13,7 @@
     <Compile Include="TestInpLine.fs" />
     <Compile Include="TestBook.fs" />
     <Compile Include="TestBookImporter.fs" />
+    <Compile Include="TestGenreListLine.fs" />
     <Compile Include="TestInpxImporter.fs" />
     <Compile Include="TestAuthorHierarchicalSearchImporter.fs" />
     <Compile Include="TestCollectionValidator.fs" />
