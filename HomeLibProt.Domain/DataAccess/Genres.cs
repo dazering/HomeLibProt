@@ -12,6 +12,8 @@ public record GenreEntityParam(long Id, string Key, string Name);
 
 public record GenreInpxEntity(string Key, string Name);
 
+public record GenreLineParam(string Key, string Name);
+
 public static class Genres {
     public static async Task<Genre[]> GetGenresByKeyAsync(DbConnection connection, string[] genreKeys) {
         var sql =
@@ -71,5 +73,16 @@ select Key, Name from Genres
 ";
 
         return connection.QueryUnbufferedAsync<GenreInpxEntity>(sql);
+    }
+
+    public static async Task InsertGenreLineAsync(DbConnection connection, GenreLineParam genre) {
+        var sql =
+            @"
+insert into
+Genres (Key, Name)
+values (@Key, @Name)
+";
+
+        await connection.ExecuteAsync(sql, genre);
     }
 }
