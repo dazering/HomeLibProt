@@ -57,11 +57,13 @@ let TestInsertBookAsync () =
             [| TestAuthorship(BookId = 1, AuthorId = 1)
                TestAuthorship(BookId = 2, AuthorId = 1) |]
 
-        let expectedGenres = [| TestGenre(Id = 1, Key = "Genre 1", Name = null) |]
+        let expectedGenres =
+            [| TestGenre(Id = 1, Key = "genre1", Name = "Genre 1")
+               TestGenre(Id = 2, Key = "genre2", Name = null) |]
 
         let expectedBookGenres =
             [| TestBookGenre(BookId = 1, GenreId = 1)
-               TestBookGenre(BookId = 2, GenreId = 1) |]
+               TestBookGenre(BookId = 2, GenreId = 2) |]
 
         let expectedKeywords = [| TestKeyword(Id = 1, Name = "Keyword 1") |]
 
