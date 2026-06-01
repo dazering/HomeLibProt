@@ -6,10 +6,16 @@ type Site =
     | Flibusta = 1
     | Librusec = 2
 
+type ArchiveTypeDownload =
+    | All
+    | Fb2
+    | Binary
+
 type CLIArguments =
     | [<CliPrefix(CliPrefix.None)>] ImportSqlDumps of ParseResults<ImportSqlDumps>
     | [<CliPrefix(CliPrefix.None)>] DownloadSqlDumps of ParseResults<DownloadSqlDumps>
     | [<CliPrefix(CliPrefix.None)>] GenerateInpx of ParseResults<GenerateInpx>
+    | [<CliPrefix(CliPrefix.None)>] DownloadBooks of ParseResults<DownloadBooks>
 
     interface IArgParserTemplate with
         member this.Usage =
@@ -17,6 +23,7 @@ type CLIArguments =
             | ImportSqlDumps _ -> "Import sql dumps to database."
             | DownloadSqlDumps _ -> "Download sql dumps."
             | GenerateInpx _ -> "Generate inpx."
+            | DownloadBooks _ -> "Download books."
 
 and ImportSqlDumps =
     | [<ExactlyOnce; AltCommandLine("-i")>] PathToSqlDumps of string
@@ -56,3 +63,19 @@ and GenerateInpx =
             | PathToLibrary _ -> "Path to library archives on local file system"
             | PathToInpx _ -> "Path to where save inpx on local file system"
             | PathToDatabase _ -> "Path to database on local file system"
+
+and DownloadBooks =
+    | [<ExactlyOnce; AltCommandLine("-i")>] PathToLibrary of string
+    | [<ExactlyOnce; AltCommandLine("-o")>] OutputPath of string
+    | [<ExactlyOnce; AltCommandLine("-s")>] Site of Site
+    | [<ExactlyOnce; AltCommandLine("-r")>] Retries of uint
+    | [<ExactlyOnce; AltCommandLine("-a")>] ArchiveTypeDownload of ArchiveTypeDownload
+
+    interface IArgParserTemplate with
+        member this.Usage =
+            match this with
+            | PathToLibrary _ -> "Path to library archives on local file system"
+            | OutputPath _ -> "Path to where save downloaded archives on local file system"
+            | Site _ -> "Source of archives"
+            | Retries _ -> "Count of retries"
+            | ArchiveTypeDownload _ -> "Type of archive to download"
