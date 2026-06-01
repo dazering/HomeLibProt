@@ -6,12 +6,43 @@ open System.Net.Http
 open System.Threading.Tasks
 
 open HomeLibProt.CollectionManager.Arguments
+open HomeLibProt.CollectionManager.Books
 open HomeLibProt.CollectionManager.SqlDumps
 open HomeLibProt.Domain.DataAccess
 
 let parser = ArgumentParser.Create<CLIArguments>()
 
 let printProgressReport (message: string) : unit = printfn $"{message}"
+
+let downloadBooks (args: ParseResults<DownloadBooks>) : Task<unit> =
+    task {
+        let pathToLibrary = args.GetResult DownloadBooks.PathToLibrary
+        let outputPath = args.GetResult DownloadBooks.OutputPath
+        let site = args.GetResult DownloadBooks.Site
+        let retries = args.GetResult DownloadBooks.Retries
+        let archiveTypeDownload = args.GetResult DownloadBooks.ArchiveTypeDownload
+
+        use httpClient = new HttpClient()
+
+        let aTD =
+            match archiveTypeDownload with
+            | All -> BooksDownloader.ArchiveTypeDownload.All
+            | Fb2 -> BooksDownloader.ArchiveTypeDownload.Fb2
+            | Binary -> BooksDownloader.ArchiveTypeDownload.Binary
+
+        let parameters: BooksDownloader.BooksDownloaderParameters =
+            { PathToLibrary = pathToLibrary
+              OutputPath = outputPath
+              HttpClient = httpClient
+              Retries = retries
+              ArchiveTypeDownload = aTD
+              ProgressReport = printProgressReport }
+
+        match site with
+        | Site.Flibusta -> do! BooksDownloader.downloadFlibustaArchives parameters
+        | Site.Librusec -> failwith $"Unsupported archive source: {site}"
+        | _ -> failwith $"Unknown archive source: {site}"
+    }
 
 let generateInpx (args: ParseResults<GenerateInpx>) : Task<unit> =
     task {
@@ -87,6 +118,7 @@ let runAsync (arguments: ParseResults<CLIArguments>) : Task<unit> =
         | ImportSqlDumps args -> do! importSqlDumps args
         | DownloadSqlDumps args -> do! downloadSqlDumps args
         | GenerateInpx args -> do! generateInpx args
+        | DownloadBooks args -> do! downloadBooks args
     }
 
 let withStopwatchAsync (stopwatch: Stopwatch) (actionAsync: unit -> Task<unit>) : Task<Stopwatch> =

@@ -37,6 +37,8 @@ SUBCOMMANDS:
                           Download sql dumps.
     generateinpx <options>
                           Generate inpx.
+    downloadbooks <options>
+                          Download books.
 
     Use 'HomeLibProt.CollectionManager <subcommand> --help' for additional information.
 
@@ -109,4 +111,29 @@ Example
 
 ```
 HomeLibProt.CollectionManager.exe generateinpx -i C:\BookDemo\Books\ -d C:\BookDemo\sql_dump.db -o C:\BookDemo\Inpx.inpx
+```
+
+### Download book archives
+
+```
+USAGE: HomeLibProt.CollectionManager downloadbooks [--help] --pathtolibrary <string> --outputpath <string> --site <flibusta|librusec> --retries <uint> --archivetypedownload <all|fb2|binary>
+
+OPTIONS:
+
+    --pathtolibrary, -i <string>
+                          Path to library archives on local file system
+    --outputpath, -o <string>
+                          Path to where save downloaded archives on local file system
+    --site, -s <flibusta|librusec>
+                          Source of archives
+    --retries, -r <uint>  Count of retries
+    --archivetypedownload, -a <all|fb2|binary>
+                          Type of archive to download
+    --help                display this list of options.
+```
+
+Example
+
+```
+HomeLibProt.CollectionManager.exe downloadbooks -i C:\BookDemo\Books\ -o C:\BookDemo\Books\ -s flibusta -r 10 -a fb2
 ```
