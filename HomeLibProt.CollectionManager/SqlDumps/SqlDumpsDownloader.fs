@@ -30,7 +30,7 @@ let downloadSqlDumpsFlibustaAsync (parameters: SqlDumpDownloaderParameters) : Ta
             let uri = Uri $"{Flibusta.url}/{fileName}"
 
             do!
-                FileDownloader.downloadFileAsync
+                HttpDownloader.downloadFileAsync
                     parameters.PathToSqlDumps
                     parameters.HttpClient
                     parameters.ProgressReport
@@ -57,7 +57,7 @@ let downloadSqlDumpsLibrusecAsync (parameters: SqlDumpDownloaderParameters) =
             let uri = Uri $"{Librusec.url}/{fileName}"
 
             do!
-                FileDownloader.downloadFileAsync
+                HttpDownloader.downloadFileAsync
                     parameters.PathToSqlDumps
                     parameters.HttpClient
                     parameters.ProgressReport

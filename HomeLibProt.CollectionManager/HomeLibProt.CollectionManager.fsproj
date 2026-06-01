@@ -15,7 +15,7 @@
     <Compile Include="RegEx\RegExResults.fs" />
     <Compile Include="RegEx\Flibusta.fs" />
     <Compile Include="RegEx\Librusec.fs" />
-    <Compile Include="Common\FileDownloader.fs" />
+    <Compile Include="Common\HttpDownloader.fs" />
     <Compile Include="SqlDumps\Flibusta.fs" />
     <Compile Include="SqlDumps\Librusec.fs" />
     <Compile Include="SqlDumps\SqlDumpParser.fs" />

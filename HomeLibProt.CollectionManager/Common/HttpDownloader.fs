@@ -1,4 +1,4 @@
-module HomeLibProt.CollectionManager.Common.FileDownloader
+module HomeLibProt.CollectionManager.Common.HttpDownloader
 
 open System
 open System.IO
