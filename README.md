@@ -8,6 +8,7 @@ Features:
 - Download SQL dumps
 - Import SQL dumps to SQLite database
 - Generate INPX
+- Download books
 
 See [README.md](HomeLibProt.CollectionManager/README.md)
 
