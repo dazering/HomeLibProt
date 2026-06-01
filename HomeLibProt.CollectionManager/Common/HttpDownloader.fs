@@ -34,10 +34,13 @@ let private isAcceptRangeSupported (response: HttpResponseMessage) : Task<bool> 
 let private saveResponse (fs: FileStream) (response: HttpResponseMessage) : Task<unit> =
     task { do! response.Content.CopyToAsync fs }
 
-let private getCheckHeadersRequestMessage (uri: Uri) : HttpRequestMessage =
+let private getStringBody (response: HttpResponseMessage) : Task<string> =
+    task { return! response.Content.ReadAsStringAsync() }
+
+let private headRequestMessage (uri: Uri) : HttpRequestMessage =
     new HttpRequestMessage(HttpMethod.Head, uri)
 
-let private getFileRequestMessage (uri: Uri) : HttpRequestMessage =
+let private getRequestMessage (uri: Uri) : HttpRequestMessage =
     new HttpRequestMessage(HttpMethod.Get, uri)
 
 let private addRangeHeaderToRequestMessage (start: int64) (requestMessage: HttpRequestMessage) : HttpRequestMessage =
@@ -85,7 +88,7 @@ let private downloadRangeFileWithRetryAsync
         let makeRequest () =
             task {
                 use requestMessage =
-                    uri |> getFileRequestMessage |> addRangeHeaderToRequestMessage fs.Length
+                    uri |> getRequestMessage |> addRangeHeaderToRequestMessage fs.Length
 
                 return! sendRequest httpClient (saveResponse fs) requestMessage
             }
@@ -106,7 +109,7 @@ let private downloadFileWithRetryAsync
             task {
                 use fs = File.Create(Path.Combine(pathToSqlDumps, fileName))
 
-                use requestMessage = uri |> getFileRequestMessage
+                use requestMessage = uri |> getRequestMessage
 
                 return! sendRequest httpClient (saveResponse fs) requestMessage
             }
@@ -123,9 +126,26 @@ let private checkIfRequestSupportsRangeWithRetryAsync
     task {
         let makeRequest () =
             task {
-                use requestMessage = uri |> getCheckHeadersRequestMessage
+                use requestMessage = uri |> headRequestMessage
 
                 return! sendRequest httpClient isAcceptRangeSupported requestMessage
+            }
+
+        return! doWithRetry makeReportMessageForCheckingRange reportProgress makeRequest retries
+    }
+
+let private downloadStringWithRetryAsync
+    (httpClient: HttpClient)
+    (reportProgress: string -> unit)
+    (uri: Uri)
+    (retries: uint)
+    : Task<string> =
+    task {
+        let makeRequest () =
+            task {
+                use requestMessage = uri |> getRequestMessage
+
+                return! sendRequest httpClient getStringBody requestMessage
             }
 
         return! doWithRetry makeReportMessageForCheckingRange reportProgress makeRequest retries
@@ -149,3 +169,11 @@ let downloadFileAsync
         else
             do! downloadFileWithRetryAsync pathToSqlDumps httpClient reportProgress uri fileName retries
     }
+
+let downloadStringAsync
+    (httpClient: HttpClient)
+    (reportProgress: string -> unit)
+    (uri: Uri)
+    (retries: uint)
+    : Task<string> =
+    task { return! downloadStringWithRetryAsync httpClient reportProgress uri retries }
