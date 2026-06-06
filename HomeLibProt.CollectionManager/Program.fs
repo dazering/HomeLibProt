@@ -14,6 +14,30 @@ let parser = ArgumentParser.Create<CLIArguments>()
 
 let printProgressReport (message: string) : unit = printfn $"{message}"
 
+let mergeBooks (args: ParseResults<MergeBooks>) : Task<unit> =
+    task {
+        let pathToLibrary = args.GetResult MergeBooks.PathToLibrary
+        let outputPath = args.GetResult MergeBooks.OutputPath
+        let archiveFilter = args.GetResult MergeBooks.ArchiveFilter
+        let archiveSize = args.GetResult MergeBooks.ArchiveSize
+
+        let prefix =
+            args.TryGetResult MergeBooks.Prefix |> Option.defaultValue System.String.Empty
+
+        let keepOldArchives = args.Contains MergeBooks.KeepOldArchives
+
+        let parameters: BooksMerger.BooksMergerParameters =
+            { PathToLibrary = pathToLibrary
+              OutputPath = outputPath
+              ArchiveSize = archiveSize
+              ArchiveFilter = archiveFilter
+              Prefix = prefix
+              KeepArchives = keepOldArchives
+              ProgressReport = printProgressReport }
+
+        do! BooksMerger.megreBooksAsync parameters
+    }
+
 let downloadBooks (args: ParseResults<DownloadBooks>) : Task<unit> =
     task {
         let pathToLibrary = args.GetResult DownloadBooks.PathToLibrary
@@ -119,6 +143,7 @@ let runAsync (arguments: ParseResults<CLIArguments>) : Task<unit> =
         | DownloadSqlDumps args -> do! downloadSqlDumps args
         | GenerateInpx args -> do! generateInpx args
         | DownloadBooks args -> do! downloadBooks args
+        | MergeBooks args -> do! mergeBooks args
     }
 
 let withStopwatchAsync (stopwatch: Stopwatch) (actionAsync: unit -> Task<unit>) : Task<Stopwatch> =
