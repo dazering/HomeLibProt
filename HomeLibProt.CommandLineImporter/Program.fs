@@ -88,7 +88,7 @@ let withStopwatchAsync (stopwatch: Stopwatch) (actionAsync: unit -> Task<unit>) 
     }
 
 let printElapsedTime (stopwatch: Stopwatch) : unit =
-    printfn $"Elapsed time: {stopwatch.Elapsed.Minutes:d2}:{stopwatch.Elapsed.Seconds:d2}"
+    printfn $"Elapsed time: {stopwatch.Elapsed.TotalMinutes |> int:d2}:{stopwatch.Elapsed.Seconds:d2}"
 
 [<EntryPoint>]
 let main args =
