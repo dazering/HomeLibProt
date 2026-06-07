@@ -95,6 +95,7 @@ let private getLastBookFromArchives (path: string) : int64 =
     let firstAndLastRegEx = new Regex(firstLastRegExPattern, RegexOptions.Compiled)
 
     Directory.EnumerateFiles(path, "*.zip")
+    |> Seq.map Path.GetFileName
     |> Seq.map (getFirstAndLastBookGroups firstAndLastRegEx >> getFirsAndLastBook)
     |> Seq.map (fun fl -> fl.Last)
     |> Seq.max
