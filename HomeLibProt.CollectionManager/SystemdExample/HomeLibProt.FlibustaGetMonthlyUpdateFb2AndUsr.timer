@@ -1,0 +1,9 @@
+[Unit]
+Description=HomeLibProt: Make monthly archives timer every 1st day of month
+
+[Timer]
+OnCalendar=*-*-1 7:00:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

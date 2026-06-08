@@ -164,3 +164,51 @@ Example
 ```
 HomeLibProt.CollectionManager.exe  mergebooks -i C:\BookDemo\Books\ -o C:\BookDemo\Books\ -s 10000 -p "f.fb2-" -f "*.zip" -k
 ```
+
+## Automation
+
+### Linux - Systemd
+
+See [example files](./SystemdExample)
+
+1. Place service and timer files to `/etc/systemd/system/`
+
+2. Use corresponding paths in scripts and arguments
+
+3. Run commands:
+
+```
+systemctl daemon-reload
+```
+
+```
+systemctl enable --now HomeLibProt.FlibustaGetMonthlyUpdateFb2AndUsr.timer
+```
+
+```
+systemctl enable --now HomeLibProt.FlibustaGetDailyUpdateFb2AndUsr.timer
+```
+
+4. Check if timers appear in scheduled list
+
+```
+systemctl list-timers
+```
+
+### Windows
+
+1. Run in powershell command
+
+```
+schtasks /create /tn 'HomeLibProt.GetDailyUpdate' /tr "powershell -WindowStyle Hidden -NonInteractive -ExecutionPolicy Bypass C:\BookDemo\Scripts\FlibustaGetDailyUpdateFb2AndUsr.ps1 -InpxPath C:\BookDemo\Books\Flibusta_all_local.inpx -LibraryPath C:\BookDemo\Books\" /sc daily /st 06:00
+```
+
+2. Run in powershell command
+
+```
+schtasks /create /tn 'HomeLibProt.GetMonthlyUpdate' /tr "powershell -WindowStyle Hidden -NonInteractive -ExecutionPolicy Bypass C:\BookDemo\Scripts\FlibustaGetMonthlyUpdateFb2AndUsr.ps1 -InpxPath C:\BookDemo\Books\Flibusta_all_local.inpx -LibraryPath C:\BookDemo\Books\" /sc monthly /d 1 /st 07:00
+```
+
+3. Open Task Scheduler
+
+4. For every task `Properties > Settings` check in `Run task as soon as possible after a scheduled start is missed`

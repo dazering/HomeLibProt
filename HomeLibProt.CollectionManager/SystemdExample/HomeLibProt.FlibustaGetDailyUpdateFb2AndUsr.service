@@ -1,0 +1,7 @@
+[Unit]
+Description=HomeLibProt: Get daily updates
+Wants=HomeLibProt.FlibustaGetDailyUpdateFb2AndUsr.timer
+
+[Service]
+Type=oneshot 
+ExecStart=/home/HomeLibProt/Scripts/FlibustaGetDailyUpdateFb2AndUsr.sh /srv/dev/Flibusta/Flibusta_all_local.inpx /srv/dev/Flibusta

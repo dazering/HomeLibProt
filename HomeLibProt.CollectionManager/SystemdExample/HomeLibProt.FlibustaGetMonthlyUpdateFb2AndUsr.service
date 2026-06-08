@@ -1,0 +1,7 @@
+[Unit]
+Description=HomeLibProt: Make monthly archives
+Wants=HomeLibProt.FlibustaGetMonthlyUpdateFb2AndUsr.timer
+
+[Service]
+Type=oneshot 
+ExecStart=/home/HomeLibProt/Scripts/FlibustaGetMonthlyUpdateFb2AndUsr.sh /srv/dev/Flibusta/Flibusta_all_local.inpx /srv/dev/Flibusta
