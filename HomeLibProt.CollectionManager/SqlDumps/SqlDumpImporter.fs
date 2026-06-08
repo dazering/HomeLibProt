@@ -15,6 +15,7 @@ type SqlDumpImporterParameters =
     { PathToSqlDumps: string
       KeepSqlDumps: bool
       ProgressReport: string -> unit
+      ErrorReport: string -> unit
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
 let private archiveName = "SQL_Dump"
@@ -22,37 +23,45 @@ let private archiveName = "SQL_Dump"
 let private rateResultToEntityParam (rate: RateResult) : RateEntityParam =
     RateEntityParam(BookId = rate.BookId, Rate = rate.Rate)
 
-let private importRateResult (connection: DbConnection) (result: RateResult) : Task<unit> =
+let private importRateResult
+    (reportError: string -> unit)
+    (connection: DbConnection)
+    (result: RateResult)
+    : Task<unit> =
     task {
         let entityParam = result |> rateResultToEntityParam
 
         match! Rates.CheckIfBookExistsAsync(connection, entityParam) with
         | RatesCheckResult.BookExsists -> do! Rates.InsertRateEntityAsync(connection, entityParam)
         | RatesCheckResult.NoRecord ->
-            eprintfn $"Book Id: {entityParam.BookId}, Rate: {entityParam.Rate}. Book not found."
+            reportError $"Book Id: {entityParam.BookId}, Rate: {entityParam.Rate}. Book not found."
         | r -> raise (InvalidOperationException $"Unsupported check result: {r}")
     }
 
 let private bookSeriesResultToEntityParam (bookSeries: BookSeriesResult) : BookSeriesParam =
     BookSeriesParam(BookId = bookSeries.BookId, SeriesId = bookSeries.SeriesId, SeriesNumber = bookSeries.SeriesNumber)
 
-let private importBookSeriesResult (connection: DbConnection) (result: BookSeriesResult) : Task<unit> =
+let private importBookSeriesResult
+    (reportError: string -> unit)
+    (connection: DbConnection)
+    (result: BookSeriesResult)
+    : Task<unit> =
     task {
         let entityParam = result |> bookSeriesResultToEntityParam
 
         match! BookSeries.CheckIfBookSeriesExistsAsync(connection, entityParam) with
         | BookSeriesCheckResult.Duplicate ->
-            eprintfn
+            reportError
                 $"Unable to insert duplicate of book series with Book Id: {entityParam.BookId}, Series Id: {entityParam.SeriesId}."
         | BookSeriesCheckResult.AllExsists -> do! BookSeries.InsertBookSeriesAsync(connection, entityParam)
         | BookSeriesCheckResult.OnlyBook ->
-            eprintfn
+            reportError
                 $"Book Id: {entityParam.BookId}, Series Id: {entityParam.SeriesId}, Series Number: {entityParam.SeriesNumber}. Series not found."
         | BookSeriesCheckResult.OnlySeries ->
-            eprintfn
+            reportError
                 $"Book Id: {entityParam.BookId}, Series Id: {entityParam.SeriesId}, Series Number: {entityParam.SeriesNumber}. Book not found."
         | BookSeriesCheckResult.NoRecords ->
-            eprintfn
+            reportError
                 $"Book Id: {entityParam.BookId}, Series Id: {entityParam.SeriesId}, Series Number: {entityParam.SeriesNumber}. Book and Series not found."
         | r -> raise (InvalidOperationException $"Unsupported check result: {r}")
     }
@@ -70,21 +79,25 @@ let private importSeriesResult (connection: DbConnection) (result: SeriesResult)
 let private bookGenreResultToEntityParam (bookGenre: BookGenreResult) : BookGenreParam =
     BookGenreParam(BookId = bookGenre.BookId, GenreId = bookGenre.GenreId)
 
-let private importBookGenreResult (connection: DbConnection) (result: BookGenreResult) : Task<unit> =
+let private importBookGenreResult
+    (reportError: string -> unit)
+    (connection: DbConnection)
+    (result: BookGenreResult)
+    : Task<unit> =
     task {
         let entityParam = result |> bookGenreResultToEntityParam
 
         match! BookGenres.CheckIfBookGenreExistsAsync(connection, entityParam) with
         | BookGenreCheckResult.Duplicate ->
-            eprintfn
+            reportError
                 $"Unable to insert duplicate of book genre with Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}."
         | BookGenreCheckResult.AllExsists -> do! BookGenres.InsertBookGenresAsync(connection, [| entityParam |])
         | BookGenreCheckResult.OnlyBook ->
-            eprintfn $"Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}. Genre not found."
+            reportError $"Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}. Genre not found."
         | BookGenreCheckResult.OnlyGenre ->
-            eprintfn $"Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}. Book not found."
+            reportError $"Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}. Book not found."
         | BookGenreCheckResult.NoRecords ->
-            eprintfn $"Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}. Book and Genre not found."
+            reportError $"Book Id: {entityParam.BookId}, Genre Id: {entityParam.GenreId}. Book and Genre not found."
         | r -> raise (InvalidOperationException $"Unsupported check result: {r}")
     }
 
@@ -101,21 +114,25 @@ let private importGenreResult (connection: DbConnection) (result: GenreResult) :
 let private authorshipsResultToParam (authorships: AuthorshipsResult) : AuthorshipParam =
     AuthorshipParam(BookId = authorships.BookId, AuthorId = authorships.AuthorId)
 
-let private importAuthorshipsResult (connection: DbConnection) (result: AuthorshipsResult) : Task<unit> =
+let private importAuthorshipsResult
+    (reportError: string -> unit)
+    (connection: DbConnection)
+    (result: AuthorshipsResult)
+    : Task<unit> =
     task {
         let entityParam = result |> authorshipsResultToParam
 
         match! Authorships.CheckIfAuthorshipsExistsAsync(connection, entityParam) with
         | AuthorshipsCheckResult.Duplicate ->
-            eprintfn
+            reportError
                 $"Unable to insert duplicate of authorship with Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}."
         | AuthorshipsCheckResult.AllExsists -> do! Authorships.InsertAuthorshipsAsync(connection, [| entityParam |])
         | AuthorshipsCheckResult.OnlyBook ->
-            eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Author not found."
+            reportError $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Author not found."
         | AuthorshipsCheckResult.OnlyAuthor ->
-            eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Book not found."
+            reportError $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Book not found."
         | AuthorshipsCheckResult.NoRecords ->
-            eprintfn $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Author and Book not found."
+            reportError $"Author Id: {entityParam.AuthorId}, Book Id: {entityParam.BookId}. Author and Book not found."
         | r -> raise (InvalidOperationException $"Unsupported check result: {r}")
     }
 
@@ -288,7 +305,7 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                             importFromGZip
                                 authorships
                                 HomeLibProt.CollectionManager.RegEx.Flibusta.authorships
-                                importAuthorshipsResult
+                                (importAuthorshipsResult parameters.ErrorReport)
                                 getAuthorshipsResult
                                 c
                     }
@@ -322,7 +339,7 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                             importFromGZip
                                 bookGenres
                                 HomeLibProt.CollectionManager.RegEx.Flibusta.bookGenres
-                                importBookGenreResult
+                                (importBookGenreResult parameters.ErrorReport)
                                 getBookGenreResult
                                 c
                     }
@@ -356,7 +373,7 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                             importFromGZip
                                 bookSeries
                                 HomeLibProt.CollectionManager.RegEx.Flibusta.bookSeries
-                                importBookSeriesResult
+                                (importBookSeriesResult parameters.ErrorReport)
                                 getBookSeriesResult
                                 c
                     }
@@ -373,7 +390,7 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                             importFromGZip
                                 rates
                                 HomeLibProt.CollectionManager.RegEx.Flibusta.rates
-                                importRateResult
+                                (importRateResult parameters.ErrorReport)
                                 getRateResult
                                 c
                     }
@@ -451,7 +468,7 @@ let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connect
                             importFromGZip
                                 authorships
                                 HomeLibProt.CollectionManager.RegEx.Librusec.authorships
-                                importAuthorshipsResult
+                                (importAuthorshipsResult parameters.ErrorReport)
                                 getAuthorshipsResult
                                 c
                     }
@@ -485,7 +502,7 @@ let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connect
                             importFromGZip
                                 bookGenres
                                 HomeLibProt.CollectionManager.RegEx.Librusec.bookGenres
-                                importBookGenreResult
+                                (importBookGenreResult parameters.ErrorReport)
                                 getBookGenreResult
                                 c
                     }
@@ -519,7 +536,7 @@ let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connect
                             importFromGZip
                                 bookSeries
                                 HomeLibProt.CollectionManager.RegEx.Librusec.bookSeries
-                                importBookSeriesResult
+                                (importBookSeriesResult parameters.ErrorReport)
                                 getBookSeriesResult
                                 c
                     }
@@ -536,7 +553,7 @@ let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connect
                             importFromGZip
                                 rates
                                 HomeLibProt.CollectionManager.RegEx.Librusec.rates
-                                importRateResult
+                                (importRateResult parameters.ErrorReport)
                                 getRateResult
                                 c
                     }

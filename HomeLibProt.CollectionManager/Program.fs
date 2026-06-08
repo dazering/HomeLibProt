@@ -16,6 +16,7 @@ open HomeLibProt.Domain.DataAccess
 let parser = ArgumentParser.Create<CLIArguments>()
 
 let printProgressReport (logger: ILogger) (message: string) : unit = logger.Information message
+let printErrorReport (logger: ILogger) (message: string) : unit = logger.Error message
 
 let mergeBooks (logger: ILogger) (args: ParseResults<MergeBooks>) : Task<unit> =
     task {
@@ -86,6 +87,7 @@ let generateInpx (logger: ILogger) (args: ParseResults<GenerateInpx>) : Task<uni
             { PathToLibrary = pathToLibrary
               PathToInpx = pathToInpx
               ProgressReport = printProgressReport logger
+              ErrorReport = printErrorReport logger
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
         do! ConnectionUtils.WithConnectionAsync(connection, Inpx.InpxGenerator.generateInpxAsync parameters)
@@ -128,6 +130,7 @@ let importSqlDumps (logger: ILogger) (args: ParseResults<ImportSqlDumps>) : Task
             { PathToSqlDumps = pathToSqlDumps
               KeepSqlDumps = keepSqlDumps
               ProgressReport = printProgressReport logger
+              ErrorReport = printErrorReport logger
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
         match site with

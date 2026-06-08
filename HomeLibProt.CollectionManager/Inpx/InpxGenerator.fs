@@ -13,6 +13,7 @@ type InpxGeneratorParameters =
     { PathToLibrary: string
       PathToInpx: string
       ProgressReport: string -> unit
+      ErrorReport: string -> unit
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
 let private authorInpxInfoToAuthorsName (author: AuthorInpxInfo) : InpLine.AuthorName =
@@ -56,6 +57,7 @@ let private getInpLinesAsync
     (bookId: int64)
     (extension: string)
     (size: string)
+    (reportError: string -> unit)
     (connection: DbConnection)
     : Task<string array> =
     task {
@@ -63,7 +65,7 @@ let private getInpLinesAsync
 
         match bookInfo with
         | [||] ->
-            eprintfn $"Not found any information in database for Book Id: {bookId}"
+            reportError $"Not found any information in database for Book Id: {bookId}"
             return [||]
         | bf ->
             let! authors = Authors.GetAuthorInpxInfosByBookIdAsync(connection, bookId)
@@ -78,14 +80,18 @@ let private getInpLinesAsync
                     |> InpLine.makeLine)
     }
 
-let private tryToGetInpLinesAsync (entry: ZipArchiveEntry) (connection: DbConnection) : Task<string array option> =
+let private tryToGetInpLinesAsync
+    (reportError: string -> unit)
+    (entry: ZipArchiveEntry)
+    (connection: DbConnection)
+    : Task<string array option> =
     task {
         match Int64.TryParse(entry.Name |> Path.GetFileNameWithoutExtension) with
         | true, bookId ->
             let extension = (entry.Name |> Path.GetExtension).Replace(".", String.Empty)
             let size = entry.Length.ToString()
 
-            let! lines = getInpLinesAsync bookId extension size connection
+            let! lines = getInpLinesAsync bookId extension size reportError connection
 
             return Some lines
         | false, _ -> return None
@@ -97,6 +103,7 @@ let private createInpFromLibraryArchive
     (archiveName: string)
     (inpx: ZipArchive)
     (reportProgress: string -> unit)
+    (reportError: string -> unit)
     (connection: DbConnection)
     (libraryArchive: ZipArchive)
     : Task =
@@ -108,7 +115,7 @@ let private createInpFromLibraryArchive
 
         for entry in libraryArchive.Entries do
 
-            let! linesResult = tryToGetInpLinesAsync entry connection
+            let! linesResult = tryToGetInpLinesAsync reportError entry connection
 
             match linesResult with
             | Some lines ->
@@ -138,6 +145,7 @@ let private importGenreList (connection: DbConnection) (inpx: ZipArchive) : Task
 let private fillInpxAsync
     (pathToLibrary: string)
     (reportProgress: string -> unit)
+    (reportError: string -> unit)
     (connection: DbConnection)
     (inpx: ZipArchive)
     =
@@ -157,10 +165,10 @@ let private fillInpxAsync
                 do!
                     ArchiveUtils.DoWithArchiveAsync(
                         archive,
-                        createInpFromLibraryArchive archiveName inpx reportProgress connection
+                        createInpFromLibraryArchive archiveName inpx reportProgress reportError connection
                     )
             with :? InvalidDataException as _ ->
-                eprintfn $"Invalid archive {archiveName}"
+                reportError $"Invalid archive {archiveName}"
     }
 
 let private createInpxAndFillAsync (path: string) (fillInpx: ZipArchive -> Task<unit>) : Task =
@@ -180,7 +188,11 @@ let generateInpxAsync (parameters: InpxGeneratorParameters) (connection: DbConne
                         do!
                             createInpxAndFillAsync
                                 parameters.PathToInpx
-                                (fillInpxAsync parameters.PathToLibrary parameters.ProgressReport c)
+                                (fillInpxAsync
+                                    parameters.PathToLibrary
+                                    parameters.ProgressReport
+                                    parameters.ErrorReport
+                                    c)
                     }
             )
     }
