@@ -7,6 +7,7 @@ open System.Text.RegularExpressions
 open System.Threading.Tasks
 
 open HomeLibProt.CollectionManager.Common
+open HomeLibProt.Common.RegEx
 
 type ArchiveTypeDownload =
     | All
@@ -39,8 +40,6 @@ module private RegExGroups =
 
 module private Flibusta =
     let url = "http://https.flibusta.is/daily/"
-
-let private extractGroupValue (group: Group) : string = group.Value
 
 module private FlibustaRegEx =
     open RegExGroups

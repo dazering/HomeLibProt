@@ -3,6 +3,8 @@ module HomeLibProt.CollectionManager.RegEx.RegExResults
 open System
 open System.Text.RegularExpressions
 
+open HomeLibProt.Common.RegEx
+
 type RateResult = { BookId: int64; Rate: int64 }
 
 type BookSeriesResult =
@@ -45,8 +47,6 @@ let private convertStringToBool (value: string) : bool =
     match value with
     | "0" -> false
     | _ -> true
-
-let private extractGroupValue (group: Group) : string = group.Value
 
 let getRateResult (groups: GroupCollection) : RateResult =
     { BookId = groups.[RegExGroups.Rates.bookId] |> extractGroupValue |> int64

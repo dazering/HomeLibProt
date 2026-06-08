@@ -2,6 +2,8 @@ module HomeLibProt.CollectionImporter.GenreListLine
 
 open System.Text.RegularExpressions
 
+open HomeLibProt.Common.RegEx
+
 module private GenreInpLineRegExFields =
     let public key = "key"
     let public name = "name"
@@ -21,8 +23,6 @@ let parseGenreListLine (regEx: Regex) (line: string) : GroupCollection =
         regExMatch.Groups
     else
         failwith $"Unsupported genre line format: \"{line}\""
-
-let private extractGroupValue (group: Group) : string = group.Value
 
 let getGenreLine (groups: GroupCollection) : GenreListLine =
     { Key = groups.[GenreInpLineRegExFields.key] |> extractGroupValue

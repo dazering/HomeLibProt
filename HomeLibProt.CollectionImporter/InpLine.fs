@@ -4,6 +4,7 @@ open System
 open System.Text.RegularExpressions
 
 open HomeLibProt.CollectionImporter.InpLineFields
+open HomeLibProt.Common.RegEx
 
 type InpLine =
     { Authors: string
@@ -115,13 +116,6 @@ let parseInpLine (regEx: Regex) (line: string) : GroupCollection =
         regExMatch.Groups
     else
         failwith $"Unsupported inpx format: \"{line}\""
-
-let private extractGroupValue (group: Group) : string = group.Value
-
-let private tryToExtractGroupValue (group: Group) : string option =
-    match group.Success with
-    | true -> group |> extractGroupValue |> Some
-    | _ -> None
 
 let getInpLine (groups: GroupCollection) : InpLine =
     { Authors = groups.[authors] |> extractGroupValue
