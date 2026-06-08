@@ -1,5 +1,6 @@
 module HomeLibProt.CollectionImporter.GenreListLine
 
+open System
 open System.Text.RegularExpressions
 
 open HomeLibProt.Common.RegEx
@@ -22,7 +23,7 @@ let parseGenreListLine (regEx: Regex) (line: string) : GroupCollection =
     if regExMatch.Success then
         regExMatch.Groups
     else
-        failwith $"Unsupported genre line format: \"{line}\""
+        raise (InvalidOperationException $"Unsupported genre line format: \"{line}\"")
 
 let getGenreLine (groups: GroupCollection) : GenreListLine =
     { Key = groups.[GenreInpLineRegExFields.key] |> extractGroupValue

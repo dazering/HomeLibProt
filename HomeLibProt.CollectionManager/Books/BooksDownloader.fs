@@ -51,7 +51,7 @@ module private FlibustaRegEx =
         match s with
         | "fb2" -> Fb2
         | "n" -> Binary
-        | _ -> failwith $"Unsupported archive type: {s}"
+        | _ -> raise (InvalidOperationException $"Unsupported archive type: {s}")
 
     let getReference (groups: GroupCollection) : Reference =
         { Reference = groups.[reference] |> extractGroupValue

@@ -2,6 +2,7 @@
 
 open Argu
 open Serilog
+open System
 open System.Diagnostics
 open System.Net.Http
 open System.Threading.Tasks
@@ -66,8 +67,8 @@ let downloadBooks (logger: ILogger) (args: ParseResults<DownloadBooks>) : Task<u
 
         match site with
         | Site.Flibusta -> do! BooksDownloader.downloadFlibustaArchives parameters
-        | Site.Librusec -> failwith $"Unsupported archive source: {site}"
-        | _ -> failwith $"Unknown archive source: {site}"
+        | Site.Librusec -> raise (NotImplementedException $"Unsupported archive source: {site}")
+        | _ -> raise (InvalidOperationException $"Unknown archive source: {site}")
     }
 
 let generateInpx (logger: ILogger) (args: ParseResults<GenerateInpx>) : Task<unit> =
@@ -107,7 +108,7 @@ let downloadSqlDumps (logger: ILogger) (args: ParseResults<DownloadSqlDumps>) : 
         match site with
         | Site.Flibusta -> do! SqlDumpsDownloader.downloadSqlDumpsFlibustaAsync parameters
         | Site.Librusec -> do! SqlDumpsDownloader.downloadSqlDumpsLibrusecAsync parameters
-        | _ -> failwith $"Unknown sql dump source: {site}"
+        | _ -> raise (InvalidOperationException $"Unknown sql dump source: {site}")
 
     }
 
@@ -134,7 +135,7 @@ let importSqlDumps (logger: ILogger) (args: ParseResults<ImportSqlDumps>) : Task
             do! ConnectionUtils.WithConnectionAsync(connection, SqlDumpImporter.importSqlDumpsFlibustaAsync parameters)
         | Site.Librusec ->
             do! ConnectionUtils.WithConnectionAsync(connection, SqlDumpImporter.importSqlDumpsLibrusecAsync parameters)
-        | _ -> failwith $"Unknown sql dump source: {site}"
+        | _ -> raise (InvalidOperationException $"Unknown sql dump source: {site}")
 
     }
 
