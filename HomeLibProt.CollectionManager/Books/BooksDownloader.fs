@@ -81,7 +81,7 @@ let private getReferences
         return matches |> Seq.map (fun m -> m.Groups |> getReference) |> Seq.toArray
     }
 
-let private firstLastRegExPattern = "(?<first>\\d*)-(?<last>\\d*)"
+let private firstLastRegExPattern = "-(?<first>\\d+)-(?<last>\\d+)"
 
 let private getFirstAndLastBookGroups (regEx: Regex) (fileName: string) =
     let m = regEx.Match fileName
