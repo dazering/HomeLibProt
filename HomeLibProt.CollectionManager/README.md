@@ -39,6 +39,7 @@ SUBCOMMANDS:
                           Generate inpx.
     downloadbooks <options>
                           Download books.
+    mergebooks <options>  Merge book archives.
 
     Use 'HomeLibProt.CollectionManager <subcommand> --help' for additional information.
 
@@ -136,4 +137,30 @@ Example
 
 ```
 HomeLibProt.CollectionManager.exe downloadbooks -i C:\BookDemo\Books\ -o C:\BookDemo\Books\ -s flibusta -r 10 -a fb2
+```
+
+### Merge book archives
+
+```
+USAGE: HomeLibProt.CollectionManager mergebooks [--help] --pathtolibrary <string> --outputpath <string> --archivesize <int> --archivefilter <string> [--prefix <string>] [--keepoldarchives]
+
+OPTIONS:
+
+    --pathtolibrary, -i <string>
+                          Path to library archives on local file system
+    --outputpath, -o <string>
+                          Path to where save new archives on local file system
+    --archivesize, -s <int>
+                          Size of new archives
+    --archivefilter, -f <string>
+                          Filter library archives
+    --prefix, -p <string> [Optional] Prefix of new archives
+    --keepoldarchives, -k [Optional] If not set after copying old archives will be deleted
+    --help                display this list of options.
+```
+
+Example
+
+```
+HomeLibProt.CollectionManager.exe  mergebooks -i C:\BookDemo\Books\ -o C:\BookDemo\Books\ -s 10000 -p "f.fb2-" -f "*.zip" -k
 ```
