@@ -23,7 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\HomeLibProt.Domain\HomeLibProt.Domain.csproj" />
+    <ProjectReference Include="..\HomeLibProt.Common\HomeLibProt.Common.fsproj" />
   </ItemGroup>
 
 </Project>
