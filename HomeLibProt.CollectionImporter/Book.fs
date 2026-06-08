@@ -4,6 +4,7 @@ open System
 open System.Text.RegularExpressions
 
 open InpLine
+open HomeLibProt.Common.RegEx
 
 type Author =
     { FullName: string
@@ -36,13 +37,6 @@ let internal authorName =
         "(?:(?:(?:(?<lastName>.*),(?! )(?<firstName>.*),(?! )(?<middleName>.*))|(?<lastName>.*)):)",
         RegexOptions.Compiled
     )
-
-let private extractGroupValue (group: Group) : string = group.Value
-
-let private tryToExtractGroupValue (group: Group) : string option =
-    match group.Success with
-    | true -> group |> extractGroupValue |> Some
-    | _ -> None
 
 let internal mapAuthor (authorsNamesRegex: Regex) (author: string) : Author =
     let groups = authorsNamesRegex.Match(author).Groups

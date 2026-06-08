@@ -1,10 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <DebugType>embedded</DebugType>
     <EmbedAllSources>true</EmbedAllSources>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="RegEx.fs" />
+  </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\HomeLibProt.Domain\HomeLibProt.Domain.csproj" />
