@@ -212,3 +212,33 @@ schtasks /create /tn 'HomeLibProt.GetMonthlyUpdate' /tr "powershell -WindowStyle
 3. Open Task Scheduler
 
 4. For every task `Properties > Settings` check in `Run task as soon as possible after a scheduled start is missed`
+
+## Migration
+
+1. Copy fb2 archives to `C:\BookDemo\Books\Updates\Fb2`
+
+2. Copy usr archives to `C:\BookDemo\Books\Updates\Binary`
+
+3. Run command
+
+```
+C:\BookDemo\HomeLibProt.CollectionManager.exe  mergebooks -i {pathToUpdates} -o {pathToLibrary} -s 10000 -p "{year}-{month}-f.fb2-" -f "*.zip"
+```
+
+Example
+
+```
+C:\BookDemo\HomeLibProt.CollectionManager.exe  mergebooks -i C:\BookDemo\Books\Update\Fb2 -o C:\BookDemo\Books\ -s 10000 -p "26-06-f.fb2-" -f "*.zip"
+```
+
+4. Run command
+
+```
+C:\BookDemo\HomeLibProt.CollectionManager.exe  mergebooks -i {pathToUpdates} -o {pathToLibrary} -s 10000 -p "{year}-{month}-f.usr-" -f "*.zip"
+```
+
+Example
+
+```
+C:\BookDemo\HomeLibProt.CollectionManager.exe  mergebooks -i C:\BookDemo\Books\Update\Binary -o C:\BookDemo\Books\ -s 10000 -p "26-06-f.usr-" -f "*.zip"
+```
