@@ -70,7 +70,7 @@ let internal validateInpFieldsOnRequired (inpFields: InpField array) =
 
     if difference |> Set.isEmpty |> not then
         let message = String.Join(", ", difference |> Set.map (fun f -> f))
-        failwith $"Required Inp Fields are absent: {message}"
+        raise (InvalidOperationException $"Required Inp Fields are absent: {message}")
 
     inpFields
 
@@ -92,7 +92,7 @@ let internal mapStructureSectionToInpField (section: string) : InpField =
     | "lang" -> Required lang
     | "librate" -> Required rate
     | "keywords" -> Required keywords
-    | s -> failwith $"Unsupported Inp Field: {s}"
+    | s -> raise (InvalidOperationException $"Unsupported Inp Field: {s}")
 
 let internal getStructureSections (structure: string) =
     structure.Split(';', StringSplitOptions.RemoveEmptyEntries ||| StringSplitOptions.TrimEntries)
@@ -115,7 +115,7 @@ let parseInpLine (regEx: Regex) (line: string) : GroupCollection =
     if regExMatch.Success then
         regExMatch.Groups
     else
-        failwith $"Unsupported inpx format: \"{line}\""
+        raise (InvalidOperationException $"Unsupported inpx format: \"{line}\"")
 
 let getInpLine (groups: GroupCollection) : InpLine =
     { Authors = groups.[authors] |> extractGroupValue

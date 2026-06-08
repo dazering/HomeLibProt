@@ -166,9 +166,9 @@ let private getLanguageId (lang: string) (connection: DbConnection) : Task<int64
 
             match ee with
             | [| language |] -> return language.Id
-            | _ -> return! failwith $"Language '{lang}' not found"
+            | _ -> return! raise (InvalidOperationException $"Language '{lang}' not found")
         | [| language |] -> return language.Id
-        | _ -> return! failwith $"There are more then one '{lang}'"
+        | _ -> return! raise (InvalidOperationException $"There are more then one '{lang}'")
 
     }
 
@@ -224,8 +224,8 @@ let getArchiveId (connection: DbConnection) : Task<int64> =
 
         match! Archives.GetArchivesByNameAsync(connection, [| archiveName |]) with
         | [| archive |] -> return archive.Id
-        | [||] -> return! failwith $"There is no archive with name: {archiveName}"
-        | _ -> return! failwith $"There are more then one archive with name: {archiveName}"
+        | [||] -> return! raise (InvalidOperationException $"There is no archive with name: {archiveName}")
+        | _ -> return! raise (InvalidOperationException $"There are more then one archive with name: {archiveName}")
     }
 
 let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connection: DbConnection) : Task<unit> =
