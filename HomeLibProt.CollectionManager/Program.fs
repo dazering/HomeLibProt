@@ -1,6 +1,7 @@
 ﻿module HomeLibProt.CollectionManager.Program
 
 open Argu
+open Serilog
 open System.Diagnostics
 open System.Net.Http
 open System.Threading.Tasks
@@ -8,13 +9,14 @@ open System.Threading.Tasks
 open HomeLibProt.CollectionManager.Arguments
 open HomeLibProt.CollectionManager.Books
 open HomeLibProt.CollectionManager.SqlDumps
+open HomeLibProt.Common.Logger
 open HomeLibProt.Domain.DataAccess
 
 let parser = ArgumentParser.Create<CLIArguments>()
 
-let printProgressReport (message: string) : unit = printfn $"{message}"
+let printProgressReport (logger: ILogger) (message: string) : unit = logger.Information message
 
-let mergeBooks (args: ParseResults<MergeBooks>) : Task<unit> =
+let mergeBooks (logger: ILogger) (args: ParseResults<MergeBooks>) : Task<unit> =
     task {
         let pathToLibrary = args.GetResult MergeBooks.PathToLibrary
         let outputPath = args.GetResult MergeBooks.OutputPath
@@ -33,12 +35,12 @@ let mergeBooks (args: ParseResults<MergeBooks>) : Task<unit> =
               ArchiveFilter = archiveFilter
               Prefix = prefix
               KeepArchives = keepOldArchives
-              ProgressReport = printProgressReport }
+              ProgressReport = printProgressReport logger }
 
         do! BooksMerger.megreBooksAsync parameters
     }
 
-let downloadBooks (args: ParseResults<DownloadBooks>) : Task<unit> =
+let downloadBooks (logger: ILogger) (args: ParseResults<DownloadBooks>) : Task<unit> =
     task {
         let pathToLibrary = args.GetResult DownloadBooks.PathToLibrary
         let outputPath = args.GetResult DownloadBooks.OutputPath
@@ -60,7 +62,7 @@ let downloadBooks (args: ParseResults<DownloadBooks>) : Task<unit> =
               HttpClient = httpClient
               Retries = retries
               ArchiveTypeDownload = aTD
-              ProgressReport = printProgressReport }
+              ProgressReport = printProgressReport logger }
 
         match site with
         | Site.Flibusta -> do! BooksDownloader.downloadFlibustaArchives parameters
@@ -68,7 +70,7 @@ let downloadBooks (args: ParseResults<DownloadBooks>) : Task<unit> =
         | _ -> failwith $"Unknown archive source: {site}"
     }
 
-let generateInpx (args: ParseResults<GenerateInpx>) : Task<unit> =
+let generateInpx (logger: ILogger) (args: ParseResults<GenerateInpx>) : Task<unit> =
     task {
         let pathToDb = args.GetResult GenerateInpx.PathToDatabase
         let pathToLibrary = args.GetResult GenerateInpx.PathToLibrary
@@ -82,13 +84,13 @@ let generateInpx (args: ParseResults<GenerateInpx>) : Task<unit> =
         let parameters: Inpx.InpxGenerator.InpxGeneratorParameters =
             { PathToLibrary = pathToLibrary
               PathToInpx = pathToInpx
-              ProgressReport = printProgressReport
+              ProgressReport = printProgressReport logger
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
         do! ConnectionUtils.WithConnectionAsync(connection, Inpx.InpxGenerator.generateInpxAsync parameters)
     }
 
-let downloadSqlDumps (args: ParseResults<DownloadSqlDumps>) : Task<unit> =
+let downloadSqlDumps (logger: ILogger) (args: ParseResults<DownloadSqlDumps>) : Task<unit> =
     task {
         let pathToSqlDumps = args.GetResult DownloadSqlDumps.PathToSqlDumps
         let site = args.GetResult DownloadSqlDumps.Site
@@ -100,7 +102,7 @@ let downloadSqlDumps (args: ParseResults<DownloadSqlDumps>) : Task<unit> =
             { PathToSqlDumps = pathToSqlDumps
               HttpClient = httpClient
               Retries = retries
-              ProgressReport = printProgressReport }
+              ProgressReport = printProgressReport logger }
 
         match site with
         | Site.Flibusta -> do! SqlDumpsDownloader.downloadSqlDumpsFlibustaAsync parameters
@@ -109,7 +111,7 @@ let downloadSqlDumps (args: ParseResults<DownloadSqlDumps>) : Task<unit> =
 
     }
 
-let importSqlDumps (args: ParseResults<ImportSqlDumps>) : Task<unit> =
+let importSqlDumps (logger: ILogger) (args: ParseResults<ImportSqlDumps>) : Task<unit> =
     task {
         let pathToDb = args.GetResult ImportSqlDumps.PathToDatabase
         let pathToSqlDumps = args.GetResult ImportSqlDumps.PathToSqlDumps
@@ -124,7 +126,7 @@ let importSqlDumps (args: ParseResults<ImportSqlDumps>) : Task<unit> =
         let parameters: SqlDumpImporter.SqlDumpImporterParameters =
             { PathToSqlDumps = pathToSqlDumps
               KeepSqlDumps = keepSqlDumps
-              ProgressReport = printProgressReport
+              ProgressReport = printProgressReport logger
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
 
         match site with
@@ -136,14 +138,14 @@ let importSqlDumps (args: ParseResults<ImportSqlDumps>) : Task<unit> =
 
     }
 
-let runAsync (arguments: ParseResults<CLIArguments>) : Task<unit> =
+let runAsync (logger: ILogger) (arguments: ParseResults<CLIArguments>) : Task<unit> =
     task {
         match arguments.GetSubCommand() with
-        | ImportSqlDumps args -> do! importSqlDumps args
-        | DownloadSqlDumps args -> do! downloadSqlDumps args
-        | GenerateInpx args -> do! generateInpx args
-        | DownloadBooks args -> do! downloadBooks args
-        | MergeBooks args -> do! mergeBooks args
+        | ImportSqlDumps args -> do! importSqlDumps logger args
+        | DownloadSqlDumps args -> do! downloadSqlDumps logger args
+        | GenerateInpx args -> do! generateInpx logger args
+        | DownloadBooks args -> do! downloadBooks logger args
+        | MergeBooks args -> do! mergeBooks logger args
     }
 
 let withStopwatchAsync (stopwatch: Stopwatch) (actionAsync: unit -> Task<unit>) : Task<Stopwatch> =
@@ -154,24 +156,25 @@ let withStopwatchAsync (stopwatch: Stopwatch) (actionAsync: unit -> Task<unit>) 
         return stopwatch
     }
 
-let printElapsedTime (stopwatch: Stopwatch) : unit =
-    printfn $"Elapsed time: {stopwatch.Elapsed.TotalMinutes |> int:d2}:{stopwatch.Elapsed.Seconds:d2}"
+let printElapsedTime (logger: ILogger) (stopwatch: Stopwatch) : unit =
+    logger.Information $"Elapsed time: {stopwatch.Elapsed.TotalMinutes |> int:d2}:{stopwatch.Elapsed.Seconds:d2}"
+
+let doWithArgumentsAsync (logger: ILogger) (args: string array) : Task<int> =
+    task {
+        try
+            let arguments = parser.ParseCommandLine args
+
+            let! stopwatch = withStopwatchAsync (new Stopwatch()) (fun _ -> task { do! runAsync logger arguments })
+            stopwatch |> printElapsedTime logger
+
+            return 0
+        with :? ArguParseException as e ->
+            logger.Fatal(e, e.Message)
+            return 1
+    }
 
 [<EntryPoint>]
 let main args =
-    try
-        let arguments = parser.ParseCommandLine args
+    use logger = getConsoleAppLogger ()
 
-        (withStopwatchAsync (new Stopwatch()) (fun _ -> task { do! runAsync arguments }))
-            .ConfigureAwait(false)
-            .GetAwaiter()
-            .GetResult()
-        |> printElapsedTime
-
-        0
-
-    with :? ArguParseException as e ->
-        eprintfn "%s" e.Message
-        parser.PrintUsage() |> ignore
-
-        1
+    (doWithLoggerAsync logger (fun l -> doWithArgumentsAsync l args)).ConfigureAwait(false).GetAwaiter().GetResult()
