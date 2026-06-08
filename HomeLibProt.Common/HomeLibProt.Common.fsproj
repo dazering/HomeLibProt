@@ -6,4 +6,8 @@
     <EmbedAllSources>true</EmbedAllSources>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\HomeLibProt.Domain\HomeLibProt.Domain.csproj" />
+  </ItemGroup>
+
 </Project>
