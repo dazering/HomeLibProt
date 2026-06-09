@@ -85,3 +85,23 @@ Tested with inpx contains 1M lines, 100 inp files, 1M authors, genres, series an
 |             HomeLibProt.CommandLineImporter             | 1:24  | 2:37  | 25 MB        |
 |    [Inpx-web](https://github.com/bookpauk/inpx-web)     | 1:18  | 3:35  | 1095.98 MB   |
 | [MyHomeLib](https://github.com/OleksiyPenkov/MyHomeLib) | ~3;45 | ~3:57 | 19 MB        |
+
+## Logs
+
+```
+| -- logs
+| -- | errors-{yyyyMMdd}.txt
+| -- | fatal-{yyyyMMdd}.txt
+| -- | information-{yyyyMMdd}.txt
+| -- Scripts
+|    | -- ....
+| -- HomeLibProt.CommandLineImporter.exe
+```
+
+Logs are writing to the directory logs near `HomeLibProt.CommandLineImporter.exe`
+
+`errors-{yyyyMMdd}.txt` contains error messages not fatal for application
+
+`fatal-{yyyyMMdd}.txt` contains error messages fatal for application
+
+`information-{yyyyMMdd}.txt` contains verbose and fatal messages

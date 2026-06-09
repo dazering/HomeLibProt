@@ -243,3 +243,23 @@ Example
 ```
 C:\BookDemo\HomeLibProt.CollectionManager.exe  mergebooks -i C:\BookDemo\Books\Update\Binary -o C:\BookDemo\Books\ -s 10000 -p "26-06-f.usr-" -f "*.zip"
 ```
+
+## Logs
+
+```
+| -- logs
+| -- | errors-{yyyyMMdd}.txt
+| -- | fatal-{yyyyMMdd}.txt
+| -- | information-{yyyyMMdd}.txt
+| -- Scripts
+|    | -- ....
+| -- HomeLibProt.CollectionManager.exe
+```
+
+Logs are writing to the directory logs near `HomeLibProt.CollectionManager.exe`
+
+`errors-{yyyyMMdd}.txt` contains error messages not fatal for application
+
+`fatal-{yyyyMMdd}.txt` contains error messages fatal for application
+
+`information-{yyyyMMdd}.txt` contains verbose and fatal messages
