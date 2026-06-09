@@ -79,6 +79,8 @@ let runAsync (logger: ILogger) (arguments: ParseResults<CLIArguments>) : Task<un
         match arguments.GetSubCommand() with
         | ImportInpx args -> do! importInpxAsync logger args
         | ReimportAHS args -> do! reimportAHSAsync logger args
+        | Version _ ->
+            printProgressReport logger $"Version: {System.Reflection.Assembly.GetExecutingAssembly().GetName().Version}"
     }
 
 let withStopwatchAsync (stopwatch: Stopwatch) (actionAsync: unit -> Task<unit>) : Task<Stopwatch> =

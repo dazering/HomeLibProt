@@ -150,6 +150,8 @@ let runAsync (logger: ILogger) (arguments: ParseResults<CLIArguments>) : Task<un
         | GenerateInpx args -> do! generateInpx logger args
         | DownloadBooks args -> do! downloadBooks logger args
         | MergeBooks args -> do! mergeBooks logger args
+        | Version _ ->
+            printProgressReport logger $"Version: {Reflection.Assembly.GetExecutingAssembly().GetName().Version}"
     }
 
 let withStopwatchAsync (stopwatch: Stopwatch) (actionAsync: unit -> Task<unit>) : Task<Stopwatch> =
