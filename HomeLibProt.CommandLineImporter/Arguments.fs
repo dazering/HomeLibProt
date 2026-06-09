@@ -5,12 +5,14 @@ open Argu
 type CLIArguments =
     | [<CliPrefix(CliPrefix.None)>] ImportInpx of ParseResults<ImportInpxArgs>
     | [<CliPrefix(CliPrefix.None)>] ReimportAHS of ParseResults<ReimportAHSArgs>
+    | [<CliPrefix(CliPrefix.None)>] Version of ParseResults<Version>
 
     interface IArgParserTemplate with
         member this.Usage =
             match this with
             | ImportInpx _ -> "Import inpx file to database."
             | ReimportAHS _ -> "Reimport author hierarchical search based on existing database."
+            | Version _ -> "Print version."
 
 and ImportInpxArgs =
     | [<ExactlyOnce; AltCommandLine("-i")>] PathToInpx of string
@@ -39,3 +41,11 @@ and ReimportAHSArgs =
             match this with
             | PathToDatabase _ -> "Path to database on local file system"
             | MaxCountLeafs _ -> "[Optional] Max count leafs for author hierarchical search. Default: 50."
+
+and Version =
+    | V
+
+    interface IArgParserTemplate with
+        member this.Usage =
+            match this with
+            | _ -> ""

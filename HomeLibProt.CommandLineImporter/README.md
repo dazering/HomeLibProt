@@ -33,6 +33,7 @@ SUBCOMMANDS:
 
     importinpx <options>  Import inpx file to database.
     reimportahs <options> Reimport author hierarchical search based on existing database.
+    version <options>     Print version.
 
     Use 'HomeLibProt.CommandLineImporter <subcommand> --help' for additional information.
 

@@ -17,6 +17,7 @@ type CLIArguments =
     | [<CliPrefix(CliPrefix.None)>] GenerateInpx of ParseResults<GenerateInpx>
     | [<CliPrefix(CliPrefix.None)>] DownloadBooks of ParseResults<DownloadBooks>
     | [<CliPrefix(CliPrefix.None)>] MergeBooks of ParseResults<MergeBooks>
+    | [<CliPrefix(CliPrefix.None)>] Version of ParseResults<Version>
 
     interface IArgParserTemplate with
         member this.Usage =
@@ -26,6 +27,7 @@ type CLIArguments =
             | GenerateInpx _ -> "Generate inpx."
             | DownloadBooks _ -> "Download books."
             | MergeBooks _ -> "Merge book archives."
+            | Version _ -> "Print version."
 
 and ImportSqlDumps =
     | [<ExactlyOnce; AltCommandLine("-i")>] PathToSqlDumps of string
@@ -99,3 +101,11 @@ and MergeBooks =
             | ArchiveFilter _ -> "Filter library archives"
             | Prefix _ -> "[Optional] Prefix of new archives"
             | KeepOldArchives -> "[Optional] If not set after copying old archives will be deleted"
+
+and Version =
+    | V
+
+    interface IArgParserTemplate with
+        member this.Usage =
+            match this with
+            | _ -> ""

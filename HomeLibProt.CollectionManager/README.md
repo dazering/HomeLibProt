@@ -40,6 +40,7 @@ SUBCOMMANDS:
     downloadbooks <options>
                           Download books.
     mergebooks <options>  Merge book archives.
+    version <options>     Print version.
 
     Use 'HomeLibProt.CollectionManager <subcommand> --help' for additional information.
 
