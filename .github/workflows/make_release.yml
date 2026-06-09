@@ -1,0 +1,63 @@
+name: Make Release
+
+on: workflow_dispatch
+
+env:
+  BuildNumber: ${{ github.run_number }}
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        permissions:
+          contents: write
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Setup .NET
+              uses: actions/setup-dotnet@v5
+
+            - name: Setup fantomas
+              run: dotnet tool install -g fantomas
+
+            - name: Check formatting F#
+              run: fantomas ./ --check
+
+            - name: Check formatting C#
+              run: dotnet format --verify-no-changes
+
+            - name: Restore dependencies
+              run: dotnet restore
+
+            - name: Build
+              run: dotnet build --no-restore
+
+            - name: Test
+              run: dotnet test --no-build
+
+            - name: Get build version
+              run: echo "BuildVersion=$(dotnet msbuild -getProperty:VersionPrefix ./HomeLibProt.CollectionImporter/HomeLibProt.CollectionImporter.fsproj -p:BuildNumber=$BuildNumber)" >> $GITHUB_ENV
+
+            - name: Publish
+              run: |
+                dotnet publish ./HomeLibProt.CommandLineImporter/HomeLibProt.CommandLineImporter.fsproj -o ./publish/HomeLibProt.CommandLineImporter/linux-x64 -r linux-x64 -p:BuildNumber=$BuildNumber
+                dotnet publish ./HomeLibProt.CommandLineImporter/HomeLibProt.CommandLineImporter.fsproj -o ./publish/HomeLibProt.CommandLineImporter/win-x64 -r win-x64 -p:BuildNumber=$BuildNumber
+                dotnet publish ./HomeLibProt.CollectionManager/HomeLibProt.CollectionManager.fsproj -o ./publish/HomeLibProt.CollectionManager/linux-x64 -r linux-x64 -p:BuildNumber=$BuildNumber
+                dotnet publish ./HomeLibProt.CollectionManager/HomeLibProt.CollectionManager.fsproj -o ./publish/HomeLibProt.CollectionManager/win-x64 -r win-x64 -p:BuildNumber=$BuildNumber
+
+            - name: Make artifacts
+              run: |
+                mkdir ./artifacts
+                tar cvzf ./artifacts/HomeLibProt.CommandLineImporter-linux-x64-$BuildVersion.tar.gz -C ./publish/HomeLibProt.CommandLineImporter/linux-x64/ .
+                tar cvzf ./artifacts/HomeLibProt.CollectionManager-linux-x64-$BuildVersion.tar.gz -C ./publish/HomeLibProt.CollectionManager/linux-x64/ .
+                pushd ./publish/HomeLibProt.CommandLineImporter/win-x64/
+                zip -r ../../../artifacts/HomeLibProt.CommandLineImporter-win-x64-$BuildVersion.zip ./*
+                popd
+                pushd ./publish/HomeLibProt.CollectionManager/win-x64/
+                zip -r ../../../artifacts/HomeLibProt.CollectionManager-win-x64-$BuildVersion.zip ./*
+                popd
+
+            - name: Make Release
+              env:
+                GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: gh release create $BuildVersion --title $BuildVersion --generate-notes ./artifacts/*
