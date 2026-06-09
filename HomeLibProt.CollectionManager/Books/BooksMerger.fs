@@ -152,6 +152,10 @@ let private getArchivesToCopy (pathToLibrary: string) (archiveFilter: string) : 
 
 let megreBooksAsync (parameters: BooksMergerParameters) : Task<unit> =
     task {
+
+        $"Megring archives from {parameters.PathToLibrary} to {parameters.OutputPath} with filter: {parameters.ArchiveFilter}"
+        |> parameters.ProgressReport
+
         let archives = getArchivesToCopy parameters.PathToLibrary parameters.ArchiveFilter
 
         let newArchives =

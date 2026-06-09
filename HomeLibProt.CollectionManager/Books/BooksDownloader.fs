@@ -101,6 +101,9 @@ let private getLastBookFromArchives (path: string) : int64 =
 
 let downloadFlibustaArchives (parameters: BooksDownloaderParameters) : Task<unit> =
     task {
+        $"Downloading {parameters.ArchiveTypeDownload} books to {parameters.PathToLibrary} from {Flibusta.url}"
+        |> parameters.ProgressReport
+
         let lastLibraryBook = getLastBookFromArchives parameters.PathToLibrary
 
         parameters.ProgressReport $"Found last book: {lastLibraryBook}"
