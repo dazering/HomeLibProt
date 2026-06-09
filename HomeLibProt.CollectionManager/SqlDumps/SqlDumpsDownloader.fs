@@ -14,6 +14,9 @@ type SqlDumpDownloaderParameters =
 
 let downloadSqlDumpsFlibustaAsync (parameters: SqlDumpDownloaderParameters) : Task<unit> =
     task {
+        $"Downloading sql dumps from {Flibusta.url} to {parameters.PathToSqlDumps}"
+        |> parameters.ProgressReport
+
         let urisToDownload =
             [| Flibusta.authors
                Flibusta.authorships
@@ -41,6 +44,9 @@ let downloadSqlDumpsFlibustaAsync (parameters: SqlDumpDownloaderParameters) : Ta
 
 let downloadSqlDumpsLibrusecAsync (parameters: SqlDumpDownloaderParameters) =
     task {
+        $"Downloading sql dumps from {Librusec.url} to {parameters.PathToSqlDumps}"
+        |> parameters.ProgressReport
+
         let urisToDownload =
             [| Librusec.authors
                Librusec.authorships

@@ -247,6 +247,9 @@ let getArchiveId (connection: DbConnection) : Task<int64> =
 
 let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connection: DbConnection) : Task<unit> =
     task {
+        $"Importing sql dumps from {parameters.PathToSqlDumps}"
+        |> parameters.ProgressReport
+
         do! parameters.DoInTransactionAsync(connection, DbStructure.CreateImportSqlDumpStructure)
 
         let authors = Path.Combine(parameters.PathToSqlDumps, Flibusta.authors)
@@ -410,6 +413,9 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
 
 let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connection: DbConnection) : Task<unit> =
     task {
+        $"Importing sql dumps from {parameters.PathToSqlDumps}"
+        |> parameters.ProgressReport
+
         do! parameters.DoInTransactionAsync(connection, DbStructure.CreateImportSqlDumpStructure)
 
         let authors = Path.Combine(parameters.PathToSqlDumps, Librusec.authors)

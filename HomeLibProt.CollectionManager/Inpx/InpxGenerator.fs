@@ -180,6 +180,8 @@ let private createInpxAndFillAsync (path: string) (fillInpx: ZipArchive -> Task<
 
 let generateInpxAsync (parameters: InpxGeneratorParameters) (connection: DbConnection) : Task =
     task {
+        $"Generating inpx: {parameters.PathToInpx}" |> parameters.ProgressReport
+
         do!
             parameters.DoInTransactionAsync(
                 connection,
