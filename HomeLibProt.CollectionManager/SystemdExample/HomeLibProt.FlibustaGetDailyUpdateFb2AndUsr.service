@@ -4,4 +4,4 @@ Wants=HomeLibProt.FlibustaGetDailyUpdateFb2AndUsr.timer
 
 [Service]
 Type=oneshot 
-ExecStart=/home/HomeLibProt/Scripts/FlibustaGetDailyUpdateFb2AndUsr.sh /srv/dev/Flibusta/Flibusta_all_local.inpx /srv/dev/Flibusta
+ExecStart=/home/HomeLibProt/HomeLibProt.CollectionManager/Scripts/FlibustaGetDailyUpdateFb2AndUsr.sh /srv/dev/Flibusta/Flibusta_all_local.inpx /srv/dev/Flibusta

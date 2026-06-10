@@ -6,13 +6,13 @@ Console application for managing collection
 
 - .NET SDK 8.0+
 
-## Build
+## Build from source files
 
 ```
 dotnet build .\HomeLibProt.CollectionManager\HomeLibProt.CollectionManager.fsproj
 ```
 
-## Publish
+## Publish from source files
 
 Linux
 
@@ -166,6 +166,98 @@ Example
 HomeLibProt.CollectionManager.exe  mergebooks -i C:\BookDemo\Books\ -o C:\BookDemo\Books\ -s 10000 -p "f.fb2-" -f "*.zip" -k
 ```
 
+## Scripts
+
+### FlibustaGetDailyUpdateFb2.ps1 and FlibustaGetDailyUpdateFb2.sh
+
+#### Expected arguments
+
+```
+FlibustaGetDailyUpdateFb2.ps1 -InpxPath {InpxPath} -LibraryPath {LibraryPath}
+```
+
+```
+FlibustaGetDailyUpdateFb2.sh {InpxPath} {LibraryPath}
+```
+
+#### Steps
+
+1. Creates directory `Updates/Fb2` in `LibrarPath` directory
+2. Creates directory `flibusta_sql_dumps` near `HomeLibProt.CollectionManager`
+3. Get last book number from `LibraryPath` then downloads last fb2 archives to `Updates/Fb2` directory
+4. Creating daily archive from `Updates/Fb2` in `LibraryPath` with name `{currentYear}-{currentMonth}-f.fb2-{firstBookNumber}-{lastBookNumber}.zip`
+5. Downloading sql dumps from Flibusta to `flibusta_sql_dumps` directory
+6. Importing sql dumps to sqlite database
+7. Generating inpx from sqlite database to `flibusta_sql_dumps/flibusta_fb2_local.inpx"`
+8. Copy generated inpx to `InpxPath`
+
+### FlibustaGetDailyUpdateFb2AndUsr.ps1 and FlibustaGetDailyUpdateFb2AndUsr.sh
+
+#### Expected arguments
+
+```
+FlibustaGetDailyUpdateFb2AndUsr.ps1 -InpxPath {InpxPath} -LibraryPath {LibraryPath}
+```
+
+```
+FlibustaGetDailyUpdateFb2AndUsr.sh {InpxPath} {LibraryPath}
+```
+
+#### Steps
+
+1. Creates directory `Updates/Fb2` in `LibrarPath` directory
+2. Creates directory `Updates/Binary` in `LibrarPath` directory
+3. Creates directory `flibusta_sql_dumps` near `HomeLibProt.CollectionManager`
+4. Get last book number from `LibraryPath` then downloads last fb2 archives to `Updates/Fb2` directory
+5. Get last book number from `LibraryPath` then downloads last usr archives to `Updates/Binary` directory
+6. Creating daily archive from `Updates/Fb2` in `LibraryPath` with name `{currentYear}-{currentMonth}-f.fb2-{firstBookNumber}-{lastBookNumber}.zip`
+7. Creating daily archive from `Updates/Binary` in `LibraryPath` with name `{currentYear}-{currentMonth}-f.usr-{firstBookNumber}-{lastBookNumber}.zip`
+8. Downloading sql dumps from Flibusta to `flibusta_sql_dumps` directory
+9. Importing sql dumps to sqlite database
+10. Generating inpx from sqlite database to `flibusta_sql_dumps/flibusta_all_local.inpx"`
+11. Copy generated inpx to `InpxPath`
+
+### FlibustaGetMonthlyUpdateFb2.ps1 and FlibustaGetMonthlyUpdateFb2.sh
+
+#### Expected arguments
+
+```
+FlibustaGetMonthlyUpdateFb2.ps1 -InpxPath {InpxPath} -LibraryPath {LibraryPath}
+```
+
+```
+FlibustaGetMonthlyUpdateFb2.sh {InpxPath} {LibraryPath}
+```
+
+#### Steps
+
+1. Creating monthly archive from `LibraryPath` in `LibraryPath` with name `f.fb2-{firstBookNumber}-{lastBookNumber}.zip` from archives coppesponding filter `{currentYear}-{currentMonth}-f.fb2-*.zip`
+2. Downloading sql dumps from Flibusta to `flibusta_sql_dumps` directory
+3. Importing sql dumps to sqlite database
+4. Generating inpx from sqlite database to `flibusta_sql_dumps/flibusta_fb2_local.inpx"`
+5. Copy generated inpx to `InpxPath`
+
+### FlibustaGetMonthlyUpdateFb2AndUsr.ps1 and FlibustaGetMonthlyUpdateFb2AndUsr.sh
+
+#### Expected arguments
+
+```
+FlibustaGetMonthlyUpdateFb2AndUsr.ps1 -InpxPath {InpxPath} -LibraryPath {LibraryPath}
+```
+
+```
+FlibustaGetMonthlyUpdateFb2AndUsr.sh {InpxPath} {LibraryPath}
+```
+
+#### Steps
+
+1. Creating monthly archive from `LibraryPath` in `LibraryPath` with name `f.fb2-{firstBookNumber}-{lastBookNumber}.zip` from archives coppesponding filter `{currentYear}-{currentMonth}-f.fb2-*.zip`
+2. Creating monthly archive from `LibraryPath` in `LibraryPath` with name `f.fb2-{firstBookNumber}-{lastBookNumber}.zip` from archives coppesponding filter `{currentYear}-{currentMonth}-f.usr-*.zip`
+3. Downloading sql dumps from Flibusta to `flibusta_sql_dumps` directory
+4. Importing sql dumps to sqlite database
+5. Generating inpx from sqlite database to `flibusta_sql_dumps/flibusta_fb2_local.inpx"`
+6. Copy generated inpx to `InpxPath`
+
 ## Automation
 
 ### Linux - Systemd
@@ -216,32 +308,32 @@ schtasks /create /tn 'HomeLibProt.GetMonthlyUpdate' /tr "powershell -WindowStyle
 
 ## Migration
 
-1. Copy fb2 archives to `C:\BookDemo\Books\Updates\Fb2`
+1. Copy fb2 archives to `{pathToLibrary}/Update/Fb2` directory
 
-2. Copy usr archives to `C:\BookDemo\Books\Updates\Binary`
+2. Copy usr archives to `{pathToLibrary}/Update/Binary` directory
 
 3. Run command
 
 ```
-C:\BookDemo\HomeLibProt.CollectionManager.exe  mergebooks -i {pathToUpdates} -o {pathToLibrary} -s 10000 -p "{year}-{month}-f.fb2-" -f "*.zip"
+HomeLibProt.CollectionManager.exe  mergebooks -i {pathToUpdates} -o {pathToLibrary} -s 10000 -p "{currentYear}-{currentMonth}-f.fb2-" -f "*.zip"
 ```
 
 Example
 
 ```
-C:\BookDemo\HomeLibProt.CollectionManager.exe  mergebooks -i C:\BookDemo\Books\Update\Fb2 -o C:\BookDemo\Books\ -s 10000 -p "26-06-f.fb2-" -f "*.zip"
+HomeLibProt.CollectionManager.exe  mergebooks -i C:\BookDemo\Books\Update\Fb2 -o C:\BookDemo\Books\ -s 10000 -p "26-06-f.fb2-" -f "*.zip"
 ```
 
 4. Run command
 
 ```
-C:\BookDemo\HomeLibProt.CollectionManager.exe  mergebooks -i {pathToUpdates} -o {pathToLibrary} -s 10000 -p "{year}-{month}-f.usr-" -f "*.zip"
+HomeLibProt.CollectionManager.exe  mergebooks -i {pathToUpdates} -o {pathToLibrary} -s 10000 -p "{currentYear}-{currentMonth}-f.usr-" -f "*.zip"
 ```
 
 Example
 
 ```
-C:\BookDemo\HomeLibProt.CollectionManager.exe  mergebooks -i C:\BookDemo\Books\Update\Binary -o C:\BookDemo\Books\ -s 10000 -p "26-06-f.usr-" -f "*.zip"
+HomeLibProt.CollectionManager.exe  mergebooks -i C:\BookDemo\Books\Update\Binary -o C:\BookDemo\Books\ -s 10000 -p "26-06-f.usr-" -f "*.zip"
 ```
 
 ## Logs
