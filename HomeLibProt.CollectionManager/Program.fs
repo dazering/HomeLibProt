@@ -54,9 +54,9 @@ let downloadBooks (logger: ILogger) (args: ParseResults<DownloadBooks>) : Task<u
 
         let aTD =
             match archiveTypeDownload with
-            | All -> BooksDownloader.ArchiveTypeDownload.All
-            | Fb2 -> BooksDownloader.ArchiveTypeDownload.Fb2
-            | Binary -> BooksDownloader.ArchiveTypeDownload.Binary
+            | ArchiveTypeDownload.All -> BooksDownloader.ArchiveTypeDownload.All
+            | ArchiveTypeDownload.Fb2 -> BooksDownloader.ArchiveTypeDownload.Fb2
+            | ArchiveTypeDownload.Binary -> BooksDownloader.ArchiveTypeDownload.Binary
 
         let parameters: BooksDownloader.BooksDownloaderParameters =
             { PathToLibrary = pathToLibrary
@@ -77,6 +77,8 @@ let generateInpx (logger: ILogger) (args: ParseResults<GenerateInpx>) : Task<uni
         let pathToDb = args.GetResult GenerateInpx.PathToDatabase
         let pathToLibrary = args.GetResult GenerateInpx.PathToLibrary
         let pathToInpx = args.GetResult GenerateInpx.PathToInpx
+        let site = args.GetResult GenerateInpx.Site
+        let libraryType = args.GetResult GenerateInpx.LibraryType
 
         let connection =
             pathToDb
@@ -86,6 +88,16 @@ let generateInpx (logger: ILogger) (args: ParseResults<GenerateInpx>) : Task<uni
         let parameters: Inpx.InpxGenerator.InpxGeneratorParameters =
             { PathToLibrary = pathToLibrary
               PathToInpx = pathToInpx
+              InpxParameters =
+                { Site =
+                    match site with
+                    | Site.Flibusta -> Inpx.InpxGenerator.Site.Flibusta
+                    | Site.Librusec -> Inpx.InpxGenerator.Site.Librusec
+                    | _ -> raise (InvalidOperationException $"Unknown books source: {site}")
+                  LibraryType =
+                    match libraryType with
+                    | Fb2 -> Inpx.InpxGenerator.LibraryType.Fb2
+                    | All -> Inpx.InpxGenerator.LibraryType.All }
               ProgressReport = printProgressReport logger
               ErrorReport = printErrorReport logger
               DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }

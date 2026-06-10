@@ -11,6 +11,10 @@ type ArchiveTypeDownload =
     | Fb2
     | Binary
 
+type LibraryType =
+    | Fb2
+    | All
+
 type CLIArguments =
     | [<CliPrefix(CliPrefix.None)>] ImportSqlDumps of ParseResults<ImportSqlDumps>
     | [<CliPrefix(CliPrefix.None)>] DownloadSqlDumps of ParseResults<DownloadSqlDumps>
@@ -59,7 +63,8 @@ and GenerateInpx =
     | [<ExactlyOnce; AltCommandLine("-i")>] PathToLibrary of string
     | [<ExactlyOnce; AltCommandLine("-o")>] PathToInpx of string
     | [<ExactlyOnce; AltCommandLine("-d")>] PathToDatabase of string
-
+    | [<ExactlyOnce; AltCommandLine("-s")>] Site of Site
+    | [<ExactlyOnce; AltCommandLine("-l")>] LibraryType of LibraryType
 
     interface IArgParserTemplate with
         member this.Usage =
@@ -67,6 +72,8 @@ and GenerateInpx =
             | PathToLibrary _ -> "Path to library archives on local file system"
             | PathToInpx _ -> "Path to where save inpx on local file system"
             | PathToDatabase _ -> "Path to database on local file system"
+            | Site _ -> "Source of books"
+            | LibraryType _ -> "Type of library"
 
 and DownloadBooks =
     | [<ExactlyOnce; AltCommandLine("-i")>] PathToLibrary of string
