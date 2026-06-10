@@ -64,7 +64,7 @@ if (!$?) {
     throw "Importing sql dumps failed"
 }
 
-& $toolPath/HomeLibProt.CollectionManager.exe generateinpx -i $LibraryPath -d "$sqlDumpsPath/sql_dump.db" -o "$sqlDumpsPath/$inpxName"
+& $toolPath/HomeLibProt.CollectionManager.exe generateinpx -i $LibraryPath -d "$sqlDumpsPath/sql_dump.db" -o "$sqlDumpsPath/$inpxName" -s $siteKey -l all
 
 if (!$?) {
     throw "Generating inpx failed"

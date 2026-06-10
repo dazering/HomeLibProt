@@ -69,7 +69,7 @@ if [ $? -ne 0 ]; then
     exit 1 
 fi
 
-$ToolPath/HomeLibProt.CollectionManager generateinpx -i $LibraryPath -d "$SqlDumpsPath/sql_dump.db" -o "$SqlDumpsPath/$InpxName"
+$ToolPath/HomeLibProt.CollectionManager generateinpx -i $LibraryPath -d "$SqlDumpsPath/sql_dump.db" -o "$SqlDumpsPath/$InpxName" -s $SiteKey -l all
 
 if [ $? -ne 0 ]; then
     echo "Generating inpx failed"
