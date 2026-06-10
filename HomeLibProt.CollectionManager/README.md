@@ -96,7 +96,7 @@ HomeLibProt.CollectionManager.exe importsqldumps -i C:\BookDemo\flibusta_sql\ -d
 ### Generate INPX
 
 ```
-USAGE: HomeLibProt.CollectionManager generateinpx [--help] --pathtolibrary <string> --pathtoinpx <string> --pathtodatabase <string>
+USAGE: HomeLibProt.CollectionManager generateinpx [--help] --pathtolibrary <string> --pathtoinpx <string> --pathtodatabase <string> --site <flibusta|librusec> --librarytype <fb2|all>
 
 OPTIONS:
 
@@ -106,13 +106,17 @@ OPTIONS:
                           Path to where save inpx on local file system
     --pathtodatabase, -d <string>
                           Path to database on local file system
+    --site, -s <flibusta|librusec>
+                          Source of books
+    --librarytype, -l <fb2|all>
+                          Type of library
     --help                display this list of options.
 ```
 
 Example
 
 ```
-HomeLibProt.CollectionManager.exe generateinpx -i C:\BookDemo\Books\ -d C:\BookDemo\sql_dump.db -o C:\BookDemo\Inpx.inpx
+HomeLibProt.CollectionManager.exe generateinpx -i C:\BookDemo\Books\ -d C:\BookDemo\sql_dump.db -o C:\BookDemo\Inpx.inpx -s flibusta -l fb2
 ```
 
 ### Download book archives
