@@ -9,9 +9,21 @@ open System.Threading.Tasks
 open HomeLibProt.Domain.DataAccess
 open HomeLibProt.Domain.Utils
 
+type Site =
+    | Flibusta
+    | Librusec
+
+type LibraryType =
+    | Fb2
+    | All
+
+type InpxParameters =
+    { Site: Site; LibraryType: LibraryType }
+
 type InpxGeneratorParameters =
     { PathToLibrary: string
       PathToInpx: string
+      InpxParameters: InpxParameters
       ProgressReport: string -> unit
       ErrorReport: string -> unit
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
@@ -142,14 +154,57 @@ let private importGenreList (connection: DbConnection) (inpx: ZipArchive) : Task
             do! sw.WriteLineAsync(genreEnumerator.Current |> genreInpxEntityToString)
     }
 
+let getCode (libraryType: LibraryType) : string =
+    match libraryType with
+    | Fb2 -> (65536).ToString Globalization.CultureInfo.InvariantCulture
+    | All -> (65537).ToString Globalization.CultureInfo.InvariantCulture
+
+let private getDateString () : string = DateTime.Now.ToString "yyyy-MM-dd"
+
+let private getLibraryType (libraryType: LibraryType) : string =
+    match libraryType with
+    | Fb2 -> "FB2"
+    | All -> "ALL"
+
+let private getLibraryName (site: Site) : string =
+    match site with
+    | Flibusta -> "Flibusta"
+    | Librusec -> "Librusec"
+
+let private getCollectionInfoContent (inpxParameters: InpxParameters) : string =
+    let name = getLibraryName inpxParameters.Site
+    let libType = getLibraryType inpxParameters.LibraryType
+    let date = getDateString ()
+
+    $"{name} {libType} - {date}
+{name.ToLower}_{libType.ToLower}_{date}
+{getCode inpxParameters.LibraryType}
+Collection of {name} {libType} books
+"
+
+let private addCollectionInfo (inpx: ZipArchive) (inpxParameters: InpxParameters) : Task =
+    task {
+        let collectionInfo = inpx.CreateEntry "collection.info"
+
+        use fs = collectionInfo.Open()
+        use sw = new StreamWriter(fs)
+
+        do! sw.WriteAsync(getCollectionInfoContent inpxParameters)
+    }
+
 let private fillInpxAsync
     (pathToLibrary: string)
+    (inpxParameters: InpxParameters)
     (reportProgress: string -> unit)
     (reportError: string -> unit)
     (connection: DbConnection)
     (inpx: ZipArchive)
     =
     task {
+        reportProgress $"Make collection.info"
+
+        do! addCollectionInfo inpx inpxParameters
+
         reportProgress $"Importing Genres List"
 
         do! importGenreList connection inpx
@@ -192,6 +247,7 @@ let generateInpxAsync (parameters: InpxGeneratorParameters) (connection: DbConne
                                 parameters.PathToInpx
                                 (fillInpxAsync
                                     parameters.PathToLibrary
+                                    parameters.InpxParameters
                                     parameters.ProgressReport
                                     parameters.ErrorReport
                                     c)
