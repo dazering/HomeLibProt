@@ -6,13 +6,13 @@ Console application for importing inpx to sqlite database
 
 - .NET SDK 8.0+
 
-## Build
+## Build source from source files
 
 ```
 dotnet build .\HomeLibProt.CommandLineImporter\HomeLibProt.CommandLineImporter.fsproj
 ```
 
-## Publish
+## Publish from source from source files
 
 Linux
 
