@@ -22,7 +22,7 @@ CreateDirectoryIfNeeded $sqlDumpsPath
 
 $datePrefix = (Get-Date).AddDays(-14).ToString("yy-MM")
 $siteKey = "flibusta"
-$inpxName = "flibusta_all_local.inpx"
+$inpxName = "flibusta_fb2_local.inpx"
 
 & $toolPath/HomeLibProt.CollectionManager.exe mergebooks -i $LibraryPath -o $LibraryPath -s 10000 -p "f.fb2-" -f "$datePrefix-f.fb2-*.zip"
 
