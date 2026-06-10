@@ -23,7 +23,7 @@ mkdir -p $Fb2UpdatesPath
 mkdir -p $SqlDumpsPath
 
 SiteKey="flibusta"
-InpxName="flibusta_all_local.inpx"
+InpxName="flibusta_fb2_local.inpx"
 DatePrefix=$(date "+%y-%m")
 
 $ToolPath/HomeLibProt.CollectionManager downloadbooks -i $LibraryPath -o $Fb2UpdatesPath -s $SiteKey -r 10 -a fb2

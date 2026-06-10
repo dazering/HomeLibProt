@@ -21,7 +21,7 @@ SqlDumpsPath=$ToolPath/flibusta_sql_dumps/
 mkdir -p $SqlDumpsPath
 
 SiteKey="flibusta"
-InpxName="flibusta_all_local.inpx"
+InpxName="flibusta_fb2_local.inpx"
 DatePrefix=$(date -d "14 day ago" "+%y-%m")
 
 $ToolPath/HomeLibProt.CollectionManager mergebooks -i $LibraryPath -o $LibraryPath -s 10000 -p "f.fb2-" -f "$DatePrefix-f.fb2-*.zip"
