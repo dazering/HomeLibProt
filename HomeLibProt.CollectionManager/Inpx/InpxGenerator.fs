@@ -154,7 +154,7 @@ let private importGenreList (connection: DbConnection) (inpx: ZipArchive) : Task
             do! sw.WriteLineAsync(genreEnumerator.Current |> genreInpxEntityToString)
     }
 
-let getCode (libraryType: LibraryType) : string =
+let private getOffflineCode (libraryType: LibraryType) : string =
     match libraryType with
     | Fb2 -> (65536).ToString Globalization.CultureInfo.InvariantCulture
     | All -> (65537).ToString Globalization.CultureInfo.InvariantCulture
@@ -178,7 +178,7 @@ let private getCollectionInfoContent (inpxParameters: InpxParameters) : string =
 
     $"{name} {libType} - {date}
 {name.ToLower}_{libType.ToLower}_{date}
-{getCode inpxParameters.LibraryType}
+{getOffflineCode inpxParameters.LibraryType}
 Collection of {name} {libType} books
 "
 
