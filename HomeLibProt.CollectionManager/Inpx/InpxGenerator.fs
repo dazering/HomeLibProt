@@ -33,6 +33,11 @@ type private InpStat =
       Skipped: uint
       Added: uint }
 
+type private InpxStat =
+    { Processed: uint
+      Skipped: uint
+      Added: uint }
+
 let private authorInpxInfoToAuthorsName (author: AuthorInpxInfo) : InpLine.AuthorName =
     { First = author.FirstName
       Middle = author.MiddleName
@@ -145,7 +150,7 @@ let private createInpFromLibraryArchive
         use fs = inp.Open()
         use sw = new StreamWriter(fs)
 
-        let mutable inpStat =
+        let mutable inpStat: InpStat =
             { Processed = 0u
               Skipped = 0u
               Added = 0u }
@@ -240,6 +245,11 @@ let private fillInpxAsync
 
         let zipArchives = Directory.EnumerateFiles(pathToLibrary, "*.zip")
 
+        let mutable inpxStat: InpxStat =
+            { Processed = 0u
+              Skipped = 0u
+              Added = 0u }
+
         for archive in zipArchives do
             let archiveName = Path.GetFileName archive
 
@@ -250,10 +260,19 @@ let private fillInpxAsync
                         createInpFromLibraryArchive archiveName inpx reportProgress reportError connection
                     )
 
+                inpxStat <-
+                    { inpxStat with
+                        Processed = inpxStat.Processed + inpStat.Processed
+                        Added = inpxStat.Added + inpStat.Added
+                        Skipped = inpxStat.Skipped + inpStat.Skipped }
+
                 reportProgress
                     $"Generated inp for {archiveName}. Processed: {inpStat.Processed}, Added: {inpStat.Added}, Skipped: {inpStat.Skipped}"
             with :? InvalidDataException as _ ->
                 reportError $"Invalid archive {archiveName}"
+
+        reportProgress
+            $"Total books Processed: {inpxStat.Processed}, Added: {inpxStat.Added}, Skipped: {inpxStat.Skipped}"
     }
 
 let private createInpxAndFillAsync (path: string) (fillInpx: ZipArchive -> Task<unit>) : Task =
