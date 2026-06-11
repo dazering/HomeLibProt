@@ -19,6 +19,7 @@ ToolPath=$RootPath/../
 Fb2UpdatesPath=$LibraryPath/Updates/Fb2/
 UsrUpdatesPath=$LibraryPath/Updates/Binary/
 SqlDumpsPath=$ToolPath/flibusta_sql_dumps/
+PostUpdateScript=$RootPath/../../PostUpdate.sh
 
 mkdir -p $Fb2UpdatesPath
 mkdir -p $UsrUpdatesPath
@@ -77,3 +78,7 @@ if [ $? -ne 0 ]; then
 fi
 
 cp -f "$SqlDumpsPath/$InpxName" $InpxPath
+
+if [ -f $PostUpdateScript ]; then
+    $PostUpdateScript
+fi

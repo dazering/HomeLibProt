@@ -18,6 +18,7 @@ function CreateDirectoryIfNeeded {
 $toolPath = "$PSScriptRoot/../"
 $fb2UpdatesPath = "$LibraryPath/Updates/Fb2"
 $sqlDumpsPath = "$toolPath/flibusta_sql_dumps"
+$postUpdateScript="$PSScriptRoot/../../PostUpdate.ps1"
 
 CreateDirectoryIfNeeded $fb2UpdatesPath
 CreateDirectoryIfNeeded $sqlDumpsPath
@@ -57,3 +58,7 @@ if (!$?) {
 }
 
 Copy-Item -Path "$sqlDumpsPath/$inpxName" -Destination $InpxPath -Force
+
+if (Test-Path -Path $postUpdateScript -PathType Leaf) {
+    & $postUpdateScript
+}
