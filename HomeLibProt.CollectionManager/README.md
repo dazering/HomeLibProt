@@ -194,6 +194,7 @@ FlibustaGetDailyUpdateFb2.sh {InpxPath} {LibraryPath}
 6. Importing sql dumps to sqlite database
 7. Generating inpx from sqlite database to `flibusta_sql_dumps/flibusta_fb2_local.inpx"`
 8. Copy generated inpx to `InpxPath`
+9. Run `PostUpdate.(ps1|sh)` script
 
 ### FlibustaGetDailyUpdateFb2AndUsr.ps1 and FlibustaGetDailyUpdateFb2AndUsr.sh
 
@@ -220,6 +221,7 @@ FlibustaGetDailyUpdateFb2AndUsr.sh {InpxPath} {LibraryPath}
 9. Importing sql dumps to sqlite database
 10. Generating inpx from sqlite database to `flibusta_sql_dumps/flibusta_all_local.inpx"`
 11. Copy generated inpx to `InpxPath`
+12. Run `PostUpdate.(ps1|sh)` script
 
 ### FlibustaGetMonthlyUpdateFb2.ps1 and FlibustaGetMonthlyUpdateFb2.sh
 
@@ -240,6 +242,7 @@ FlibustaGetMonthlyUpdateFb2.sh {InpxPath} {LibraryPath}
 3. Importing sql dumps to sqlite database
 4. Generating inpx from sqlite database to `flibusta_sql_dumps/flibusta_fb2_local.inpx"`
 5. Copy generated inpx to `InpxPath`
+6. Run `PostUpdate.(ps1|sh)` script
 
 ### FlibustaGetMonthlyUpdateFb2AndUsr.ps1 and FlibustaGetMonthlyUpdateFb2AndUsr.sh
 
@@ -261,6 +264,37 @@ FlibustaGetMonthlyUpdateFb2AndUsr.sh {InpxPath} {LibraryPath}
 4. Importing sql dumps to sqlite database
 5. Generating inpx from sqlite database to `flibusta_sql_dumps/flibusta_fb2_local.inpx"`
 6. Copy generated inpx to `InpxPath`
+7. Run `PostUpdate.(ps1|sh)` script
+
+## PostUpdate script
+
+It's possible to place PostUpdate script to run any command after updates library
+
+For windows:
+
+```
+| -- HomeLibProt.CollectionManager
+|    | -- Scripts
+|    | -- | -- FlibustaGetDailyUpdateFb2.ps1
+|    | -- | -- FlibustaGetDailyUpdateFb2AndUsr.ps1
+|    | -- | -- FlibustaGetMonthlyUpdateFb2.ps1
+|    | -- | -- FlibustaGetMonthlyUpdateFb2AndUsr.ps1
+|    | -- HomeLibProt.CollectionManager.exe
+| -- PostUpdate.ps1
+```
+
+And Linix:
+
+```
+| -- HomeLibProt.CollectionManager
+|    | -- Scripts
+|    | -- | -- FlibustaGetDailyUpdateFb2.sh
+|    | -- | -- FlibustaGetDailyUpdateFb2AndUsr.sh
+|    | -- | -- FlibustaGetMonthlyUpdateFb2.sh
+|    | -- | -- FlibustaGetMonthlyUpdateFb2AndUsr.sh
+|    | -- HomeLibProt.CollectionManager.exe
+| -- PostUpdate.sh
+```
 
 ## Automation
 
