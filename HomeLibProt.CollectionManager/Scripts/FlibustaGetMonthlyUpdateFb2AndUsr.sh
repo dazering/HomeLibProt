@@ -17,6 +17,7 @@ RootPath=$(dirname "$(realpath "$0")")
 ToolPath=$RootPath/../
 
 SqlDumpsPath=$ToolPath/flibusta_sql_dumps/
+PostUpdateScript=$RootPath/../../PostUpdate.sh
 
 mkdir -p $SqlDumpsPath
 
@@ -59,3 +60,7 @@ if [ $? -ne 0 ]; then
 fi
 
 cp -f "$SqlDumpsPath/$InpxName" $InpxPath
+
+if [ -f $PostUpdateScript ]; then
+    $PostUpdateScript
+fi
