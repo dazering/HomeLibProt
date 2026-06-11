@@ -211,7 +211,7 @@ let private getCollectionInfoContent (inpxParameters: InpxParameters) : string =
     let date = getDateString ()
 
     $"{name} {libType} - {date}
-{name.ToLower}_{libType.ToLower}_{date}
+{name.ToLower()}_{libType.ToLower()}_{date}
 {getOffflineCode inpxParameters.LibraryType}
 Collection of {name} {libType} books
 "
