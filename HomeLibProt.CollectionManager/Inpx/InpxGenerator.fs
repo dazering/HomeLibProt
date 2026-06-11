@@ -28,6 +28,11 @@ type InpxGeneratorParameters =
       ErrorReport: string -> unit
       DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
 
+type private InpStat =
+    { Processed: uint
+      Skipped: uint
+      Added: uint }
+
 let private authorInpxInfoToAuthorsName (author: AuthorInpxInfo) : InpLine.AuthorName =
     { First = author.FirstName
       Middle = author.MiddleName
@@ -69,16 +74,22 @@ let private getInpLinesAsync
     (bookId: int64)
     (extension: string)
     (size: string)
+    (inpStat: InpStat)
     (reportError: string -> unit)
     (connection: DbConnection)
-    : Task<string array> =
+    : Task<string array * InpStat> =
     task {
         let! bookInfo = Books.GetBookInpxInfosByIdAsync(connection, bookId)
 
         match bookInfo with
         | [||] ->
             reportError $"Not found any information in database for Book Id: {bookId}"
-            return [||]
+
+            return
+                [||],
+                { inpStat with
+                    Processed = inpStat.Processed + 1u
+                    Skipped = inpStat.Skipped + 1u }
         | bf ->
             let! authors = Authors.GetAuthorInpxInfosByBookIdAsync(connection, bookId)
             let! genres = Genres.GetGenreKeysByBookIdAsync(connection, bookId)
@@ -89,24 +100,33 @@ let private getInpLinesAsync
                 bf
                 |> Array.map (fun bi ->
                     bookAttributesToInpRecord (bookId.ToString()) extension size rate bi authors genres keywords
-                    |> InpLine.makeLine)
+                    |> InpLine.makeLine),
+                { inpStat with
+                    Processed = inpStat.Processed + 1u
+                    Added = inpStat.Added + 1u }
     }
 
 let private tryToGetInpLinesAsync
     (reportError: string -> unit)
     (entry: ZipArchiveEntry)
+    (inpStat: InpStat)
     (connection: DbConnection)
-    : Task<string array option> =
+    : Task<string array option * InpStat> =
     task {
         match Int64.TryParse(entry.Name |> Path.GetFileNameWithoutExtension) with
         | true, bookId ->
             let extension = (entry.Name |> Path.GetExtension).Replace(".", String.Empty)
             let size = entry.Length.ToString()
 
-            let! lines = getInpLinesAsync bookId extension size reportError connection
+            let! lines, stat = getInpLinesAsync bookId extension size inpStat reportError connection
 
-            return Some lines
-        | false, _ -> return None
+            return Some lines, stat
+        | false, _ ->
+            return
+                None,
+                { inpStat with
+                    Processed = inpStat.Processed + 1u
+                    Skipped = inpStat.Skipped + 1u }
     }
 
 let private createInp (inpx: ZipArchive) (name: string) : ZipArchiveEntry = inpx.CreateEntry name
@@ -118,22 +138,31 @@ let private createInpFromLibraryArchive
     (reportError: string -> unit)
     (connection: DbConnection)
     (libraryArchive: ZipArchive)
-    : Task =
+    : Task<InpStat> =
     task {
         let inp = Path.ChangeExtension(archiveName, "inp") |> createInp inpx
 
         use fs = inp.Open()
         use sw = new StreamWriter(fs)
 
+        let mutable inpStat =
+            { Processed = 0u
+              Skipped = 0u
+              Added = 0u }
+
         for entry in libraryArchive.Entries do
 
-            let! linesResult = tryToGetInpLinesAsync reportError entry connection
+            let! linesResult, stat = tryToGetInpLinesAsync reportError entry inpStat connection
+
+            inpStat <- stat
 
             match linesResult with
             | Some lines ->
                 for line in lines do
                     do! sw.WriteLineAsync line
             | None -> ()
+
+        return inpStat
     }
 
 let private genreInpxEntityToString (genre: GenreInpxEntity) : string =
@@ -214,14 +243,15 @@ let private fillInpxAsync
         for archive in zipArchives do
             let archiveName = Path.GetFileName archive
 
-            reportProgress $"Generating inp for {archiveName}"
-
             try
-                do!
+                let! inpStat =
                     ArchiveUtils.DoWithArchiveAsync(
                         archive,
                         createInpFromLibraryArchive archiveName inpx reportProgress reportError connection
                     )
+
+                reportProgress
+                    $"Generated inp for {archiveName}. Processed: {inpStat.Processed}, Added: {inpStat.Added}, Skipped: {inpStat.Skipped}"
             with :? InvalidDataException as _ ->
                 reportError $"Invalid archive {archiveName}"
     }
