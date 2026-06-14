@@ -313,11 +313,11 @@ systemctl daemon-reload
 ```
 
 ```
-systemctl enable --now HomeLibProt.FlibustaGetMonthlyUpdateFb2AndUsr.timer
+systemctl enable --now HomeLibProt.FlibustaGetMonthlyUpdate.timer
 ```
 
 ```
-systemctl enable --now HomeLibProt.FlibustaGetDailyUpdateFb2AndUsr.timer
+systemctl enable --now HomeLibProt.FlibustaGetDailyUpdate.timer
 ```
 
 4. Check if timers appear in scheduled list

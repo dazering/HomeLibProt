@@ -1,6 +1,6 @@
 [Unit]
 Description=HomeLibProt: Make monthly archives
-Wants=HomeLibProt.FlibustaGetMonthlyUpdateFb2AndUsr.timer
+Wants=HomeLibProt.FlibustaGetMonthlyUpdate.timer
 
 [Service]
 Type=oneshot 

@@ -1,6 +1,6 @@
 [Unit]
 Description=HomeLibProt: Get daily updates
-Wants=HomeLibProt.FlibustaGetDailyUpdateFb2AndUsr.timer
+Wants=HomeLibProt.FlibustaGetDailyUpdate.timer
 
 [Service]
 Type=oneshot 
