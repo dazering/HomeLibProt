@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <Compile Include="Utils\TestCaseUtils.fs" />
+    <Compile Include="TestFb2Reader.fs" />
     <Compile Include="Program.fs" />
   </ItemGroup>
 
