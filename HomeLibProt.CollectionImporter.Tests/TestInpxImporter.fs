@@ -5,7 +5,7 @@ open System
 open System.IO
 
 open HomeLibProt.CollectionImporter.InpxImporter
-open HomeLibProt.CollectionImporter.Tests.Utils
+open HomeLibProt.Common.Tests.Utils
 open HomeLibProt.Domain.DataAccess
 open HomeLibProt.Domain.Tests.Entities
 open HomeLibProt.Domain.Tests.Utils

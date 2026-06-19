@@ -9,7 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Include="Utils\TestCaseUtils.fs" />
     <Compile Include="TestInpLine.fs" />
     <Compile Include="TestBook.fs" />
     <Compile Include="TestBookImporter.fs" />
