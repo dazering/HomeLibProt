@@ -6,6 +6,7 @@ open System.IO
 open System.IO.Compression
 open System.Threading.Tasks
 
+open HomeLibProt.Common.Fb2Reader
 open HomeLibProt.Domain.DataAccess
 open HomeLibProt.Domain.Utils
 
@@ -43,6 +44,11 @@ let private authorInpxInfoToAuthorsName (author: AuthorInpxInfo) : InpLine.Autho
       Middle = author.MiddleName
       Last = author.LastName }
 
+let private authorFb2InfoToAuthorsName (author: HomeLibProt.Common.Fb2Reader.AuthorName) : InpLine.AuthorName =
+    { First = author.First
+      Middle = author.Middle
+      Last = author.Last }
+
 let private bookAttributesToInpRecord
     (bookId: string)
     (extension: string)
@@ -68,6 +74,28 @@ let private bookAttributesToInpRecord
       LibRate = rate
       Keywords = keywords }
 
+let private fb2InfoToInpRecord
+    (bookId: string)
+    (extension: string)
+    (size: string)
+    (fb2Info: Fb2Info)
+    (series: HomeLibProt.Common.Fb2Reader.Series)
+    : InpLine.InpRecord =
+    { AuthorNames = fb2Info.Authors |> Array.map authorFb2InfoToAuthorsName
+      Genres = fb2Info.Genres
+      Title = fb2Info.Title
+      Series = series.Name
+      SeriesNumber = series.Number
+      FileName = bookId
+      Size = size
+      LibId = bookId
+      Del = "0"
+      Extension = extension
+      Date = "1999-01-01"
+      Lang = fb2Info.Language
+      LibRate = String.Empty
+      Keywords = fb2Info.Keywords }
+
 let private getRateAsync (bookId: int64) (connection: DbConnection) : Task<string> =
     task {
         match! Rates.GetAvgRateByBookIdAsync(connection, bookId) with
@@ -75,10 +103,39 @@ let private getRateAsync (bookId: int64) (connection: DbConnection) : Task<strin
         | r -> return r.AvgRate.ToString()
     }
 
+let private tryToGetInpLinesFromFb2
+    (bookId: int64)
+    (extension: string)
+    (size: string)
+    (bookEntry: ZipArchiveEntry)
+    (inpStat: InpStat)
+    (reportError: string -> unit)
+    : string array * InpStat =
+    use bs = bookEntry.Open()
+    let fb2Info = getFb2Info bs
+
+    match fb2Info with
+    | Some fb2I ->
+        fb2I.Series
+        |> Array.map (fun series ->
+            fb2InfoToInpRecord (bookId.ToString()) extension size fb2I series
+            |> InpLine.makeLine),
+        { inpStat with
+            Processed = inpStat.Processed + 1u
+            Added = inpStat.Added + 1u }
+    | None ->
+        reportError $"Not found any information for Book Id: {bookId}"
+
+        [||],
+        { inpStat with
+            Processed = inpStat.Processed + 1u
+            Skipped = inpStat.Skipped + 1u }
+
 let private getInpLinesAsync
     (bookId: int64)
     (extension: string)
     (size: string)
+    (bookEntry: ZipArchiveEntry)
     (inpStat: InpStat)
     (reportError: string -> unit)
     (connection: DbConnection)
@@ -87,14 +144,7 @@ let private getInpLinesAsync
         let! bookInfo = Books.GetBookInpxInfosByIdAsync(connection, bookId)
 
         match bookInfo with
-        | [||] ->
-            reportError $"Not found any information in database for Book Id: {bookId}"
-
-            return
-                [||],
-                { inpStat with
-                    Processed = inpStat.Processed + 1u
-                    Skipped = inpStat.Skipped + 1u }
+        | [||] -> return tryToGetInpLinesFromFb2 bookId extension size bookEntry inpStat reportError
         | bf ->
             let! authors = Authors.GetAuthorInpxInfosByBookIdAsync(connection, bookId)
             let! genres = Genres.GetGenreKeysByBookIdAsync(connection, bookId)
@@ -123,7 +173,7 @@ let private tryToGetInpLinesAsync
             let extension = (entry.Name |> Path.GetExtension).Replace(".", String.Empty)
             let size = entry.Length.ToString()
 
-            let! lines, stat = getInpLinesAsync bookId extension size inpStat reportError connection
+            let! lines, stat = getInpLinesAsync bookId extension size entry inpStat reportError connection
 
             return Some lines, stat
         | false, _ ->
