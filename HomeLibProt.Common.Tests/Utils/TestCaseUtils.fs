@@ -1,4 +1,4 @@
-module HomeLibProt.CollectionImporter.Tests.Utils.TestCaseUtils
+module HomeLibProt.Common.Tests.Utils.TestCaseUtils
 
 open System.IO
 open System.Reflection
