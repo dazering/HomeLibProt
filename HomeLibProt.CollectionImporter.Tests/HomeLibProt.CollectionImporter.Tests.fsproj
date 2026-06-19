@@ -30,7 +30,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\HomeLibProt.CollectionImporter\HomeLibProt.CollectionImporter.fsproj" />
-    <ProjectReference Include="..\HomeLibProt.Domain.Tests\HomeLibProt.Domain.Tests.csproj" />
+    <ProjectReference Include="..\HomeLibProt.Common.Tests\HomeLibProt.Common.Tests.fsproj" />
   </ItemGroup>
 
   <ItemGroup>
