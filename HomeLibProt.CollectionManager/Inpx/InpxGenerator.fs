@@ -177,6 +177,9 @@ let private tryToGetInpLinesAsync
 
             return Some lines, stat
         | false, _ ->
+
+            $"Invalid book id: {entry.Name}" |> reportError
+
             return
                 None,
                 { inpStat with
