@@ -195,4 +195,6 @@ let doWithArgumentsAsync (logger: ILogger) (args: string array) : Task<int> =
 let main args =
     use logger = getConsoleAppLogger ()
 
+    HomeLibProt.Common.ExtraCodePages.registerExtraCodePages ()
+
     (doWithLoggerAsync logger (fun l -> doWithArgumentsAsync l args)).ConfigureAwait(false).GetAwaiter().GetResult()
