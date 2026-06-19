@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Include="Fb2Reader.fs" />
     <Compile Include="Logger.fs" />
     <Compile Include="RegEx.fs" />
   </ItemGroup>
