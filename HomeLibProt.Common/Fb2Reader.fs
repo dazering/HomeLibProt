@@ -124,7 +124,9 @@ let private tryToSelectSeries
                     |> tryToSelectValue
                     |> Option.defaultValue String.Empty
 
-                yield { Name = name; Number = number }
+                match name |> String.IsNullOrEmpty, number |> String.IsNullOrEmpty with
+                | false, true -> yield { Name = name; Number = "0" }
+                | _, _ -> yield { Name = name; Number = number }
         }
         |> Some
     | None -> None
