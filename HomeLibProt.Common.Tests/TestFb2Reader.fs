@@ -42,6 +42,22 @@ let getFb2InfoTestCases =
                  Series = [| { Name = "Series 1"; Number = "1" }; { Name = "Series 2"; Number = "1" } |] }
        )
        TestCaseData(
+           "GetFb2Info/MultilineTitle",
+           Some
+               { Authors =
+                   [| { First = "Aa"
+                        Middle = "Bb"
+                        Last = "Cc" }
+                      { First = "Dd"
+                        Middle = "Ee"
+                        Last = "Ff" } |]
+                 Genres = [| "genre1"; "genre2" |]
+                 Title = "Title 1"
+                 Language = "en"
+                 Keywords = [| "Keyword1"; "Keyword2"; "Keyword3" |]
+                 Series = [| { Name = "Series 1"; Number = "1" }; { Name = "Series 2"; Number = "1" } |] }
+       )
+       TestCaseData(
            "GetFb2Info/NoAttributes",
            Some
                { Authors = [||]

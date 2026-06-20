@@ -44,6 +44,9 @@ let private annotationXpath =
 let private coverpageLinkXpath =
     "/fb:FictionBook/fb:description/fb:title-info/fb:coverpage/fb:image"
 
+let private normalizeString (value: string) =
+    value.Replace("\r\n", String.Empty).Replace("\n", String.Empty)
+
 let private makeKeywords (keywords: string) : string array =
     keywords.Split(',', StringSplitOptions.RemoveEmptyEntries ||| StringSplitOptions.TrimEntries)
 
@@ -118,11 +121,13 @@ let private tryToSelectSeries
                     tryToSelectAttributeNode "@name" namespaceManager (Some i.Current)
                     |> tryToSelectValue
                     |> Option.defaultValue String.Empty
+                    |> normalizeString
 
                 let number =
                     tryToSelectAttributeNode "@number" namespaceManager (Some i.Current)
                     |> tryToSelectValue
                     |> Option.defaultValue String.Empty
+                    |> normalizeString
 
                 match name |> String.IsNullOrEmpty, number |> String.IsNullOrEmpty with
                 | false, true -> yield { Name = name; Number = "0" }
@@ -136,7 +141,8 @@ let private tryToSelectKeywords (iterator: XPathNodeIterator option) : string se
     | Some i ->
         seq {
             while i.MoveNext() do
-                yield $"{i.Current}"
+                let keywords = $"{i.Current}"
+                yield keywords |> normalizeString
         }
         |> Some
     | None -> None
@@ -146,7 +152,8 @@ let private tryToSelectGenres (iterator: XPathNodeIterator option) : string seq 
     | Some i ->
         seq {
             while i.MoveNext() do
-                yield $"{i.Current}"
+                let genre = $"{i.Current}"
+                yield genre |> normalizeString
         }
         |> Some
     | None -> None
@@ -163,16 +170,19 @@ let private tryToSelectAuthors
                     "fb:first-name"
                     |> tryToSelectSingleNode i.Current namespaceManager
                     |> tryToGetValue
+                    |> normalizeString
 
                 let middleName =
                     "fb:middle-name"
                     |> tryToSelectSingleNode i.Current namespaceManager
                     |> tryToGetValue
+                    |> normalizeString
 
                 let lastName =
                     "fb:last-name"
                     |> tryToSelectSingleNode i.Current namespaceManager
                     |> tryToGetValue
+                    |> normalizeString
 
                 yield
                     { First = firstName
@@ -243,10 +253,16 @@ let getFb2Info (fb2: Stream) : Fb2Info option =
             |> Seq.toArray
 
         let title =
-            titleXpath |> tryToSelectSingleNode navigator namespaceManager |> tryToGetValue
+            titleXpath
+            |> tryToSelectSingleNode navigator namespaceManager
+            |> tryToGetValue
+            |> normalizeString
 
         let language =
-            langXpath |> tryToSelectSingleNode navigator namespaceManager |> tryToGetValue
+            langXpath
+            |> tryToSelectSingleNode navigator namespaceManager
+            |> tryToGetValue
+            |> normalizeString
 
         let keywords =
             keywordsXpath
