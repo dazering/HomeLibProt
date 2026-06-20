@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<FictionBook xmlns:l="http://www.w3.org/1999/xlink" xmlns="http://www.gribuser.ru/xml/fictionbook/2.0">
+<description>
+<title-info>
+<genre>genre1</genre>
+<genre>gen
+re2</genre>
+<author>
+<first-name>A
+a</first-name>
+<middle-name>B
+b</middle-name>
+<last-name>C
+c</last-name>
+</author>
+<author>
+<first-name>Dd</first-name>
+<middle-name>Ee</middle-name>
+<last-name>Ff</last-name>
+</author>
+<book-title>Ti
+tle 1</book-title>
+<annotation>
+<p>Annotation</p>
+</annotation>
+<coverpage>
+<image l:href="#coverpage" />
+</coverpage>
+<lang>e
+n</lang>
+<sequence name="Series 1" number="1"/>
+<sequence name="Series 2" number="1"/>
+<keywords>Keyword1, Keyword2</keywords>
+<keywords>Ke
+yword3</keywords>
+</title-info>
+</description>
+<body>
+<section>
+<p>Body</p>
+</section>
+</body>
+<binary content-type="image/jpeg" id="coverpage">Base64</binary>
+</FictionBook>
