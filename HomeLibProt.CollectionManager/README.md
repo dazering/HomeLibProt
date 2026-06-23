@@ -326,24 +326,6 @@ systemctl enable --now HomeLibProt.FlibustaGetDailyUpdate.timer
 systemctl list-timers
 ```
 
-### Windows
-
-1. Run in powershell command
-
-```
-schtasks /create /tn 'HomeLibProt.GetDailyUpdate' /tr "powershell -WindowStyle Hidden -NonInteractive -ExecutionPolicy Bypass C:\BookDemo\Scripts\FlibustaGetDailyUpdateFb2AndUsr.ps1 -InpxPath C:\BookDemo\Books\Flibusta_all_local.inpx -LibraryPath C:\BookDemo\Books\" /sc daily /st 06:00
-```
-
-2. Run in powershell command
-
-```
-schtasks /create /tn 'HomeLibProt.GetMonthlyUpdate' /tr "powershell -WindowStyle Hidden -NonInteractive -ExecutionPolicy Bypass C:\BookDemo\Scripts\FlibustaGetMonthlyUpdateFb2AndUsr.ps1 -InpxPath C:\BookDemo\Books\Flibusta_all_local.inpx -LibraryPath C:\BookDemo\Books\" /sc monthly /d 1 /st 07:00
-```
-
-3. Open Task Scheduler
-
-4. For every task `Properties > Settings` check in `Run task as soon as possible after a scheduled start is missed`
-
 ## Migration
 
 1. Copy fb2 archives to `{pathToLibrary}/Update/Fb2` directory
