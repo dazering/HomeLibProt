@@ -2,17 +2,17 @@
 
 Console application for importing inpx to sqlite database
 
-## Requirements
+## Build requirements
 
 - .NET SDK 8.0+
 
-## Build source from source files
+## Build from source files
 
 ```
 dotnet build .\HomeLibProt.CommandLineImporter\HomeLibProt.CommandLineImporter.fsproj
 ```
 
-## Publish from source from source files
+## Publish from source files
 
 Linux
 
@@ -90,9 +90,9 @@ Tested with inpx contains 1M lines, 100 inp files, 1M authors, genres, series an
 
 ```
 | -- logs
-| -- | errors-{yyyyMMdd}.txt
-| -- | fatal-{yyyyMMdd}.txt
-| -- | information-{yyyyMMdd}.txt
+|    | errors-{yyyyMMdd}.txt
+|    | fatal-{yyyyMMdd}.txt
+|    | information-{yyyyMMdd}.txt
 | -- Scripts
 |    | -- ....
 | -- HomeLibProt.CommandLineImporter.exe
