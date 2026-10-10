@@ -137,11 +137,11 @@ let TestInsertBookAsync () =
                     }
             )
 
-        Assert.That(books, Is.EqualTo expectedBooks)
-        Assert.That(authorships, Is.EqualTo(expectedAuthorships).AsCollection)
-        Assert.That(bookGenres, Is.EqualTo(expectedBookGenres).AsCollection)
-        Assert.That(bookKeywords, Is.EqualTo(expectedBookKeywords).AsCollection)
-        Assert.That(bookSeries, Is.EqualTo(expectedBookSeries).AsCollection)
+        Assert.That(books, Is.EqualTo<TestBook array> expectedBooks)
+        Assert.That(authorships, Is.EqualTo<TestAuthorship array>(expectedAuthorships).AsCollection)
+        Assert.That(bookGenres, Is.EqualTo<TestBookGenre array>(expectedBookGenres).AsCollection)
+        Assert.That(bookKeywords, Is.EqualTo<TestBookKeyword array>(expectedBookKeywords).AsCollection)
+        Assert.That(bookSeries, Is.EqualTo<TestBookSeriesEntity array>(expectedBookSeries).AsCollection)
 
     }
 
@@ -167,7 +167,7 @@ let TestGetLanguagesMapAsyncAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<Map<string, int>>(expected).AsCollection)
 
     }
 
@@ -200,7 +200,7 @@ let TestInsertUnexistedArchivesAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<TestArchive array>(expected).AsCollection)
 
     }
 
@@ -226,7 +226,7 @@ let TestGetArchivesMapAsyncAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<Map<string, int>>(expected).AsCollection)
 
     }
 
@@ -259,7 +259,7 @@ let TestInsertUnexistedLanguagesAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<TestLanguage array>(expected).AsCollection)
 
     }
 
@@ -285,7 +285,7 @@ let TestGetKeywordsMapAsyncAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<Map<string, int>>(expected).AsCollection)
 
     }
 
@@ -318,7 +318,7 @@ let TestInsertUnexistedKeywordsAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<TestKeyword array>(expected).AsCollection)
 
     }
 
@@ -344,7 +344,7 @@ let TestGetSeriesMapAsyncAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<Map<string, int>>(expected).AsCollection)
 
     }
 
@@ -377,7 +377,7 @@ let TestInsertUnexistedSeriesAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<TestSeriesEntity array>(expected).AsCollection)
 
     }
 
@@ -403,7 +403,7 @@ let TestGetGenresMapAsyncAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<Map<string, int>>(expected).AsCollection)
 
     }
 
@@ -436,7 +436,7 @@ let TestInsertUnexistedGenresAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<TestGenre array>(expected).AsCollection)
 
     }
 
@@ -471,7 +471,7 @@ let TestGetAuthorsMapAsyncAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<Map<string, int>>(expected).AsCollection)
 
     }
 
@@ -519,6 +519,6 @@ let TestInsertUnexistedAuthorsAsync () =
                     }
             )
 
-        Assert.That(actual, Is.EqualTo(expected).AsCollection)
+        Assert.That(actual, Is.EqualTo<TestAuthor array>(expected).AsCollection)
 
     }

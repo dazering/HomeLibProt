@@ -104,6 +104,6 @@ let TestValidateCollectionAsync () =
                     }
             )
 
-        Assert.That(actualMessages, Is.EqualTo(expected).AsCollection)
+        Assert.That(actualMessages, Is.EqualTo<string array>(expected).AsCollection)
 
     }
