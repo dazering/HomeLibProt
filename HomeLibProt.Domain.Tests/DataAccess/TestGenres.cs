@@ -161,4 +161,25 @@ public class TestGenres {
 
         Assert.That(actual, Is.EqualTo(expected));
     }
+
+    [Test]
+    [TestCase(1, "genre1", "", GenreCheckResult.Duplicate)]
+    [TestCase(1, "genre2", "", GenreCheckResult.DuplicateId)]
+    [TestCase(2, "genre1", "", GenreCheckResult.DuplicateKey)]
+    [TestCase(2, "genre2", "", GenreCheckResult.NoRecords)]
+    public async Task TestCheckIfGenreExistsAsync(long genreId, string key, string name, GenreCheckResult expected) {
+        var actual = await TestUtils.UseTestDatabase(
+            async (connection) => await DbStructure.CreateImportInpxStructure(connection, true),
+            async (connection) => {
+                await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    await GenreUtils.Create(c, "genre1", "Genre 1");
+                });
+
+                return await ConnectionUtils.DoInTransactionAsync(connection, async (c) => {
+                    return await Genres.CheckIfGenreExistsAsync(c, new GenreEntityParam(Id: genreId, Key: key, Name: name));
+                });
+            });
+
+        Assert.That(actual, Is.EqualTo(expected).AsCollection);
+    }
 }

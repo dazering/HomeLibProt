@@ -106,11 +106,22 @@ let private importBookGenreResult
 let private genreResultToEntityParam (genre: GenreResult) : GenreEntityParam =
     GenreEntityParam(Id = genre.Id, Key = genre.Key, Name = genre.Name)
 
-let private importGenreResult (connection: DbConnection) (result: GenreResult) : Task<unit> =
+let private importGenreResult
+    (reportError: string -> unit)
+    (connection: DbConnection)
+    (result: GenreResult)
+    : Task<unit> =
     task {
         let entityParam = result |> genreResultToEntityParam
 
-        do! Genres.InsertGenreEntityAsync(connection, entityParam)
+        match! Genres.CheckIfGenreExistsAsync(connection, entityParam) with
+        | GenreCheckResult.Duplicate ->
+            reportError $"Unable to insert duplicate of genre with Id: {entityParam.Id}, Key: {entityParam.Key}"
+        | GenreCheckResult.DuplicateId -> reportError $"Unable to insert duplicate of genre with Id: {entityParam.Id}"
+        | GenreCheckResult.DuplicateKey ->
+            reportError $"Unable to insert duplicate of genre with Key: {entityParam.Key}"
+        | GenreCheckResult.NoRecords -> do! Genres.InsertGenreEntityAsync(connection, entityParam)
+        | r -> raise (InvalidOperationException $"Unsupported check result: {r}")
     }
 
 let private authorshipsResultToParam (authorships: AuthorshipsResult) : AuthorshipParam =
@@ -327,7 +338,7 @@ let importSqlDumpsFlibustaAsync (parameters: SqlDumpImporterParameters) (connect
                             importFromGZip
                                 genres
                                 HomeLibProt.CollectionManager.RegEx.Flibusta.genres
-                                importGenreResult
+                                (importGenreResult parameters.ErrorReport)
                                 getGenreResult
                                 c
                     }
@@ -493,7 +504,7 @@ let importSqlDumpsLibrusecAsync (parameters: SqlDumpImporterParameters) (connect
                             importFromGZip
                                 genres
                                 HomeLibProt.CollectionManager.RegEx.Librusec.genres
-                                importGenreResult
+                                (importGenreResult parameters.ErrorReport)
                                 getGenreResult
                                 c
                     }

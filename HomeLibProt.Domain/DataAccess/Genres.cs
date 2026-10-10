@@ -14,6 +14,13 @@ public record GenreInpxEntity(string Key, string Name);
 
 public record GenreLineParam(string Key, string Name);
 
+public enum GenreCheckResult {
+    Duplicate = 0,
+    DuplicateId,
+    DuplicateKey,
+    NoRecords
+}
+
 public static class Genres {
     public static async Task<Genre[]> GetGenresByKeyAsync(DbConnection connection, string[] genreKeys) {
         var sql =
@@ -84,5 +91,24 @@ values (@Key, @Name)
 ";
 
         await connection.ExecuteAsync(sql, genre);
+    }
+
+    public static async Task<GenreCheckResult> CheckIfGenreExistsAsync(DbConnection connection, GenreEntityParam genreEntityParam) {
+        var sql =
+            @"
+with
+    GenreKey as (select max(1) as GenreKeyExsists from Genres where Key = @Key),
+    GenreId as (select max(1) as GenreIdExsists from Genres where Id = @Id)
+select
+    case
+        when GenreKey.GenreKeyExsists and GenreId.GenreIdExsists then 0
+        when GenreId.GenreIdExsists then 1
+        when GenreKey.GenreKeyExsists then 2
+        else 3
+    end as Result
+from GenreKey, GenreId
+";
+
+        return await connection.QuerySingleAsync<GenreCheckResult>(sql, new { Id = genreEntityParam.Id, Key = genreEntityParam.Key });
     }
 }
