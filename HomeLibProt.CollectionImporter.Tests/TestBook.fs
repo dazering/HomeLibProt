@@ -7,41 +7,53 @@ open HomeLibProt.CollectionImporter.Book
 open HomeLibProt.CollectionImporter.InpLine
 
 let mapAuthorsTestCases =
-    [| TestCaseData(
-           "A,A,A:",
-           { FullName = "A A A"
-             LastName = "A"
-             FirstName = "A"
-             MiddleName = "A" }
-       )
-       TestCaseData(
-           "A: A, A,A,A:",
-           { FullName = "A: A, A A A"
-             LastName = "A: A, A"
-             FirstName = "A"
-             MiddleName = "A" }
-       )
-       TestCaseData(
-           "A,A: A, A,A:",
-           { FullName = "A A: A, A A"
-             LastName = "A"
-             FirstName = "A: A, A"
-             MiddleName = "A" }
-       )
-       TestCaseData(
-           "A,A,A: A, A:",
-           { FullName = "A A A: A, A"
-             LastName = "A"
-             FirstName = "A"
-             MiddleName = "A: A, A" }
-       )
-       TestCaseData(
-           "A:",
-           { FullName = "A  "
-             LastName = "A"
-             FirstName = ""
-             MiddleName = "" }
-       ) |]
+    [|
+        TestCaseData(
+            "A,A,A:",
+            {
+                FullName = "A A A"
+                LastName = "A"
+                FirstName = "A"
+                MiddleName = "A"
+            }
+        )
+        TestCaseData(
+            "A: A, A,A,A:",
+            {
+                FullName = "A: A, A A A"
+                LastName = "A: A, A"
+                FirstName = "A"
+                MiddleName = "A"
+            }
+        )
+        TestCaseData(
+            "A,A: A, A,A:",
+            {
+                FullName = "A A: A, A A"
+                LastName = "A"
+                FirstName = "A: A, A"
+                MiddleName = "A"
+            }
+        )
+        TestCaseData(
+            "A,A,A: A, A:",
+            {
+                FullName = "A A A: A, A"
+                LastName = "A"
+                FirstName = "A"
+                MiddleName = "A: A, A"
+            }
+        )
+        TestCaseData(
+            "A:",
+            {
+                FullName = "A  "
+                LastName = "A"
+                FirstName = ""
+                MiddleName = ""
+            }
+        )
+    |]
 
 [<Test>]
 [<TestCaseSource(nameof mapAuthorsTestCases)>]
@@ -51,8 +63,10 @@ let TestMapAuthors (authors: string, expected: Author) =
     Assert.That(actual, Is.EqualTo expected)
 
 let makeAuthorsTestCases =
-    [| TestCaseData("A,A,A:B,B,B:", [| "A,A,A:"; "B,B,B:" |])
-       TestCaseData("A: A,A,A:B,B: B,B:C,C,C: C:", [| "A: A,A,A:"; "B,B: B,B:"; "C,C,C: C:" |]) |]
+    [|
+        TestCaseData("A,A,A:B,B,B:", [| "A,A,A:"; "B,B,B:" |])
+        TestCaseData("A: A,A,A:B,B: B,B:C,C,C: C:", [| "A: A,A,A:"; "B,B: B,B:"; "C,C,C: C:" |])
+    |]
 
 [<Test>]
 [<TestCaseSource(nameof makeAuthorsTestCases)>]
@@ -82,10 +96,12 @@ let TestMakeKeywords () =
     Assert.That(actual, Is.EqualTo expected)
 
 let makeSeriesTestCases =
-    [| TestCaseData("Series 1", "1", Some { Name = "Series 1"; Number = 1 })
-       TestCaseData("Series 1", "", Some { Name = "Series 1"; Number = 0 })
-       TestCaseData("", "1", None)
-       TestCaseData("", "", None) |]
+    [|
+        TestCaseData("Series 1", "1", Some { Name = "Series 1"; Number = 1 })
+        TestCaseData("Series 1", "", Some { Name = "Series 1"; Number = 0 })
+        TestCaseData("", "1", None)
+        TestCaseData("", "", None)
+    |]
 
 [<Test>]
 [<TestCaseSource(nameof makeSeriesTestCases)>]
@@ -117,46 +133,56 @@ let TestConvertStringToNullableInt (value: string, expected: Nullable<int>) =
 [<Test>]
 let TestConvertInpLineToBook () =
     let expected =
-        { Authors =
-            [| { FullName = "A A A"
-                 LastName = "A"
-                 FirstName = "A"
-                 MiddleName = "A" }
-               { FullName = "B B B"
-                 LastName = "B"
-                 FirstName = "B"
-                 MiddleName = "B" } |]
-          Genres = [| "Genre 1"; "Genre 2" |]
-          Title = "Title 1"
-          Series = Some { Name = "Series 1"; Number = 1 }
-          FileName = "1"
-          Size = 100500
-          LibId = "1"
-          Deleted = false
-          Extension = "fb2"
-          Date = "2025-05-28"
-          Folder = "archive.zip"
-          Lang = "en"
-          LibRate = Nullable 2
-          Keywords = [| "Keyword 1"; "Keyword 2" |] }
+        {
+            Authors =
+                [|
+                    {
+                        FullName = "A A A"
+                        LastName = "A"
+                        FirstName = "A"
+                        MiddleName = "A"
+                    }
+                    {
+                        FullName = "B B B"
+                        LastName = "B"
+                        FirstName = "B"
+                        MiddleName = "B"
+                    }
+                |]
+            Genres = [| "Genre 1"; "Genre 2" |]
+            Title = "Title 1"
+            Series = Some { Name = "Series 1"; Number = 1 }
+            FileName = "1"
+            Size = 100500
+            LibId = "1"
+            Deleted = false
+            Extension = "fb2"
+            Date = "2025-05-28"
+            Folder = "archive.zip"
+            Lang = "en"
+            LibRate = Nullable 2
+            Keywords = [| "Keyword 1"; "Keyword 2" |]
+        }
 
     let inpLine =
-        { Authors = "A,A,A:B,B,B:"
-          Genres = "Genre 1:Genre 2:"
-          Title = "Title 1"
-          Series = "Series 1"
-          SeriesNumber = "1"
-          FileName = "1"
-          Size = "100500"
-          LibId = "1"
-          Deleted = "0"
-          Extension = "fb2"
-          Date = "2025-05-28"
-          InsNumber = Some "1"
-          Folder = Some "archive.zip"
-          Lang = "en"
-          LibRate = "2"
-          Keywords = "Keyword 1, Keyword 2" }
+        {
+            Authors = "A,A,A:B,B,B:"
+            Genres = "Genre 1:Genre 2:"
+            Title = "Title 1"
+            Series = "Series 1"
+            SeriesNumber = "1"
+            FileName = "1"
+            Size = "100500"
+            LibId = "1"
+            Deleted = "0"
+            Extension = "fb2"
+            Date = "2025-05-28"
+            InsNumber = Some "1"
+            Folder = Some "archive.zip"
+            Lang = "en"
+            LibRate = "2"
+            Keywords = "Keyword 1, Keyword 2"
+        }
 
     let actual = inpLine |> convertInpLineToBook "test.zip"
 

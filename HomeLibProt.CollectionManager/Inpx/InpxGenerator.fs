@@ -22,32 +22,42 @@ type InpxParameters =
     { Site: Site; LibraryType: LibraryType }
 
 type InpxGeneratorParameters =
-    { PathToLibrary: string
-      PathToInpx: string
-      InpxParameters: InpxParameters
-      ProgressReport: string -> unit
-      ErrorReport: string -> unit
-      DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
+    {
+        PathToLibrary: string
+        PathToInpx: string
+        InpxParameters: InpxParameters
+        ProgressReport: string -> unit
+        ErrorReport: string -> unit
+        DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task
+    }
 
 type private InpStat =
-    { Processed: uint
-      Skipped: uint
-      Added: uint }
+    {
+        Processed: uint
+        Skipped: uint
+        Added: uint
+    }
 
 type private InpxStat =
-    { Processed: uint
-      Skipped: uint
-      Added: uint }
+    {
+        Processed: uint
+        Skipped: uint
+        Added: uint
+    }
 
 let private authorInpxInfoToAuthorsName (author: AuthorInpxInfo) : InpLine.AuthorName =
-    { First = author.FirstName
-      Middle = author.MiddleName
-      Last = author.LastName }
+    {
+        First = author.FirstName
+        Middle = author.MiddleName
+        Last = author.LastName
+    }
 
 let private authorFb2InfoToAuthorsName (author: HomeLibProt.Common.Fb2Reader.AuthorName) : InpLine.AuthorName =
-    { First = author.First
-      Middle = author.Middle
-      Last = author.Last }
+    {
+        First = author.First
+        Middle = author.Middle
+        Last = author.Last
+    }
 
 let private bookAttributesToInpRecord
     (bookId: string)
@@ -59,20 +69,22 @@ let private bookAttributesToInpRecord
     (genres: string array)
     (keywords: string array)
     : InpLine.InpRecord =
-    { AuthorNames = authors |> Array.map authorInpxInfoToAuthorsName
-      Genres = genres
-      Title = bookInpxInfo.Title
-      Series = bookInpxInfo.Series
-      SeriesNumber = bookInpxInfo.SeriesNumber.ToString()
-      FileName = bookId
-      Size = size
-      LibId = bookId
-      Del = bookInpxInfo.Deleted.ToString()
-      Extension = extension
-      Date = bookInpxInfo.Date
-      Lang = bookInpxInfo.Language
-      LibRate = rate
-      Keywords = keywords }
+    {
+        AuthorNames = authors |> Array.map authorInpxInfoToAuthorsName
+        Genres = genres
+        Title = bookInpxInfo.Title
+        Series = bookInpxInfo.Series
+        SeriesNumber = bookInpxInfo.SeriesNumber.ToString()
+        FileName = bookId
+        Size = size
+        LibId = bookId
+        Del = bookInpxInfo.Deleted.ToString()
+        Extension = extension
+        Date = bookInpxInfo.Date
+        Lang = bookInpxInfo.Language
+        LibRate = rate
+        Keywords = keywords
+    }
 
 let private fb2InfoToInpRecord
     (bookId: string)
@@ -81,20 +93,22 @@ let private fb2InfoToInpRecord
     (fb2Info: Fb2Info)
     (series: HomeLibProt.Common.Fb2Reader.Series)
     : InpLine.InpRecord =
-    { AuthorNames = fb2Info.Authors |> Array.map authorFb2InfoToAuthorsName
-      Genres = fb2Info.Genres
-      Title = fb2Info.Title
-      Series = series.Name
-      SeriesNumber = series.Number
-      FileName = bookId
-      Size = size
-      LibId = bookId
-      Del = "0"
-      Extension = extension
-      Date = "1999-01-01"
-      Lang = fb2Info.Language
-      LibRate = String.Empty
-      Keywords = fb2Info.Keywords }
+    {
+        AuthorNames = fb2Info.Authors |> Array.map authorFb2InfoToAuthorsName
+        Genres = fb2Info.Genres
+        Title = fb2Info.Title
+        Series = series.Name
+        SeriesNumber = series.Number
+        FileName = bookId
+        Size = size
+        LibId = bookId
+        Del = "0"
+        Extension = extension
+        Date = "1999-01-01"
+        Lang = fb2Info.Language
+        LibRate = String.Empty
+        Keywords = fb2Info.Keywords
+    }
 
 let private getRateAsync (bookId: int64) (connection: DbConnection) : Task<string> =
     task {
@@ -122,14 +136,16 @@ let private tryToGetInpLinesFromFb2
             |> InpLine.makeLine),
         { inpStat with
             Processed = inpStat.Processed + 1u
-            Added = inpStat.Added + 1u }
+            Added = inpStat.Added + 1u
+        }
     | None ->
         reportError $"Not found any information for Book Id: {bookId}"
 
         [||],
         { inpStat with
             Processed = inpStat.Processed + 1u
-            Skipped = inpStat.Skipped + 1u }
+            Skipped = inpStat.Skipped + 1u
+        }
 
 let private getInpLinesAsync
     (bookId: int64)
@@ -158,7 +174,8 @@ let private getInpLinesAsync
                     |> InpLine.makeLine),
                 { inpStat with
                     Processed = inpStat.Processed + 1u
-                    Added = inpStat.Added + 1u }
+                    Added = inpStat.Added + 1u
+                }
     }
 
 let private tryToGetInpLinesAsync
@@ -173,7 +190,8 @@ let private tryToGetInpLinesAsync
             let extension = (entry.Name |> Path.GetExtension).Replace(".", String.Empty)
             let size = entry.Length.ToString()
 
-            let! lines, stat = getInpLinesAsync bookId extension size entry inpStat reportError connection
+            let! lines, stat =
+                getInpLinesAsync bookId extension size entry inpStat reportError connection
 
             return Some lines, stat
         | false, _ ->
@@ -184,7 +202,8 @@ let private tryToGetInpLinesAsync
                 None,
                 { inpStat with
                     Processed = inpStat.Processed + 1u
-                    Skipped = inpStat.Skipped + 1u }
+                    Skipped = inpStat.Skipped + 1u
+                }
     }
 
 let private createInp (inpx: ZipArchive) (name: string) : ZipArchiveEntry = inpx.CreateEntry name
@@ -204,9 +223,11 @@ let private createInpFromLibraryArchive
         use sw = new StreamWriter(fs)
 
         let mutable inpStat: InpStat =
-            { Processed = 0u
-              Skipped = 0u
-              Added = 0u }
+            {
+                Processed = 0u
+                Skipped = 0u
+                Added = 0u
+            }
 
         for entry in libraryArchive.Entries do
 
@@ -299,9 +320,11 @@ let private fillInpxAsync
         let zipArchives = Directory.EnumerateFiles(pathToLibrary, "*.zip")
 
         let mutable inpxStat: InpxStat =
-            { Processed = 0u
-              Skipped = 0u
-              Added = 0u }
+            {
+                Processed = 0u
+                Skipped = 0u
+                Added = 0u
+            }
 
         for archive in zipArchives do
             let archiveName = Path.GetFileName archive
@@ -317,7 +340,8 @@ let private fillInpxAsync
                     { inpxStat with
                         Processed = inpxStat.Processed + inpStat.Processed
                         Added = inpxStat.Added + inpStat.Added
-                        Skipped = inpxStat.Skipped + inpStat.Skipped }
+                        Skipped = inpxStat.Skipped + inpStat.Skipped
+                    }
 
                 reportProgress
                     $"Generated inp for {archiveName}. Processed: {inpStat.Processed}, Added: {inpStat.Added}, Skipped: {inpStat.Skipped}"

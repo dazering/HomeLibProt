@@ -38,13 +38,15 @@ let importInpxAsync (logger: ILogger) (args: ParseResults<ImportInpxArgs>) : Tas
             |> ConnectionUtils.MakeConnection
 
         let parameters: CollectionImporter.ImportInpxParameters =
-            { PathToInpx = pathToInpx
-              PathToArchives = pathToArchives
-              BatchSize = batchSize
-              MaxCountLeafs = maxCountLeafs
-              FullCreation = fullCreation
-              ProgressReport = printProgressReport logger
-              DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
+            {
+                PathToInpx = pathToInpx
+                PathToArchives = pathToArchives
+                BatchSize = batchSize
+                MaxCountLeafs = maxCountLeafs
+                FullCreation = fullCreation
+                ProgressReport = printProgressReport logger
+                DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync
+            }
 
         do! ConnectionUtils.WithConnectionAsync(connection, CollectionImporter.importCollectionToDb parameters)
     }
@@ -63,9 +65,11 @@ let reimportAHSAsync (logger: ILogger) (args: ParseResults<ReimportAHSArgs>) : T
             |> ConnectionUtils.MakeConnection
 
         let parameters: CollectionImporter.ReimportAHSParameters =
-            { MaxCountLeafs = maxCountLeafs
-              ProgressReport = printProgressReport logger
-              DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
+            {
+                MaxCountLeafs = maxCountLeafs
+                ProgressReport = printProgressReport logger
+                DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync
+            }
 
         do!
             ConnectionUtils.WithConnectionAsync(
@@ -99,7 +103,9 @@ let doWithArgumentsAsync (logger: ILogger) (args: string array) : Task<int> =
         try
             let arguments = parser.ParseCommandLine args
 
-            let! stopwatch = withStopwatchAsync (new Stopwatch()) (fun _ -> task { do! runAsync logger arguments })
+            let! stopwatch =
+                withStopwatchAsync (new Stopwatch()) (fun _ -> task { do! runAsync logger arguments })
+
             stopwatch |> printElapsedTime logger
 
             return 0

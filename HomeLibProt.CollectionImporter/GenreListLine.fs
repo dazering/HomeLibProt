@@ -26,5 +26,7 @@ let parseGenreListLine (regEx: Regex) (line: string) : GroupCollection =
         raise (InvalidOperationException $"Unsupported genre line format: \"{line}\"")
 
 let getGenreLine (groups: GroupCollection) : GenreListLine =
-    { Key = groups.[GenreInpLineRegExFields.key] |> extractGroupValue
-      Name = groups.[GenreInpLineRegExFields.name] |> extractGroupValue }
+    {
+        Key = groups.[GenreInpLineRegExFields.key] |> extractGroupValue
+        Name = groups.[GenreInpLineRegExFields.name] |> extractGroupValue
+    }

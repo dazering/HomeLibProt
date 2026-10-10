@@ -11,10 +11,12 @@ open HomeLibProt.Domain.DataAccess
 open HomeLibProt.CollectionImporter.InpLine
 
 type InpxImporterParameters =
-    { PathToInpx: string
-      BatchSize: int
-      ProgressReport: string -> unit
-      DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
+    {
+        PathToInpx: string
+        BatchSize: int
+        ProgressReport: string -> unit
+        DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task
+    }
 
 let makeImportProgressMessage (chunkCount: int) (chunkNumber: int) =
     sprintf $"Imported {chunkNumber}/{chunkCount}"

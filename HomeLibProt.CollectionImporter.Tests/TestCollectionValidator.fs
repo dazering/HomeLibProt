@@ -16,21 +16,25 @@ let getArchivesPath (testCaseName: string) =
 let TestValidateCollectionAsync () =
     task {
         let expected =
-            [| "Collection validation"
-               "Validating 000001-000002.zip"
-               "Absent files in 000001-000002.zip: 2.fb2"
-               "Validating 000003-000003.zip"
-               "Archive isn't exsists: 000003-000003.zip"
-               "Collection validation finished" |]
+            [|
+                "Collection validation"
+                "Validating 000001-000002.zip"
+                "Absent files in 000001-000002.zip: 2.fb2"
+                "Validating 000003-000003.zip"
+                "Archive isn't exsists: 000003-000003.zip"
+                "Collection validation finished"
+            |]
 
         let actualMessages = Collections.Generic.List<string>()
 
         let getReportMessages (message: string) = actualMessages.Add message
 
         let collectionValidatorParameters =
-            { PathToArchives = getArchivesPath "Simple"
-              ProgressReport = getReportMessages
-              DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
+            {
+                PathToArchives = getArchivesPath "Simple"
+                ProgressReport = getReportMessages
+                DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync
+            }
 
         do!
             TestUtils.UseTestDatabase(

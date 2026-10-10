@@ -12,11 +12,13 @@ open HomeLibProt.CollectionManager.RegEx.RegExResults
 open HomeLibProt.CollectionManager.SqlDumps.SqlDumpParser
 
 type SqlDumpImporterParameters =
-    { PathToSqlDumps: string
-      KeepSqlDumps: bool
-      ProgressReport: string -> unit
-      ErrorReport: string -> unit
-      DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
+    {
+        PathToSqlDumps: string
+        KeepSqlDumps: bool
+        ProgressReport: string -> unit
+        ErrorReport: string -> unit
+        DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task
+    }
 
 let private archiveName = "SQL_Dump"
 

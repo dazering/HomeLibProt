@@ -7,10 +7,12 @@ open System.Threading.Tasks
 open HomeLibProt.CollectionManager.Common
 
 type SqlDumpDownloaderParameters =
-    { PathToSqlDumps: string
-      HttpClient: HttpClient
-      Retries: uint
-      ProgressReport: string -> unit }
+    {
+        PathToSqlDumps: string
+        HttpClient: HttpClient
+        Retries: uint
+        ProgressReport: string -> unit
+    }
 
 let downloadSqlDumpsFlibustaAsync (parameters: SqlDumpDownloaderParameters) : Task<unit> =
     task {
@@ -18,14 +20,16 @@ let downloadSqlDumpsFlibustaAsync (parameters: SqlDumpDownloaderParameters) : Ta
         |> parameters.ProgressReport
 
         let urisToDownload =
-            [| Flibusta.authors
-               Flibusta.authorships
-               Flibusta.bookGenres
-               Flibusta.books
-               Flibusta.bookSeries
-               Flibusta.genres
-               Flibusta.rates
-               Flibusta.series |]
+            [|
+                Flibusta.authors
+                Flibusta.authorships
+                Flibusta.bookGenres
+                Flibusta.books
+                Flibusta.bookSeries
+                Flibusta.genres
+                Flibusta.rates
+                Flibusta.series
+            |]
 
         for fileName in urisToDownload do
             parameters.ProgressReport $"Downloading: {fileName}"
@@ -48,14 +52,16 @@ let downloadSqlDumpsLibrusecAsync (parameters: SqlDumpDownloaderParameters) =
         |> parameters.ProgressReport
 
         let urisToDownload =
-            [| Librusec.authors
-               Librusec.authorships
-               Librusec.bookGenres
-               Librusec.books
-               Librusec.bookSeries
-               Librusec.genres
-               Librusec.rates
-               Librusec.series |]
+            [|
+                Librusec.authors
+                Librusec.authorships
+                Librusec.bookGenres
+                Librusec.books
+                Librusec.bookSeries
+                Librusec.genres
+                Librusec.rates
+                Librusec.series
+            |]
 
         for fileName in urisToDownload do
             parameters.ProgressReport $"Downloading: {fileName}"

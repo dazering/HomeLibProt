@@ -13,8 +13,12 @@ open HomeLibProt.Domain.Tests.Utils
 
 let setUpData (connection: DbConnection) : Task<unit> =
     task {
-        let! _ = AuthorUtils.Create(connection, fullName = "A A A", lastName = "A", firstName = "A", middleName = "A")
-        let! _ = AuthorUtils.Create(connection, fullName = "B B B", lastName = "B", firstName = "B", middleName = "B")
+        let! _ =
+            AuthorUtils.Create(connection, fullName = "A A A", lastName = "A", firstName = "A", middleName = "A")
+
+        let! _ =
+            AuthorUtils.Create(connection, fullName = "B B B", lastName = "B", firstName = "B", middleName = "B")
+
         let! _ = GenreUtils.Create(connection, key = "genre1", name = "Genre 1")
         let! _ = GenreUtils.Create(connection, key = "genre2", name = "Genre 2")
         let! _ = SeriesUtils.Create(connection, name = "Series 1")
@@ -32,19 +36,21 @@ let setUpData (connection: DbConnection) : Task<unit> =
 let TestInsertBookAsync () =
     task {
         let expectedBooks =
-            [| TestBook(
-                   Id = 1,
-                   Title = "Title 1",
-                   FileName = "File1",
-                   Size = 100500,
-                   LibId = "File1",
-                   Deleted = 0,
-                   Extension = "fb2",
-                   Date = "2025-11-07",
-                   ArchiveId = 1,
-                   LibRate = Nullable(2L),
-                   LanguageId = 1L
-               ) |]
+            [|
+                TestBook(
+                    Id = 1,
+                    Title = "Title 1",
+                    FileName = "File1",
+                    Size = 100500,
+                    LibId = "File1",
+                    Deleted = 0,
+                    Extension = "fb2",
+                    Date = "2025-11-07",
+                    ArchiveId = 1,
+                    LibRate = Nullable(2L),
+                    LanguageId = 1L
+                )
+            |]
 
         let expectedAuthorships = [| TestAuthorship(BookId = 1, AuthorId = 1) |]
 
@@ -63,24 +69,30 @@ let TestInsertBookAsync () =
         let archives = [| "archive1.zip", 1L |] |> Map
 
         let book =
-            { Authors =
-                [| { FullName = "A A A"
-                     LastName = "A"
-                     FirstName = "A"
-                     MiddleName = "A" } |]
-              Genres = [| "Genre 1" |]
-              Title = "Title 1"
-              Series = Some { Name = "Series 1"; Number = 1 }
-              FileName = "File1"
-              Size = 100500
-              LibId = "File1"
-              Deleted = false
-              Extension = "fb2"
-              Date = "2025-11-07"
-              Folder = "archive1.zip"
-              Lang = "Lang 1"
-              LibRate = Nullable 2
-              Keywords = [| "Keyword 1" |] }
+            {
+                Authors =
+                    [|
+                        {
+                            FullName = "A A A"
+                            LastName = "A"
+                            FirstName = "A"
+                            MiddleName = "A"
+                        }
+                    |]
+                Genres = [| "Genre 1" |]
+                Title = "Title 1"
+                Series = Some { Name = "Series 1"; Number = 1 }
+                FileName = "File1"
+                Size = 100500
+                LibId = "File1"
+                Deleted = false
+                Extension = "fb2"
+                Date = "2025-11-07"
+                Folder = "archive1.zip"
+                Lang = "Lang 1"
+                LibRate = Nullable 2
+                Keywords = [| "Keyword 1" |]
+            }
 
         let! books, authorships, bookGenres, bookKeywords, bookSeries =
             TestUtils.UseTestDatabase(
@@ -108,13 +120,18 @@ let TestInsertBookAsync () =
                             )
 
                         let! books = ConnectionUtils.DoInTransactionAsync(connection, BookUtils.GetTestData)
-                        let! authorships = ConnectionUtils.DoInTransactionAsync(connection, AuthorshipUtils.GetTestData)
-                        let! bookGenres = ConnectionUtils.DoInTransactionAsync(connection, BookGenreUtils.GetTestData)
+
+                        let! authorships =
+                            ConnectionUtils.DoInTransactionAsync(connection, AuthorshipUtils.GetTestData)
+
+                        let! bookGenres =
+                            ConnectionUtils.DoInTransactionAsync(connection, BookGenreUtils.GetTestData)
 
                         let! bookKeywords =
                             ConnectionUtils.DoInTransactionAsync(connection, BookKeywordUtils.GetTestData)
 
-                        let! bookSeries = ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.GetTestData)
+                        let! bookSeries =
+                            ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.GetTestData)
 
                         return books, authorships, bookGenres, bookKeywords, bookSeries
                     }
@@ -158,9 +175,11 @@ let TestGetLanguagesMapAsyncAsync () =
 let TestInsertUnexistedArchivesAsync () =
     task {
         let expected =
-            [| TestArchive(Id = 1, Name = "archive1.zip")
-               TestArchive(Id = 2, Name = "archive2.zip")
-               TestArchive(Id = 3, Name = "archive3.zip") |]
+            [|
+                TestArchive(Id = 1, Name = "archive1.zip")
+                TestArchive(Id = 2, Name = "archive2.zip")
+                TestArchive(Id = 3, Name = "archive3.zip")
+            |]
 
         let archives = [| "archive2.zip"; "archive3.zip" |] |> Set.ofArray
 
@@ -215,9 +234,11 @@ let TestGetArchivesMapAsyncAsync () =
 let TestInsertUnexistedLanguagesAsync () =
     task {
         let expected =
-            [| TestLanguage(Id = 1, Name = "Lang 1", Include = 1)
-               TestLanguage(Id = 2, Name = "Lang 2", Include = 1)
-               TestLanguage(Id = 3, Name = "Lang 3", Include = 1) |]
+            [|
+                TestLanguage(Id = 1, Name = "Lang 1", Include = 1)
+                TestLanguage(Id = 2, Name = "Lang 2", Include = 1)
+                TestLanguage(Id = 3, Name = "Lang 3", Include = 1)
+            |]
 
         let languages = [| "Lang 2"; "Lang 3" |] |> Set.ofArray
 
@@ -272,9 +293,11 @@ let TestGetKeywordsMapAsyncAsync () =
 let TestInsertUnexistedKeywordsAsync () =
     task {
         let expected =
-            [| TestKeyword(Id = 1, Name = "Keyword 1")
-               TestKeyword(Id = 2, Name = "Keyword 2")
-               TestKeyword(Id = 3, Name = "Keyword 3") |]
+            [|
+                TestKeyword(Id = 1, Name = "Keyword 1")
+                TestKeyword(Id = 2, Name = "Keyword 2")
+                TestKeyword(Id = 3, Name = "Keyword 3")
+            |]
 
         let keywords = [| "Keyword 2"; "Keyword 3" |] |> Set.ofArray
 
@@ -329,9 +352,11 @@ let TestGetSeriesMapAsyncAsync () =
 let TestInsertUnexistedSeriesAsync () =
     task {
         let expected =
-            [| TestSeriesEntity(Id = 1, Name = "Series 1")
-               TestSeriesEntity(Id = 2, Name = "Series 2")
-               TestSeriesEntity(Id = 3, Name = "Series 3") |]
+            [|
+                TestSeriesEntity(Id = 1, Name = "Series 1")
+                TestSeriesEntity(Id = 2, Name = "Series 2")
+                TestSeriesEntity(Id = 3, Name = "Series 3")
+            |]
 
         let series = [| "Series 2"; "Series 3" |] |> Set.ofArray
 
@@ -386,9 +411,11 @@ let TestGetGenresMapAsyncAsync () =
 let TestInsertUnexistedGenresAsync () =
     task {
         let expected =
-            [| TestGenre(Id = 1, Key = "genre1", Name = "Genre 1")
-               TestGenre(Id = 2, Key = "genre2", Name = "Genre 2")
-               TestGenre(Id = 3, Key = "genre3", Name = null) |]
+            [|
+                TestGenre(Id = 1, Key = "genre1", Name = "Genre 1")
+                TestGenre(Id = 2, Key = "genre2", Name = "Genre 2")
+                TestGenre(Id = 3, Key = "genre3", Name = null)
+            |]
 
         let genres = [| "genre2"; "genre3" |] |> Set.ofArray
 
@@ -419,10 +446,14 @@ let TestGetAuthorsMapAsyncAsync () =
         let expected = Map [| "A A A", 1 |]
 
         let authors =
-            [| { FullName = "A A A"
-                 LastName = "A"
-                 FirstName = "A"
-                 MiddleName = "A" } |]
+            [|
+                {
+                    FullName = "A A A"
+                    LastName = "A"
+                    FirstName = "A"
+                    MiddleName = "A"
+                }
+            |]
             |> Set.ofArray
 
         let! actual =
@@ -448,19 +479,27 @@ let TestGetAuthorsMapAsyncAsync () =
 let TestInsertUnexistedAuthorsAsync () =
     task {
         let expected =
-            [| TestAuthor(Id = 1, FullName = "A A A", LastName = "A", FirstName = "A", MiddleName = "A")
-               TestAuthor(Id = 2, FullName = "B B B", LastName = "B", FirstName = "B", MiddleName = "B")
-               TestAuthor(Id = 3, FullName = "C C C", LastName = "C", FirstName = "C", MiddleName = "C") |]
+            [|
+                TestAuthor(Id = 1, FullName = "A A A", LastName = "A", FirstName = "A", MiddleName = "A")
+                TestAuthor(Id = 2, FullName = "B B B", LastName = "B", FirstName = "B", MiddleName = "B")
+                TestAuthor(Id = 3, FullName = "C C C", LastName = "C", FirstName = "C", MiddleName = "C")
+            |]
 
         let authors =
-            [| { FullName = "B B B"
-                 LastName = "B"
-                 FirstName = "B"
-                 MiddleName = "B" }
-               { FullName = "C C C"
-                 LastName = "C"
-                 FirstName = "C"
-                 MiddleName = "C" } |]
+            [|
+                {
+                    FullName = "B B B"
+                    LastName = "B"
+                    FirstName = "B"
+                    MiddleName = "B"
+                }
+                {
+                    FullName = "C C C"
+                    LastName = "C"
+                    FirstName = "C"
+                    MiddleName = "C"
+                }
+            |]
             |> Set.ofArray
 
         let! actual =

@@ -7,22 +7,24 @@ open HomeLibProt.CollectionImporter.InpLineFields
 open HomeLibProt.Common.RegEx
 
 type InpLine =
-    { Authors: string
-      Genres: string
-      Title: string
-      Series: string
-      SeriesNumber: string
-      FileName: string
-      Size: string
-      LibId: string
-      Deleted: string
-      Extension: string
-      Date: string
-      InsNumber: string option
-      Folder: string option
-      Lang: string
-      LibRate: string
-      Keywords: string }
+    {
+        Authors: string
+        Genres: string
+        Title: string
+        Series: string
+        SeriesNumber: string
+        FileName: string
+        Size: string
+        LibId: string
+        Deleted: string
+        Extension: string
+        Date: string
+        InsNumber: string option
+        Folder: string option
+        Lang: string
+        LibRate: string
+        Keywords: string
+    }
 
 type InpField =
     | Required of string
@@ -42,20 +44,22 @@ let internal mapInpFieldToRegExGroup (inpField: InpField) =
 
 let private requiredInpFields =
     Set
-        [| Required authors
-           Required genres
-           Required title
-           Required series
-           Required serno
-           Required file
-           Required size
-           Required libid
-           Required del
-           Required extension
-           Required date
-           Required lang
-           Required rate
-           Required keywords |]
+        [|
+            Required authors
+            Required genres
+            Required title
+            Required series
+            Required serno
+            Required file
+            Required size
+            Required libid
+            Required del
+            Required extension
+            Required date
+            Required lang
+            Required rate
+            Required keywords
+        |]
 
 let internal validateInpFieldsOnRequired (inpFields: InpField array) =
     let presentedRequiredInpFieldsSet =
@@ -118,19 +122,21 @@ let parseInpLine (regEx: Regex) (line: string) : GroupCollection =
         raise (InvalidOperationException $"Unsupported inpx format: \"{line}\"")
 
 let getInpLine (groups: GroupCollection) : InpLine =
-    { Authors = groups.[authors] |> extractGroupValue
-      Genres = groups.[genres] |> extractGroupValue
-      Title = groups.[title] |> extractGroupValue
-      Series = groups.[series] |> extractGroupValue
-      SeriesNumber = groups.[serno] |> extractGroupValue
-      FileName = groups.[file] |> extractGroupValue
-      Size = groups.[size] |> extractGroupValue
-      LibId = groups.[libid] |> extractGroupValue
-      Deleted = groups.[del] |> extractGroupValue
-      Extension = groups.[extension] |> extractGroupValue
-      Date = groups.[date] |> extractGroupValue
-      InsNumber = groups.[insno] |> tryToExtractGroupValue
-      Folder = groups.[folder] |> tryToExtractGroupValue
-      Lang = groups.[lang] |> extractGroupValue
-      LibRate = groups.[rate] |> extractGroupValue
-      Keywords = groups.[keywords] |> extractGroupValue }
+    {
+        Authors = groups.[authors] |> extractGroupValue
+        Genres = groups.[genres] |> extractGroupValue
+        Title = groups.[title] |> extractGroupValue
+        Series = groups.[series] |> extractGroupValue
+        SeriesNumber = groups.[serno] |> extractGroupValue
+        FileName = groups.[file] |> extractGroupValue
+        Size = groups.[size] |> extractGroupValue
+        LibId = groups.[libid] |> extractGroupValue
+        Deleted = groups.[del] |> extractGroupValue
+        Extension = groups.[extension] |> extractGroupValue
+        Date = groups.[date] |> extractGroupValue
+        InsNumber = groups.[insno] |> tryToExtractGroupValue
+        Folder = groups.[folder] |> tryToExtractGroupValue
+        Lang = groups.[lang] |> extractGroupValue
+        LibRate = groups.[rate] |> extractGroupValue
+        Keywords = groups.[keywords] |> extractGroupValue
+    }

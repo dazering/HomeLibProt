@@ -19,81 +19,99 @@ let TestInsertBookAsync () =
         let expectedArchives = [| TestArchive(Id = 1, Name = "000001-000002.zip") |]
 
         let expectedLanguages =
-            [| TestLanguage(Id = 1, Name = "de", Include = 1)
-               TestLanguage(Id = 2, Name = "en", Include = 1) |]
+            [|
+                TestLanguage(Id = 1, Name = "de", Include = 1)
+                TestLanguage(Id = 2, Name = "en", Include = 1)
+            |]
 
         let expectedBooks =
-            [| TestBook(
-                   Id = 1,
-                   Title = "Title 1",
-                   FileName = "1",
-                   Size = 100500,
-                   LibId = "1",
-                   Deleted = 0,
-                   Extension = "fb2",
-                   Date = "2025-05-28",
-                   ArchiveId = 1,
-                   LibRate = Nullable(0L),
-                   LanguageId = 1
-               )
-               TestBook(
-                   Id = 2,
-                   Title = "Title 2",
-                   FileName = "2",
-                   Size = 100500,
-                   LibId = "2",
-                   Deleted = 0,
-                   Extension = "fb2",
-                   Date = "2025-05-28",
-                   ArchiveId = 1,
-                   LibRate = Nullable(1L),
-                   LanguageId = 2
-               ) |]
+            [|
+                TestBook(
+                    Id = 1,
+                    Title = "Title 1",
+                    FileName = "1",
+                    Size = 100500,
+                    LibId = "1",
+                    Deleted = 0,
+                    Extension = "fb2",
+                    Date = "2025-05-28",
+                    ArchiveId = 1,
+                    LibRate = Nullable(0L),
+                    LanguageId = 1
+                )
+                TestBook(
+                    Id = 2,
+                    Title = "Title 2",
+                    FileName = "2",
+                    Size = 100500,
+                    LibId = "2",
+                    Deleted = 0,
+                    Extension = "fb2",
+                    Date = "2025-05-28",
+                    ArchiveId = 1,
+                    LibRate = Nullable(1L),
+                    LanguageId = 2
+                )
+            |]
 
         let expectedAuthors =
-            [| TestAuthor(Id = 1, FullName = "B B B", FirstName = "B", MiddleName = "B", LastName = "B") |]
+            [|
+                TestAuthor(Id = 1, FullName = "B B B", FirstName = "B", MiddleName = "B", LastName = "B")
+            |]
 
         let expectedAuthorships =
-            [| TestAuthorship(BookId = 1, AuthorId = 1)
-               TestAuthorship(BookId = 2, AuthorId = 1) |]
+            [|
+                TestAuthorship(BookId = 1, AuthorId = 1)
+                TestAuthorship(BookId = 2, AuthorId = 1)
+            |]
 
         let expectedGenres =
-            [| TestGenre(Id = 1, Key = "genre1", Name = "Genre 1")
-               TestGenre(Id = 2, Key = "genre2", Name = null) |]
+            [|
+                TestGenre(Id = 1, Key = "genre1", Name = "Genre 1")
+                TestGenre(Id = 2, Key = "genre2", Name = null)
+            |]
 
         let expectedBookGenres =
-            [| TestBookGenre(BookId = 1, GenreId = 1)
-               TestBookGenre(BookId = 2, GenreId = 2) |]
+            [|
+                TestBookGenre(BookId = 1, GenreId = 1)
+                TestBookGenre(BookId = 2, GenreId = 2)
+            |]
 
         let expectedKeywords = [| TestKeyword(Id = 1, Name = "Keyword 1") |]
 
         let expectedBookKeywords =
-            [| TestBookKeyword(BookId = 1, KeywordId = 1)
-               TestBookKeyword(BookId = 2, KeywordId = 1) |]
+            [|
+                TestBookKeyword(BookId = 1, KeywordId = 1)
+                TestBookKeyword(BookId = 2, KeywordId = 1)
+            |]
 
         let expectedSeries = [| TestSeriesEntity(Id = 1, Name = "Series 1") |]
 
         let expectedBookSeries =
-            [| TestBookSeriesEntity(BookId = 1, SeriesId = 1, SeriesNumber = 1)
-               TestBookSeriesEntity(BookId = 2, SeriesId = 1, SeriesNumber = 2) |]
+            [|
+                TestBookSeriesEntity(BookId = 1, SeriesId = 1, SeriesNumber = 1)
+                TestBookSeriesEntity(BookId = 2, SeriesId = 1, SeriesNumber = 2)
+            |]
 
         let inpxImporterParameters =
-            { PathToInpx = getInpxPath "Simple"
-              BatchSize = 2
-              ProgressReport = ignore
-              DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
+            {
+                PathToInpx = getInpxPath "Simple"
+                BatchSize = 2
+                ProgressReport = ignore
+                DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync
+            }
 
-        let! books,
-             authors,
-             authorships,
-             genres,
-             bookGenres,
-             keywords,
-             bookKeywords,
-             series,
-             bookSeries,
-             languages,
-             archives =
+        let! (books,
+              authors,
+              authorships,
+              genres,
+              bookGenres,
+              keywords,
+              bookKeywords,
+              series,
+              bookSeries,
+              languages,
+              archives) =
             TestUtils.UseTestDatabase(
                 fun connection -> task { do! DbStructure.CreateImportInpxStructure(connection, true) }
                 , fun connection ->
@@ -102,19 +120,36 @@ let TestInsertBookAsync () =
                         do! importInpxToDb inpxImporterParameters connection
 
                         let! books = ConnectionUtils.DoInTransactionAsync(connection, BookUtils.GetTestData)
-                        let! authors = ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData)
-                        let! authorships = ConnectionUtils.DoInTransactionAsync(connection, AuthorshipUtils.GetTestData)
-                        let! genres = ConnectionUtils.DoInTransactionAsync(connection, GenreUtils.GetTestData)
-                        let! bookGenres = ConnectionUtils.DoInTransactionAsync(connection, BookGenreUtils.GetTestData)
-                        let! keywords = ConnectionUtils.DoInTransactionAsync(connection, KeywordUtils.GetTestData)
+
+                        let! authors =
+                            ConnectionUtils.DoInTransactionAsync(connection, AuthorUtils.GetTestData)
+
+                        let! authorships =
+                            ConnectionUtils.DoInTransactionAsync(connection, AuthorshipUtils.GetTestData)
+
+                        let! genres =
+                            ConnectionUtils.DoInTransactionAsync(connection, GenreUtils.GetTestData)
+
+                        let! bookGenres =
+                            ConnectionUtils.DoInTransactionAsync(connection, BookGenreUtils.GetTestData)
+
+                        let! keywords =
+                            ConnectionUtils.DoInTransactionAsync(connection, KeywordUtils.GetTestData)
 
                         let! bookKeywords =
                             ConnectionUtils.DoInTransactionAsync(connection, BookKeywordUtils.GetTestData)
 
-                        let! series = ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData)
-                        let! bookSeries = ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.GetTestData)
-                        let! languages = ConnectionUtils.DoInTransactionAsync(connection, LanguageUtils.GetTestData)
-                        let! archives = ConnectionUtils.DoInTransactionAsync(connection, ArchiveUtils.GetTestData)
+                        let! series =
+                            ConnectionUtils.DoInTransactionAsync(connection, SeriesUtils.GetTestData)
+
+                        let! bookSeries =
+                            ConnectionUtils.DoInTransactionAsync(connection, BookSeriesUtils.GetTestData)
+
+                        let! languages =
+                            ConnectionUtils.DoInTransactionAsync(connection, LanguageUtils.GetTestData)
+
+                        let! archives =
+                            ConnectionUtils.DoInTransactionAsync(connection, ArchiveUtils.GetTestData)
 
                         return
                             books,
