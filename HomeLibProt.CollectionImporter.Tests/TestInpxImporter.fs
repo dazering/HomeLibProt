@@ -166,16 +166,16 @@ let TestInsertBookAsync () =
                     }
             )
 
-        Assert.That(books, Is.EqualTo expectedBooks)
-        Assert.That(authors, Is.EqualTo expectedAuthors)
-        Assert.That(authorships, Is.EqualTo(expectedAuthorships).AsCollection)
-        Assert.That(genres, Is.EqualTo(expectedGenres).AsCollection)
-        Assert.That(bookGenres, Is.EqualTo(expectedBookGenres).AsCollection)
-        Assert.That(keywords, Is.EqualTo(expectedKeywords).AsCollection)
-        Assert.That(bookKeywords, Is.EqualTo(expectedBookKeywords).AsCollection)
-        Assert.That(bookSeries, Is.EqualTo(expectedBookSeries).AsCollection)
-        Assert.That(series, Is.EqualTo(expectedSeries).AsCollection)
-        Assert.That(languages, Is.EqualTo(expectedLanguages).AsCollection)
-        Assert.That(archives, Is.EqualTo(expectedArchives).AsCollection)
+        Assert.That(books, Is.EqualTo<TestBook array> expectedBooks)
+        Assert.That(authors, Is.EqualTo<TestAuthor> expectedAuthors)
+        Assert.That(authorships, Is.EqualTo<TestAuthorship array>(expectedAuthorships).AsCollection)
+        Assert.That(genres, Is.EqualTo<TestGenre array>(expectedGenres).AsCollection)
+        Assert.That(bookGenres, Is.EqualTo<TestBookGenre array>(expectedBookGenres).AsCollection)
+        Assert.That(keywords, Is.EqualTo<TestKeyword array>(expectedKeywords).AsCollection)
+        Assert.That(bookKeywords, Is.EqualTo<TestBookKeyword array>(expectedBookKeywords).AsCollection)
+        Assert.That(bookSeries, Is.EqualTo<TestBookSeriesEntity array>(expectedBookSeries).AsCollection)
+        Assert.That(series, Is.EqualTo<TestSeriesEntity array>(expectedSeries).AsCollection)
+        Assert.That(languages, Is.EqualTo<TestLanguage array>(expectedLanguages).AsCollection)
+        Assert.That(archives, Is.EqualTo<TestArchive array>(expectedArchives).AsCollection)
 
     }

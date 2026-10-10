@@ -90,7 +90,7 @@ let TestMapInpFieldToRegExGroup () =
 
     let actual = inpFields |> Array.map mapInpFieldToRegExGroup
 
-    Assert.That(actual, Is.EqualTo(expected).AsCollection)
+    Assert.That(actual, Is.EqualTo<string array>(expected).AsCollection)
 
 [<Test>]
 let TestValidateInpFieldsOnRequired () =
@@ -136,7 +136,7 @@ let TestValidateInpFieldsOnRequired () =
 
     let actual = inpFields |> validateInpFieldsOnRequired
 
-    Assert.That(actual, Is.EqualTo(expected).AsCollection)
+    Assert.That(actual, Is.EqualTo<InpField array>(expected).AsCollection)
 
 [<Test>]
 let TestValidateInpFieldsOnRequiredWithFail () =
@@ -158,10 +158,10 @@ let TestValidateInpFieldsOnRequiredWithFail () =
             Required keywords
         |]
 
-    Assert.That(
-        (fun _ -> inpFields |> validateInpFieldsOnRequired |> ignore),
-        Throws.Exception.With.Message.EqualTo "Required Inp Fields are absent: Required \"genres\", Required \"series\""
-    )
+    let ex =
+        Assert.Throws<System.InvalidOperationException>(fun () -> inpFields |> validateInpFieldsOnRequired |> ignore)
+
+    Assert.That(ex.Message, Is.EqualTo "Required Inp Fields are absent: Required \"genres\", Required \"series\"")
 
 [<Test>]
 let TestMapStructureSectionToInpField () =
@@ -207,16 +207,17 @@ let TestMapStructureSectionToInpField () =
 
     let actual = structureSections |> Array.map mapStructureSectionToInpField
 
-    Assert.That(actual, Is.EqualTo(expected).AsCollection)
+    Assert.That(actual, Is.EqualTo<InpField array>(expected).AsCollection)
 
 [<Test>]
 let TestMapStructureSectionToInpFieldFail () =
     let structureSections = [| "unknown section" |]
 
-    Assert.That(
-        (fun _ -> structureSections |> Array.map mapStructureSectionToInpField |> ignore),
-        Throws.Exception.With.Message.EqualTo "Unsupported Inp Field: unknown section"
-    )
+    let ex =
+        Assert.Throws<System.InvalidOperationException>(fun () ->
+            structureSections |> Array.map mapStructureSectionToInpField |> ignore)
+
+    Assert.That(ex.Message, Is.EqualTo "Unsupported Inp Field: unknown section")
 
 [<Test>]
 let TestGetStructureSections () =
@@ -245,16 +246,20 @@ let TestGetStructureSections () =
 
     let actual = structure |> getStructureSections
 
-    Assert.That(actual, Is.EqualTo(expected).AsCollection)
+    Assert.That(actual, Is.EqualTo<string array>(expected).AsCollection)
 
 [<Test>]
 let TestParseInpLineDefaultStructureUnsupportedFormat () =
     let inpLine =
         "A,A,A:B,B,B:\x04Genre 1:Genre 2:\x04Title 1\x04Series 1\x041\x041\x04100500\x041\x040\x04fb2\x042025-05-28\x04en\x042\x04Keyword 1, Keyword 2\x040"
 
+    let ex =
+        Assert.Throws<System.InvalidOperationException>(fun () ->
+            (defaultStructure |> getRegEx, inpLine) ||> parseInpLine |> ignore)
+
     Assert.That(
-        (fun _ -> (defaultStructure |> getRegEx, inpLine) ||> parseInpLine |> ignore),
-        Throws.Exception.With.Message.EqualTo
+        ex.Message,
+        Is.EqualTo
             "Unsupported inpx format: \"A,A,A:B,B,B:Genre 1:Genre 2:Title 1Series 11110050010fb22025-05-28en2Keyword 1, Keyword 20\""
     )
 

@@ -97,7 +97,7 @@ let TestAddAuthorToTree
 
     let actual = addAuthorToTree maxCountLeafs tree author 1
 
-    Assert.That(actual, Is.EqualTo(expected).AsCollection)
+    Assert.That(actual, Is.EqualTo<Map<string, TreeNode>>(expected).AsCollection)
 
 [<Test>]
 let TestInsertTree () =
@@ -189,8 +189,8 @@ let TestInsertTree () =
                     }
             )
 
-        Assert.That(searchNodes, Is.EqualTo(expectedSearchNode).AsCollection)
-        Assert.That(searchResults, Is.EqualTo(expectedSearchResults).AsCollection)
+        Assert.That(searchNodes, Is.EqualTo<TestSearchNode array>(expectedSearchNode).AsCollection)
+        Assert.That(searchResults, Is.EqualTo<TestSearchResult array>(expectedSearchResults).AsCollection)
 
     }
 
@@ -297,7 +297,7 @@ let TestImportAuthorHierarchicalSearchToDbAsync () =
                     }
             )
 
-        Assert.That(searchNodes, Is.EqualTo(expectedSearchNode).AsCollection)
-        Assert.That(searchResults, Is.EqualTo(expectedSearchResults).AsCollection)
+        Assert.That(searchNodes, Is.EqualTo<TestSearchNode array>(expectedSearchNode).AsCollection)
+        Assert.That(searchResults, Is.EqualTo<TestSearchResult array>(expectedSearchResults).AsCollection)
 
     }

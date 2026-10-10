@@ -73,7 +73,7 @@ let makeAuthorsTestCases =
 let TestMakeAuthors (authors: string, expected: string array) =
     let actual = authors |> makeAuthors authorGroups
 
-    Assert.That(actual, Is.EqualTo expected)
+    Assert.That(actual, Is.EqualTo<string array> expected)
 
 [<Test>]
 let TestMakeGenres () =
@@ -83,7 +83,7 @@ let TestMakeGenres () =
 
     let actual = keywords |> makeGenres
 
-    Assert.That(actual, Is.EqualTo expected)
+    Assert.That(actual, Is.EqualTo<string array> expected)
 
 [<Test>]
 let TestMakeKeywords () =
@@ -93,7 +93,7 @@ let TestMakeKeywords () =
 
     let actual = keywords |> makeKeywords
 
-    Assert.That(actual, Is.EqualTo expected)
+    Assert.That(actual, Is.EqualTo<string array> expected)
 
 let makeSeriesTestCases =
     [|
