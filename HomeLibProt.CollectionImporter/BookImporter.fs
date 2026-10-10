@@ -184,7 +184,8 @@ let private getEntitiesMap
     (source: 'T1 Set)
     : Task<Map<string, int64>> =
     task {
-        let! entities = (connection, source |> Set.map keyAccessor |> Set.toArray) |> getEntitiesAsync
+        let! entities =
+            (connection, source |> Set.map keyAccessor |> Set.toArray) |> getEntitiesAsync
 
         return entities |> Array.map mapEntityToKeyValue |> Map
     }

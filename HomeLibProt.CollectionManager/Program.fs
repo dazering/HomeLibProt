@@ -31,13 +31,15 @@ let mergeBooks (logger: ILogger) (args: ParseResults<MergeBooks>) : Task<unit> =
         let keepOldArchives = args.Contains MergeBooks.KeepOldArchives
 
         let parameters: BooksMerger.BooksMergerParameters =
-            { PathToLibrary = pathToLibrary
-              OutputPath = outputPath
-              ArchiveSize = archiveSize
-              ArchiveFilter = archiveFilter
-              Prefix = prefix
-              KeepArchives = keepOldArchives
-              ProgressReport = printProgressReport logger }
+            {
+                PathToLibrary = pathToLibrary
+                OutputPath = outputPath
+                ArchiveSize = archiveSize
+                ArchiveFilter = archiveFilter
+                Prefix = prefix
+                KeepArchives = keepOldArchives
+                ProgressReport = printProgressReport logger
+            }
 
         do! BooksMerger.megreBooksAsync parameters
     }
@@ -59,12 +61,14 @@ let downloadBooks (logger: ILogger) (args: ParseResults<DownloadBooks>) : Task<u
             | ArchiveTypeDownload.Binary -> BooksDownloader.ArchiveTypeDownload.Binary
 
         let parameters: BooksDownloader.BooksDownloaderParameters =
-            { PathToLibrary = pathToLibrary
-              OutputPath = outputPath
-              HttpClient = httpClient
-              Retries = retries
-              ArchiveTypeDownload = aTD
-              ProgressReport = printProgressReport logger }
+            {
+                PathToLibrary = pathToLibrary
+                OutputPath = outputPath
+                HttpClient = httpClient
+                Retries = retries
+                ArchiveTypeDownload = aTD
+                ProgressReport = printProgressReport logger
+            }
 
         match site with
         | Site.Flibusta -> do! BooksDownloader.downloadFlibustaArchives parameters
@@ -86,21 +90,25 @@ let generateInpx (logger: ILogger) (args: ParseResults<GenerateInpx>) : Task<uni
             |> ConnectionUtils.MakeConnection
 
         let parameters: Inpx.InpxGenerator.InpxGeneratorParameters =
-            { PathToLibrary = pathToLibrary
-              PathToInpx = pathToInpx
-              InpxParameters =
-                { Site =
-                    match site with
-                    | Site.Flibusta -> Inpx.InpxGenerator.Site.Flibusta
-                    | Site.Librusec -> Inpx.InpxGenerator.Site.Librusec
-                    | _ -> raise (InvalidOperationException $"Unknown books source: {site}")
-                  LibraryType =
-                    match libraryType with
-                    | Fb2 -> Inpx.InpxGenerator.LibraryType.Fb2
-                    | All -> Inpx.InpxGenerator.LibraryType.All }
-              ProgressReport = printProgressReport logger
-              ErrorReport = printErrorReport logger
-              DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
+            {
+                PathToLibrary = pathToLibrary
+                PathToInpx = pathToInpx
+                InpxParameters =
+                    {
+                        Site =
+                            match site with
+                            | Site.Flibusta -> Inpx.InpxGenerator.Site.Flibusta
+                            | Site.Librusec -> Inpx.InpxGenerator.Site.Librusec
+                            | _ -> raise (InvalidOperationException $"Unknown books source: {site}")
+                        LibraryType =
+                            match libraryType with
+                            | Fb2 -> Inpx.InpxGenerator.LibraryType.Fb2
+                            | All -> Inpx.InpxGenerator.LibraryType.All
+                    }
+                ProgressReport = printProgressReport logger
+                ErrorReport = printErrorReport logger
+                DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync
+            }
 
         do! ConnectionUtils.WithConnectionAsync(connection, Inpx.InpxGenerator.generateInpxAsync parameters)
     }
@@ -114,10 +122,12 @@ let downloadSqlDumps (logger: ILogger) (args: ParseResults<DownloadSqlDumps>) : 
         use httpClient = new HttpClient()
 
         let parameters: SqlDumpsDownloader.SqlDumpDownloaderParameters =
-            { PathToSqlDumps = pathToSqlDumps
-              HttpClient = httpClient
-              Retries = retries
-              ProgressReport = printProgressReport logger }
+            {
+                PathToSqlDumps = pathToSqlDumps
+                HttpClient = httpClient
+                Retries = retries
+                ProgressReport = printProgressReport logger
+            }
 
         match site with
         | Site.Flibusta -> do! SqlDumpsDownloader.downloadSqlDumpsFlibustaAsync parameters
@@ -139,11 +149,13 @@ let importSqlDumps (logger: ILogger) (args: ParseResults<ImportSqlDumps>) : Task
             |> ConnectionUtils.MakeConnection
 
         let parameters: SqlDumpImporter.SqlDumpImporterParameters =
-            { PathToSqlDumps = pathToSqlDumps
-              KeepSqlDumps = keepSqlDumps
-              ProgressReport = printProgressReport logger
-              ErrorReport = printErrorReport logger
-              DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync }
+            {
+                PathToSqlDumps = pathToSqlDumps
+                KeepSqlDumps = keepSqlDumps
+                ProgressReport = printProgressReport logger
+                ErrorReport = printErrorReport logger
+                DoInTransactionAsync = ConnectionUtils.DoInTransactionAsync
+            }
 
         match site with
         | Site.Flibusta ->
@@ -182,7 +194,9 @@ let doWithArgumentsAsync (logger: ILogger) (args: string array) : Task<int> =
         try
             let arguments = parser.ParseCommandLine args
 
-            let! stopwatch = withStopwatchAsync (new Stopwatch()) (fun _ -> task { do! runAsync logger arguments })
+            let! stopwatch =
+                withStopwatchAsync (new Stopwatch()) (fun _ -> task { do! runAsync logger arguments })
+
             stopwatch |> printElapsedTime logger
 
             return 0

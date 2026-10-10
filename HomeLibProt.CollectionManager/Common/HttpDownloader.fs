@@ -13,7 +13,8 @@ let private sendRequest
     : Task<'T option> =
     task {
         try
-            use! response = httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead)
+            use! response =
+                httpClient.SendAsync(request, HttpCompletionOption.ResponseHeadersRead)
 
             response.EnsureSuccessStatusCode() |> ignore
 
@@ -160,7 +161,8 @@ let downloadFileAsync
     (retries: uint)
     : Task =
     task {
-        let! supportRange = checkIfRequestSupportsRangeWithRetryAsync httpClient reportProgress uri retries
+        let! supportRange =
+            checkIfRequestSupportsRangeWithRetryAsync httpClient reportProgress uri retries
 
         if supportRange then
             use fileStrean = File.Create(Path.Combine(pathToSqlDumps, fileName))

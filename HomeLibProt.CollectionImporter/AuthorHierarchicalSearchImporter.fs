@@ -8,9 +8,11 @@ open HomeLibProt.Domain.DataAccess
 open HomeLibProt.Domain.DataAccess.AuthorHierarchicalSearch
 
 type AuthorHierarchicalSearchImporterParameters =
-    { MaxCountLeafs: int
-      ProgressReport: string -> unit
-      DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
+    {
+        MaxCountLeafs: int
+        ProgressReport: string -> unit
+        DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task
+    }
 
 type TreeNode =
     | Authors of Author list

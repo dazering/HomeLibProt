@@ -6,27 +6,35 @@ open System.IO.Compression
 open System.Threading.Tasks
 
 type BooksMergerParameters =
-    { PathToLibrary: string
-      OutputPath: string
-      ArchiveSize: int
-      ArchiveFilter: string
-      Prefix: string
-      KeepArchives: bool
-      ProgressReport: string -> unit }
+    {
+        PathToLibrary: string
+        OutputPath: string
+        ArchiveSize: int
+        ArchiveFilter: string
+        Prefix: string
+        KeepArchives: bool
+        ProgressReport: string -> unit
+    }
 
 type ArchiveInfo =
-    { Entries: string array
-      Path: string
-      LastOne: bool }
+    {
+        Entries: string array
+        Path: string
+        LastOne: bool
+    }
 
 type NewArchive =
-    { FirstBook: int64
-      LastBook: int64
-      ArchiveInfos: ArchiveInfo array }
+    {
+        FirstBook: int64
+        LastBook: int64
+        ArchiveInfos: ArchiveInfo array
+    }
 
 type ArchiveEntry =
-    { ArchivePath: string
-      EntryName: string }
+    {
+        ArchivePath: string
+        EntryName: string
+    }
 
 type FirstAndLastEntries = { First: int64; Last: int64 }
 
@@ -115,16 +123,20 @@ let private mapArchiveEntriesToNewArchive (archiveEntries: ArchiveEntry array) :
         |> Array.map (fun (archive, entries) ->
             let firstAndLastBook = archive |> getFirstAndLastBook
 
-            { Path = archive
-              Entries = entries |> Array.map (fun e -> e.EntryName)
-              LastOne =
-                entries
-                |> Array.map (fun e -> e.EntryName |> Path.GetFileNameWithoutExtension)
-                |> Array.contains (firstAndLastBook.Last.ToString()) })
+            {
+                Path = archive
+                Entries = entries |> Array.map (fun e -> e.EntryName)
+                LastOne =
+                    entries
+                    |> Array.map (fun e -> e.EntryName |> Path.GetFileNameWithoutExtension)
+                    |> Array.contains (firstAndLastBook.Last.ToString())
+            })
 
-    { FirstBook = firstAndLastEntry.First
-      LastBook = firstAndLastEntry.Last
-      ArchiveInfos = archiveInfos }
+    {
+        FirstBook = firstAndLastEntry.First
+        LastBook = firstAndLastEntry.Last
+        ArchiveInfos = archiveInfos
+    }
 
 let private filterByBookName (entry: ZipArchiveEntry) : bool =
     match Int64.TryParse(entry.Name |> Path.GetFileNameWithoutExtension) with
@@ -141,8 +153,10 @@ let private getArchiveEntries (archives: string array) : ArchiveEntry seq =
                 |> Seq.filter filterByBookName
                 |> Seq.sortBy (fun e -> e.Name |> Path.GetFileNameWithoutExtension |> int64)
                 |> Seq.map (fun e ->
-                    { ArchivePath = archive
-                      EntryName = e.Name })
+                    {
+                        ArchivePath = archive
+                        EntryName = e.Name
+                    })
     }
 
 let private getArchivesToCopy (pathToLibrary: string) (archiveFilter: string) : string array =

@@ -15,12 +15,14 @@ type ArchiveTypeDownload =
     | Binary
 
 type BooksDownloaderParameters =
-    { PathToLibrary: string
-      OutputPath: string
-      HttpClient: HttpClient
-      Retries: uint
-      ArchiveTypeDownload: ArchiveTypeDownload
-      ProgressReport: string -> unit }
+    {
+        PathToLibrary: string
+        OutputPath: string
+        HttpClient: HttpClient
+        Retries: uint
+        ArchiveTypeDownload: ArchiveTypeDownload
+        ProgressReport: string -> unit
+    }
 
 type private FirstAndLastBook = { First: int64; Last: int64 }
 
@@ -29,9 +31,11 @@ type private ArchiveType =
     | Binary
 
 type private Reference =
-    { Reference: string
-      Type: ArchiveType
-      First: int64 }
+    {
+        Reference: string
+        Type: ArchiveType
+        First: int64
+    }
 
 module private RegExGroups =
     let reference = "reference"
@@ -54,9 +58,11 @@ module private FlibustaRegEx =
         | _ -> raise (InvalidOperationException $"Unsupported archive type: {s}")
 
     let getReference (groups: GroupCollection) : Reference =
-        { Reference = groups.[reference] |> extractGroupValue
-          Type = groups.[typeGroup] |> extractGroupValue |> stringToArchiveType
-          First = groups.[first] |> extractGroupValue |> int64 }
+        {
+            Reference = groups.[reference] |> extractGroupValue
+            Type = groups.[typeGroup] |> extractGroupValue |> stringToArchiveType
+            First = groups.[first] |> extractGroupValue |> int64
+        }
 
 let private getReferenceFilter (lastBook: int64) (archiveTypeDownload: ArchiveTypeDownload) : (Reference -> bool) =
     match archiveTypeDownload with
@@ -87,8 +93,10 @@ let private getFirstAndLastBookGroups (regEx: Regex) (fileName: string) =
     m.Groups
 
 let private getFirsAndLastBook (group: GroupCollection) : FirstAndLastBook =
-    { First = group.["first"] |> extractGroupValue |> int64
-      Last = group.["last"] |> extractGroupValue |> int64 }
+    {
+        First = group.["first"] |> extractGroupValue |> int64
+        Last = group.["last"] |> extractGroupValue |> int64
+    }
 
 let private getLastBookFromArchives (path: string) : int64 =
     let firstAndLastRegEx = new Regex(firstLastRegExPattern, RegexOptions.Compiled)

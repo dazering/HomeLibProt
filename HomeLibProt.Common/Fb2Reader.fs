@@ -6,23 +6,29 @@ open System.Xml
 open System.Xml.XPath
 
 type Fb2Attributes =
-    { Annotation: string option
-      Coverpage: string option }
+    {
+        Annotation: string option
+        Coverpage: string option
+    }
 
 type AuthorName =
-    { First: string
-      Middle: string
-      Last: string }
+    {
+        First: string
+        Middle: string
+        Last: string
+    }
 
 type Series = { Name: string; Number: string }
 
 type Fb2Info =
-    { Authors: AuthorName array
-      Genres: string array
-      Title: string
-      Language: string
-      Keywords: string array
-      Series: Series array }
+    {
+        Authors: AuthorName array
+        Genres: string array
+        Title: string
+        Language: string
+        Keywords: string array
+        Series: Series array
+    }
 
 let private authorsXpath = "/fb:FictionBook/fb:description/fb:title-info/fb:author"
 
@@ -185,9 +191,11 @@ let private tryToSelectAuthors
                     |> normalizeString
 
                 yield
-                    { First = firstName
-                      Middle = middleName
-                      Last = lastName }
+                    {
+                        First = firstName
+                        Middle = middleName
+                        Last = lastName
+                    }
         }
         |> Some
     | None -> None
@@ -233,8 +241,10 @@ let getFb2Attributes (fb2: Stream) : Fb2Attributes option =
             |> tryToGetCoverpageNode navigator namespaceManager
             |> tryToSelectValue
 
-        { Annotation = annotation
-          Coverpage = coverpage })
+        {
+            Annotation = annotation
+            Coverpage = coverpage
+        })
 
 let getFb2Info (fb2: Stream) : Fb2Info option =
     readFb2 fb2 (fun navigator namespaceManager ->
@@ -279,15 +289,19 @@ let getFb2Info (fb2: Stream) : Fb2Info option =
             |> Option.defaultValue (
                 seq {
                     yield
-                        { Name = String.Empty
-                          Number = String.Empty }
+                        {
+                            Name = String.Empty
+                            Number = String.Empty
+                        }
                 }
             )
             |> Seq.toArray
 
-        { Authors = authors
-          Genres = genres
-          Title = title
-          Language = language
-          Keywords = keywords
-          Series = series })
+        {
+            Authors = authors
+            Genres = genres
+            Title = title
+            Language = language
+            Keywords = keywords
+            Series = series
+        })

@@ -6,18 +6,22 @@ open System.Threading.Tasks
 open HomeLibProt.Domain.DataAccess
 
 type ImportInpxParameters =
-    { PathToInpx: string
-      BatchSize: int
-      PathToArchives: string
-      MaxCountLeafs: int
-      FullCreation: bool
-      ProgressReport: string -> unit
-      DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
+    {
+        PathToInpx: string
+        BatchSize: int
+        PathToArchives: string
+        MaxCountLeafs: int
+        FullCreation: bool
+        ProgressReport: string -> unit
+        DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task
+    }
 
 type ReimportAHSParameters =
-    { MaxCountLeafs: int
-      ProgressReport: string -> unit
-      DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
+    {
+        MaxCountLeafs: int
+        ProgressReport: string -> unit
+        DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task
+    }
 
 let importCollectionToDb (parameters: ImportInpxParameters) (connection: DbConnection) : Task =
     task {
@@ -26,24 +30,30 @@ let importCollectionToDb (parameters: ImportInpxParameters) (connection: DbConne
             |> parameters.DoInTransactionAsync
 
         let inpxImporterParameters: InpxImporter.InpxImporterParameters =
-            { PathToInpx = parameters.PathToInpx
-              BatchSize = parameters.BatchSize
-              ProgressReport = parameters.ProgressReport
-              DoInTransactionAsync = parameters.DoInTransactionAsync }
+            {
+                PathToInpx = parameters.PathToInpx
+                BatchSize = parameters.BatchSize
+                ProgressReport = parameters.ProgressReport
+                DoInTransactionAsync = parameters.DoInTransactionAsync
+            }
 
         do! InpxImporter.importInpxToDb inpxImporterParameters connection
 
         let collectionValidatorParameters: CollectionValidator.CollectionValidatorParameters =
-            { PathToArchives = parameters.PathToArchives
-              ProgressReport = parameters.ProgressReport
-              DoInTransactionAsync = parameters.DoInTransactionAsync }
+            {
+                PathToArchives = parameters.PathToArchives
+                ProgressReport = parameters.ProgressReport
+                DoInTransactionAsync = parameters.DoInTransactionAsync
+            }
 
         do! CollectionValidator.validateCollectionAsync collectionValidatorParameters connection
 
         let ahsImporterParameters: AuthorHierarchicalSearchImporter.AuthorHierarchicalSearchImporterParameters =
-            { MaxCountLeafs = parameters.MaxCountLeafs
-              ProgressReport = parameters.ProgressReport
-              DoInTransactionAsync = parameters.DoInTransactionAsync }
+            {
+                MaxCountLeafs = parameters.MaxCountLeafs
+                ProgressReport = parameters.ProgressReport
+                DoInTransactionAsync = parameters.DoInTransactionAsync
+            }
 
         do! AuthorHierarchicalSearchImporter.importAuthorHierarchicalSearchToDbAsync ahsImporterParameters connection
     }
@@ -53,9 +63,11 @@ let reimportAuthorHierarchicalSearch (parameters: ReimportAHSParameters) (connec
         do! (connection, DbStructure.CreateAHSStructure) |> parameters.DoInTransactionAsync
 
         let ahsImporterParameters: AuthorHierarchicalSearchImporter.AuthorHierarchicalSearchImporterParameters =
-            { MaxCountLeafs = parameters.MaxCountLeafs
-              ProgressReport = parameters.ProgressReport
-              DoInTransactionAsync = parameters.DoInTransactionAsync }
+            {
+                MaxCountLeafs = parameters.MaxCountLeafs
+                ProgressReport = parameters.ProgressReport
+                DoInTransactionAsync = parameters.DoInTransactionAsync
+            }
 
         do! AuthorHierarchicalSearchImporter.importAuthorHierarchicalSearchToDbAsync ahsImporterParameters connection
     }

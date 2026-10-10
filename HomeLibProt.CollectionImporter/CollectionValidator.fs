@@ -11,9 +11,11 @@ open HomeLibProt.Domain.DataAccess
 open HomeLibProt.Domain.Utils
 
 type CollectionValidatorParameters =
-    { PathToArchives: string
-      ProgressReport: string -> unit
-      DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task }
+    {
+        PathToArchives: string
+        ProgressReport: string -> unit
+        DoInTransactionAsync: DbConnection * (DbConnection -> Task) -> Task
+    }
 
 let private makeAbsentFilesMessage (absentFiles: List<string>) = String.Join(", ", absentFiles)
 
@@ -61,7 +63,8 @@ let private validateFolderAsync
     (connection: DbConnection)
     =
     task {
-        let! absentFiles = ArchiveUtils.DoWithArchiveAsync(fullPath, findAbsentFilesAsync archive.Id connection)
+        let! absentFiles =
+            ArchiveUtils.DoWithArchiveAsync(fullPath, findAbsentFilesAsync archive.Id connection)
 
         if absentFiles.Count > 0 then
             progressReport $"Absent files in {archive.Name}: {absentFiles |> makeAbsentFilesMessage}"
